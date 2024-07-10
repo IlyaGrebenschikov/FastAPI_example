@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.111.0"}
+sqlalchemy = "^2.0.31"
 
 
 [build-system]
