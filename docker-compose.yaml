@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: .
+    container_name: my_backend
+    restart: always
+    volumes:
+      - ./:/usr/app/backend/.
+    working_dir: /usr/app/backend/.
+    ports:
+      - "8080:8080"
+    command: bash -c 'python -m src.app.main'
+    networks:
+      - app_network
+    expose:
+      - 8080
+
+networks:
+  app_network:
