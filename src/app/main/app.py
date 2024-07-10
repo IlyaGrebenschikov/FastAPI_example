@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.app.main.routers import init_routers
+from src.app.main.endpoints import init_routers
 
 
 def create_app() -> FastAPI:

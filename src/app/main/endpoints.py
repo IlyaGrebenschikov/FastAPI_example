@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from src.app.api.v1.test.routers import test_router
+from src.app.api.v1.endpoints.test import test_router
 
 
 def init_routers(app: FastAPI) -> None:
