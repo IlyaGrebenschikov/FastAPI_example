@@ -1,15 +1,16 @@
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import DirectoryPath
 from sqlalchemy import URL
 
 
 def get_root_dir_path() -> Path:
-    return Path(__file__).resolve().parent.parent
+    return Path(__file__).resolve().parent.parent.parent.parent
 
 
 class EnvSettings(BaseSettings):
-    root_dir_path = get_root_dir_path()
+    root_dir_path: DirectoryPath = get_root_dir_path()
     model_config = SettingsConfigDict(
         env_file=f'{root_dir_path}/.env',
         env_file_encoding='utf-8',
@@ -20,7 +21,6 @@ class EnvSettings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
-    DB_URL: str
 
 
 class DatabaseSettings(EnvSettings):
