@@ -1,0 +1,9 @@
+__pycache_/
+.env
+README.md
+CHANGELOG.md
+docker-compose.yml
+LICENSE
+.git
+.gitignore
+.github
