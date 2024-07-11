@@ -1,14 +1,14 @@
 services:
   backend:
-    build: .
-    container_name: my_backend
+    build: ./user_service/.
+    container_name: user_service
     restart: always
     volumes:
-      - ./:/usr/app/backend/.
-    working_dir: /usr/app/backend/.
+      - ./:/usr/app/user_service/.
+    working_dir: /usr/app/user_service/.
     ports:
       - "8080:8080"
-    command: bash -c 'python -m src.app.main'
+    command: bash -c 'python -m user_service.src.app.main'
     networks:
       - app_network
     expose:

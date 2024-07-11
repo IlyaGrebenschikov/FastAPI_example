@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from src.app.main.app import create_app
+from user_service.src.app.main.app import create_app
 
 
 def init_app(app: FastAPI) -> None:

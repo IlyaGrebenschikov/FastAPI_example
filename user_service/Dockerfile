@@ -1,7 +1,7 @@
 FROM python:3.10.12-buster
 EXPOSE 8080
 
-WORKDIR /usr/app/backend
+WORKDIR /usr/app/user_service
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 RUN apt update
