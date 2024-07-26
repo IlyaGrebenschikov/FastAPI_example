@@ -6,7 +6,7 @@ from sqlalchemy import URL
 
 
 def get_root_dir_path() -> Path:
-    return Path(__file__).resolve().parent.parent.parent.parent.parent
+    return Path(__file__).resolve().parent.parent.parent.parent
 
 
 class EnvSettings(BaseSettings):
