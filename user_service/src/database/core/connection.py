@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import URL
@@ -17,7 +18,7 @@ def create_async_session_maker(engine: AsyncEngine) -> SessionFactory:
 
 
 async def get_async_session(
-        session_maker: Annotated[SessionFactory, session_marker],
+        session_maker: Annotated[SessionFactory, Depends(session_marker)],
 ) -> AsyncSession:
     async with session_maker() as session:
         yield session
