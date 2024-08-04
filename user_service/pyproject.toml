@@ -10,6 +10,7 @@ python = "^3.10"
 fastapi = {extras = ["all"], version = "^0.111.0"}
 sqlalchemy = "^2.0.31"
 asyncpg = "^0.29.0"
+alembic = {extras = ["async"], version = "^1.13.2"}
 
 
 [build-system]

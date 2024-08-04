@@ -6,13 +6,13 @@ from sqlalchemy import URL
 
 
 def get_root_dir_path() -> Path:
-    return Path(__file__).resolve().parent.parent.parent.parent
+    return Path(__file__).resolve().parent.parent.parent
 
 
 class EnvSettings(BaseSettings):
     root_dir_path: DirectoryPath = get_root_dir_path()
     model_config = SettingsConfigDict(
-        env_file=f'{root_dir_path}/.env.user',
+        env_file=f'{root_dir_path}/.env',
         env_file_encoding='utf-8',
     )
 
