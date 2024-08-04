@@ -1,13 +1,12 @@
-import uvicorn
-from fastapi import FastAPI
-
-from user_service.src.settings.app import create_app
+from user_service.src.settings.app import init_app, start_app
+from user_service.src.core.settings import DatabaseSettings
 
 
-def init_app(app: FastAPI) -> None:
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+def main() -> None:
+    db_settings = DatabaseSettings()
+    app = init_app(db_settings)
+    start_app(app)
 
 
 if __name__ == "__main__":
-    app = create_app()
-    init_app(app)
+    main()
