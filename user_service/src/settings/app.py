@@ -5,11 +5,12 @@ from fastapi import FastAPI
 
 from user_service.src.settings.endpoints import init_routers
 from user_service.src.settings.dependencies import init_dependencies
-from user_service.src.core.settings import DatabaseSettings
+from user_service.src.core.settings import DatabaseSettings, SecretSettings
 
 
 def init_app(
         db_settings: DatabaseSettings,
+        secret_settings: SecretSettings,
         title: str = 'FastAPI',
         docs_url: Optional[str] = "/docs",
         redoc_url: Optional[str] = "/redoc",
@@ -20,7 +21,7 @@ def init_app(
         redoc_url=redoc_url,
     )
     init_routers(app)
-    init_dependencies(app, db_settings)
+    init_dependencies(app, db_settings, secret_settings)
 
     return app
 

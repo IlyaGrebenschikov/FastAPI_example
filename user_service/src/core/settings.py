@@ -1,4 +1,6 @@
 from pathlib import Path
+from typing import Final
+from secrets import token_hex
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import DirectoryPath
@@ -47,5 +49,15 @@ class DatabaseSettings(EnvSettings):
         )
 
 
+class SecretSettings:
+    key: Final[str] = token_hex(32)
+    algorithm: Final[str] = 'HS256'
+    jwt_expiration: Final[int] = 30
+
+
 def get_db_settings() -> DatabaseSettings:
     return DatabaseSettings()
+
+
+def get_secret_settings() -> SecretSettings:
+    return SecretSettings()
