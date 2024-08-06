@@ -49,9 +49,10 @@ class DatabaseSettings(EnvSettings):
         )
 
 
-class SecretSettings:
-    key: Final[str] = token_hex(32)
-    algorithm: Final[str] = 'HS256'
+class JWTSettings:
+    private_key: Final[str] = (get_root_dir_path().parent / ".certs" / "jwt-private.pem").read_text()
+    public_key: Final[str] = (get_root_dir_path().parent / ".certs" / "jwt-public.pem").read_text()
+    algorithm: Final[str] = 'RS256'
     jwt_expiration: Final[int] = 30
 
 
@@ -59,5 +60,5 @@ def get_db_settings() -> DatabaseSettings:
     return DatabaseSettings()
 
 
-def get_secret_settings() -> SecretSettings:
-    return SecretSettings()
+def get_jwt_settings() -> JWTSettings:
+    return JWTSettings()
