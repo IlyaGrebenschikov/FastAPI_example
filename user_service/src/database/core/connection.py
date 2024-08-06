@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy import URL
 
 from user_service.src.common.types import SessionFactory
-from user_service.src.database.markers.database import session_marker
+from user_service.src.common.markers.database import session_marker
 
 
 def create_engine(url_obj: URL) -> AsyncEngine:

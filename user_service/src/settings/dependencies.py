@@ -1,13 +1,12 @@
 from fastapi import FastAPI
 
 from user_service.src.database.core.connection import create_engine, create_async_session_maker
-from user_service.src.database.markers.database import session_marker
-from user_service.src.database.markers.security import jwt_marker, bcrypt_hasher_marker
+from user_service.src.common.markers.database import session_marker
+from user_service.src.common.markers.security import jwt_marker, bcrypt_hasher_marker
 from user_service.src.core.settings import DatabaseSettings, SecretSettings
 from user_service.src.services.security.token_jwt import TokenJWT
 from user_service.src.services.security.bcrypt_hasher import BcryptHasher
 from user_service.src.services.security.pwd_context import get_pwd_context
-
 
 
 def init_dependencies(app: FastAPI, db_settings: DatabaseSettings, secret_settings: SecretSettings) -> None:
