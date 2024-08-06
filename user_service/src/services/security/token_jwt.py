@@ -7,7 +7,7 @@ from user_service.src.core.settings import SecretSettings
 from user_service.src.common.exceptions import InvalidTokenException
 
 
-class JWTToken:
+class TokenJWT:
     def __init__(self, settings: SecretSettings) -> None:
         self.settings = settings
 
