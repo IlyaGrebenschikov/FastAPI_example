@@ -11,6 +11,9 @@ fastapi = {extras = ["all"], version = "^0.111.0"}
 sqlalchemy = "^2.0.31"
 asyncpg = "^0.29.0"
 alembic = {extras = ["async"], version = "^1.13.2"}
+pyjwt = "^2.9.0"
+bcrypt = "4.0.1"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 
 [build-system]
