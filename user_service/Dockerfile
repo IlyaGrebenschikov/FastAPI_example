@@ -4,6 +4,7 @@ EXPOSE 8080
 WORKDIR /usr/app/user_service
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH=/usr/app/.
 RUN apt update
 RUN pip install --upgrade pip
 RUN pip install poetry
