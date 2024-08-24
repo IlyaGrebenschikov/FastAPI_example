@@ -9,3 +9,4 @@ GatewayType = TypeVar("GatewayType", bound="BaseGateway")
 RepositoryType = TypeVar("RepositoryType", bound="Repository")
 DTOType = TypeVar("DTOType", bound="DTO")
 SessionFactoryType = async_sessionmaker[AsyncSession]
+DependencyType = TypeVar("DependencyType")

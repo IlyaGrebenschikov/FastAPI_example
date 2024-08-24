@@ -8,6 +8,7 @@ from user_service.src.services.security.token_jwt import TokenJWT
 from user_service.src.services.security.bcrypt_hasher import BcryptHasher
 from user_service.src.services.security.pwd_context import get_pwd_context
 from user_service.src.database.factory import create_database_factory
+from user_service.src.utils.singleton import singleton
 
 
 def init_dependencies(app: FastAPI, db_settings: DatabaseSettings, jwt_settings: JWTSettings) -> None:
@@ -21,5 +22,5 @@ def init_dependencies(app: FastAPI, db_settings: DatabaseSettings, jwt_settings:
     bcrypt_hasher = BcryptHasher(bcrypt_pwd_context)
 
     app.dependency_overrides[DBGateway] = db_factory
-    # app.dependency_overrides[TokenJWT] = jwt_token
-    # app.dependency_overrides[BcryptHasher] = bcrypt_hasher
+    app.dependency_overrides[TokenJWT] = singleton(jwt_token)
+    app.dependency_overrides[BcryptHasher] = singleton(bcrypt_hasher)

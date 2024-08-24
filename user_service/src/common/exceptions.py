@@ -13,6 +13,18 @@ class InvalidTokenException(CustomException):
     pass
 
 
+class UserAlreadyExistsException(CustomException):
+    pass
+
+
+class NotFoundException(CustomException):
+    pass
+
+
+class IncorrectDataException(CustomException):
+    pass
+
+
 class DatabaseError(Exception):
     pass
 
