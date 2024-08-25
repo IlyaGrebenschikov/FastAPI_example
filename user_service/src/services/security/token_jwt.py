@@ -17,7 +17,7 @@ class TokenJWT:
         token = jwt.encode(data, self.settings.private_key, algorithm=self.settings.algorithm)
         return token
 
-    def verify_jwt_token(self, token: str) -> Optional[Any]:
+    def verify_jwt_token(self, token: str | int) -> Optional[Any]:
         try:
             decoded_data = jwt.decode(
                 token,

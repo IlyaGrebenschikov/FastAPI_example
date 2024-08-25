@@ -1,5 +1,9 @@
+from typing import Annotated
+
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from user_service.src.utils.providers.stub import Stub
 from user_service.src.services.security.bcrypt_hasher import BcryptHasher
 from user_service.src.services.security.token_jwt import TokenJWT
 from user_service.src.database.gateway import DBGateway
@@ -13,9 +17,9 @@ from user_service.src.common.converters.database import from_model_to_dto
 class LoginHandler:
     def __init__(
             self,
-            gateway: DBGateway,
-            hasher: BcryptHasher,
-            jwt: TokenJWT,
+            gateway: Annotated[DBGateway, Depends(Stub(DBGateway))],
+            hasher: Annotated[BcryptHasher, Depends(Stub(BcryptHasher))],
+            jwt: Annotated[TokenJWT, Depends(Stub(TokenJWT))]
     ) -> None:
         self._gateway = gateway
         self._hasher = hasher

@@ -3,10 +3,6 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from user_service.src.services.security.token_jwt import TokenJWT
-from user_service.src.services.security.bcrypt_hasher import BcryptHasher
-from user_service.src.database.gateway import DBGateway
-from user_service.src.utils.providers.stub import Stub
 from user_service.src.api.v1.handlers.auth.login import LoginHandler
 from user_service.src.common.exceptions import IncorrectDataException, NotFoundException
 from user_service.src.common.dto.token import Token
@@ -30,14 +26,10 @@ auth_router = APIRouter(tags=['auth'])
 )
 async def token(
         query: Annotated[OAuth2PasswordRequestForm, Depends()],
-        gateway: Annotated[DBGateway, Depends(Stub(DBGateway))],
-        hasher: Annotated[BcryptHasher, Depends(Stub(BcryptHasher))],
-        jwt: Annotated[TokenJWT, Depends(Stub(TokenJWT))]
+        handler: Annotated[LoginHandler, Depends(LoginHandler)]
 ) -> Token:
-    login_handler = LoginHandler(gateway, hasher, jwt)
-
     try:
-        return await login_handler.execute(query)
+        return await handler.execute(query)
 
     except IncorrectDataException as incorrect:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, incorrect.get_dict(), {"WWW-Authenticate": "Bearer"})
