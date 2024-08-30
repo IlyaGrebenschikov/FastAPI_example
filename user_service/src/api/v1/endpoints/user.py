@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, status, HTTPException
 
 from user_service.src.common.dto.user import UserResponseSchema, UserSchema
 from user_service.src.api.v1.handlers.user.create import CreateUserHandler
-from user_service.src.common.exceptions import UserAlreadyExistsException
-from user_service.src.common.dto.docs import ConflictError
+from user_service.src.api.v1.handlers.user.get_current import GetCurrentUserHandler
+from user_service.src.common.exceptions import ConflictException, NotFoundException, UnAuthorizedException
+from user_service.src.common.dto.docs import ConflictError, NotFoundError, UnauthorizedError
 
 
 user_router = APIRouter(tags=['user'])
@@ -29,5 +30,30 @@ async def create_user(
     try:
         return await handler.execute(body)
 
-    except UserAlreadyExistsException as exists_error:
-        raise HTTPException(status.HTTP_409_CONFLICT, exists_error.get_dict())
+    except ConflictException as conflict_error:
+        raise HTTPException(status.HTTP_409_CONFLICT, conflict_error.get_dict())
+
+
+@user_router.get(
+    '',
+    status_code=status.HTTP_200_OK,
+    response_model=UserResponseSchema,
+    response_description='User resource',
+    description='Retrieves a User resource',
+    summary='Retrieves a User resource',
+    responses={
+        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
+        status.HTTP_401_UNAUTHORIZED: {'model': UnauthorizedError}
+    },
+)
+async def get_user(
+        handler: Annotated[GetCurrentUserHandler, Depends(GetCurrentUserHandler)]
+) -> UserResponseSchema:
+    try:
+        return await handler.execute()
+
+    except NotFoundException as not_found:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, not_found.get_dict())
+
+    except UnAuthorizedException as un_authorized_error:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, un_authorized_error.get_dict())

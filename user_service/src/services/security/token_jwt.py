@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import jwt
 
 from user_service.src.core.settings import JWTSettings
-from user_service.src.common.exceptions import InvalidTokenException
+from user_service.src.common.exceptions import UnAuthorizedException
 
 
 class TokenJWT:
@@ -27,4 +27,4 @@ class TokenJWT:
             return decoded_data
 
         except jwt.PyJWTError:
-            raise InvalidTokenException('Token is invalid or expired')
+            raise UnAuthorizedException('Token is invalid or expired')

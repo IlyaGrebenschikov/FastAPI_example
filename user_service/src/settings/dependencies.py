@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer
 
 from user_service.src.database.core.connection import create_engine, create_async_session_maker
 from user_service.src.database.gateway import DBGateway
@@ -24,3 +25,6 @@ def init_dependencies(app: FastAPI, db_settings: DatabaseSettings, jwt_settings:
     app.dependency_overrides[DBGateway] = db_factory
     app.dependency_overrides[TokenJWT] = singleton(jwt_token)
     app.dependency_overrides[BcryptHasher] = singleton(bcrypt_hasher)
+
+
+oauth2_scheme = OAuth2PasswordBearer('/api/v1/auth/token')  # TODO remove global scheme

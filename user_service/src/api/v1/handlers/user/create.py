@@ -8,7 +8,7 @@ from user_service.src.database.gateway import DBGateway
 from user_service.src.common.dto.user import UserSchema, UserResponseSchema
 from user_service.src.services.security.bcrypt_hasher import BcryptHasher
 from user_service.src.common.converters.database import from_model_to_dto
-from user_service.src.common.exceptions import UserAlreadyExistsException
+from user_service.src.common.exceptions import ConflictException
 
 
 class CreateUserHandler:
@@ -30,4 +30,4 @@ class CreateUserHandler:
                 return from_model_to_dto(result, UserResponseSchema)
 
             except IntegrityError:
-                raise UserAlreadyExistsException('This user already exists')
+                raise ConflictException('This user already exists')

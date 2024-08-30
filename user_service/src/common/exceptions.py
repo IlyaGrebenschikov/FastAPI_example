@@ -9,19 +9,15 @@ class CustomException(Exception):
         return self.__dict__
 
 
-class InvalidTokenException(CustomException):
+class UnAuthorizedException(CustomException):
     pass
 
 
-class UserAlreadyExistsException(CustomException):
+class ConflictException(CustomException):
     pass
 
 
 class NotFoundException(CustomException):
-    pass
-
-
-class IncorrectDataException(CustomException):
     pass
 
 

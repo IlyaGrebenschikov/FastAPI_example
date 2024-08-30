@@ -15,3 +15,7 @@ class NotFoundError(BaseDoc):
 
 class BadRequestError(BaseDoc):
     pass
+
+
+class UnauthorizedError(BaseDoc):
+    pass

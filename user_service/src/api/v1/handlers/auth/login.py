@@ -7,7 +7,7 @@ from user_service.src.utils.providers.stub import Stub
 from user_service.src.services.security.bcrypt_hasher import BcryptHasher
 from user_service.src.services.security.token_jwt import TokenJWT
 from user_service.src.database.gateway import DBGateway
-from user_service.src.common.exceptions import IncorrectDataException
+from user_service.src.common.exceptions import UnAuthorizedException
 from user_service.src.common.dto.token import Token, TokenSubject
 from user_service.src.common.dto.user import UserInDBSchema
 from user_service.src.common.exceptions import NotFoundException
@@ -35,7 +35,7 @@ class LoginHandler:
         current_user = from_model_to_dto(fetched_user, UserInDBSchema)
 
         if not self._hasher.verify_password(query.password, current_user.password):
-            raise IncorrectDataException('Incorrect data')
+            raise UnAuthorizedException('Incorrect password')
 
         token_data = TokenSubject(sub=current_user.id, scopes=query.scopes)
         token = self._jwt.create_jwt_token(token_data.model_dump())
