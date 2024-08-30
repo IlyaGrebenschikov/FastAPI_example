@@ -48,4 +48,4 @@ class CrudRepository(AbstractCrudRepository):
 
     async def delete(self, *args: Any) -> Optional[ModelType]:
         stmt = delete(self.model).where(*args).returning(self.model)
-        return (await self._session.execute(stmt)).scalars().all()
+        return (await self._session.execute(stmt)).scalars().first()

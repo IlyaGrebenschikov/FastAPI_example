@@ -20,7 +20,7 @@ class UpdateUserHandler:
         self._gateway = gateway
         self._hasher = hasher
 
-    async def execute(self, current_user: UserInDBSchema, query: UserSchema):
+    async def execute(self, current_user: UserInDBSchema, query: UserSchema) -> UserResponseSchema:
         query.password = self._hasher.hash_password(query.password)
 
         async with self._gateway:

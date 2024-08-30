@@ -23,7 +23,12 @@ class UserRepository(BaseRepository):
 
         return await self._crud.select(clause)
 
-    async def update(self, user_id: Optional[int], **data: UserSchema):
+    async def update(self, user_id: Optional[int], **data: UserSchema) -> Optional[UserModel]:
         clause = self.model.id == user_id
 
         return await self._crud.update(clause, **data)
+
+    async def delete(self, user_id: Optional[int]) -> Optional[UserModel]:
+        clause = self.model.id == user_id
+
+        return await self._crud.delete(clause)

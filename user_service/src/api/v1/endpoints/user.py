@@ -6,6 +6,7 @@ from user_service.src.common.dto.user import UserResponseSchema, UserSchema
 from user_service.src.api.v1.handlers.user.create import CreateUserHandler
 from user_service.src.api.v1.handlers.user.get_current import GetCurrentUserHandler
 from user_service.src.api.v1.handlers.user.update import UpdateUserHandler
+from user_service.src.api.v1.handlers.user.delete import DeleteUserHandler
 from user_service.src.common.exceptions import ConflictException, NotFoundException, UnAuthorizedException
 from user_service.src.common.dto.docs import ConflictError, NotFoundError, UnauthorizedError
 
@@ -76,7 +77,7 @@ async def update_user(
         body: UserSchema,
         current_user_handler: Annotated[GetCurrentUserHandler, Depends(GetCurrentUserHandler)],
         update_user_handler: Annotated[UpdateUserHandler, Depends(UpdateUserHandler)]
-):
+) -> UserResponseSchema:
     try:
         current_user = await current_user_handler.execute()
         result = await update_user_handler.execute(current_user, body)
@@ -84,6 +85,24 @@ async def update_user(
 
     except ConflictException as conflict_error:
         raise HTTPException(status.HTTP_409_CONFLICT, conflict_error.get_dict())
+
+    except NotFoundException as not_found:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, not_found.get_dict())
+
+    except UnAuthorizedException as un_authorized_error:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, un_authorized_error.get_dict())
+
+
+@user_router.delete('')
+async def delete_user(
+        current_user_handler: Annotated[GetCurrentUserHandler, Depends(GetCurrentUserHandler)],
+        delete_user_handler: Annotated[DeleteUserHandler, Depends(DeleteUserHandler)]
+) -> UserResponseSchema:
+    try:
+        current_user = await current_user_handler.execute()
+        result = await delete_user_handler.execute(current_user)
+
+        return result
 
     except NotFoundException as not_found:
         raise HTTPException(status.HTTP_404_NOT_FOUND, not_found.get_dict())
