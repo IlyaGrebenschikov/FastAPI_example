@@ -22,3 +22,8 @@ class UserRepository(BaseRepository):
         clause = self.model.id == user_id if user_id else self.model.login == login
 
         return await self._crud.select(clause)
+
+    async def update(self, user_id: Optional[int], **data: UserSchema):
+        clause = self.model.id == user_id
+
+        return await self._crud.update(clause, **data)

@@ -41,7 +41,7 @@ class CrudRepository(AbstractCrudRepository):
 
     async def update(self, *args, **kwargs: Mapping[str, Any]) -> Optional[ModelType]:
         stmt = update(self.model).where(*args).values(**kwargs).returning(self.model)
-        return (await self._session.execute(stmt)).scalars().all()
+        return (await self._session.execute(stmt)).scalars().first()
 
     async def update_many(self, data: Sequence[Mapping[str, Any]]) -> CursorResult[Any]:
         return await self._session.execute(update(self.model), data)
