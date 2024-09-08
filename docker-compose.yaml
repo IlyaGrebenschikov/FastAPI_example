@@ -1,25 +1,25 @@
 services:
-  backend:
-    build: ./user_service/.
-    container_name: user_service
+  backend-service:
+    build: ./backend/.
+    container_name: backend-service
     environment:
-      - ALEMBIC_CONFIG=./user_service/alembic.ini
+      - ALEMBIC_CONFIG=/usr/backend_app/backend/alembic.ini
     volumes:
-      - ./:/usr/app/user_service/.
-    working_dir: /usr/app/user_service/.
+      - ./:/usr/backend_app/.
+    working_dir: /usr/backend_app/.
     ports:
       - "8080:8080"
-    command: bash -c 'alembic upgrade head && python -m user_service.src'
+    command: bash -c 'alembic upgrade head && python -m backend.src'
     networks:
       - app-network
     expose:
       - 8080
     depends_on:
-      - user-service-db
+      - db-service
 
-  user-service-db:
+  db-service:
     image: postgres:latest
-    container_name: user-service-db
+    container_name: db-service
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -29,7 +29,7 @@ services:
     networks:
       - app-network
     env_file:
-      - ./user_service/.env
+      - ./backend.env
     ports:
       - 5432:5432
     expose:
