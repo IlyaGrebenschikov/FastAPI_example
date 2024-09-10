@@ -1,0 +1,5 @@
+version: "2"
+tunnels:
+  web:
+    addr: backend-service:8080
+    proto: http

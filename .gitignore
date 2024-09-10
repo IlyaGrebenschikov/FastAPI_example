@@ -87,6 +87,7 @@ celerybeat-schedule
 .env
 .env.user
 backend.env
+ngrok.env
 .venv
 env/
 venv/

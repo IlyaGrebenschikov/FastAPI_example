@@ -35,6 +35,26 @@ services:
     expose:
       - 5432
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yaml"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    env_file:
+      - ./ngrok.env
+    depends_on:
+      - backend-service
+    volumes:
+      - ./ngrok/settings.yaml:/etc/ngrok.yaml
+    ports:
+      - 4040:4040
+    networks:
+      - app-network
+
 volumes:
   postgres_data:
 
