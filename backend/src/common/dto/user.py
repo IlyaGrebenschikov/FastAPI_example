@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
+from typing_extensions import Self
 
-from pydantic import EmailStr, BaseModel, field_validator
+from pydantic import EmailStr, BaseModel, field_validator, model_validator
 
 
 class UserSchema(BaseModel):
@@ -10,9 +11,7 @@ class UserSchema(BaseModel):
     password: str
 
     @field_validator("password")
-    def check_password(cls, value):
-        value = str(value)
-
+    def check_password(cls, value: str) -> str:
         if len(value) < 8:
             raise ValueError("Password must have at least 8 characters")
 
@@ -43,3 +42,16 @@ class UserResponseSchema(BaseModel):
 class GetUserQuerySchema(BaseModel):
     id: Optional[int] = None
     login: Optional[str] = None
+
+
+class UpdateUserQuerySchema(UserSchema):
+    login: Optional[str] = None
+    email: Optional[EmailStr] = None
+    password: Optional[str] = None
+
+    @model_validator(mode='after')
+    def check_at_least_one_field(self) -> Self:
+        if not any(value is not None for value in (self.login, self.email, self.password)):
+            raise ValueError('At least one field must be provided')
+
+        return self

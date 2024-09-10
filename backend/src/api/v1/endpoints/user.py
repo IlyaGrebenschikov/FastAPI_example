@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status, HTTPException
 
-from backend.src.common.dto.user import UserResponseSchema, UserSchema
+from backend.src.common.dto.user import UserResponseSchema, UserSchema, UpdateUserQuerySchema
 from backend.src.api.v1.handlers.user.create import CreateUserHandler
 from backend.src.api.v1.handlers.user.get_current import GetCurrentUserHandler
 from backend.src.api.v1.handlers.user.update import UpdateUserHandler
@@ -74,7 +74,7 @@ async def get_user(
     }
 )
 async def update_user(
-        body: UserSchema,
+        body: UpdateUserQuerySchema,
         current_user_handler: Annotated[GetCurrentUserHandler, Depends(GetCurrentUserHandler)],
         update_user_handler: Annotated[UpdateUserHandler, Depends(UpdateUserHandler)]
 ) -> UserResponseSchema:
