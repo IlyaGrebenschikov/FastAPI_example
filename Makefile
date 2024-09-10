@@ -19,3 +19,15 @@ up-backend:
 
 up-db:
 	docker compose --env-file ./backend.env up $(DB_SERVICE)
+
+stop-all:
+	docker stop $(BACKEND_SERVICE) $(DB_SERVICE) $(NGROK_SERVICE)
+
+stop-backend:
+	docker stop $(BACKEND_SERVICE) $(DB_SERVICE)
+
+stop-db:
+	docker stop $(DB_SERVICE)
+
+stop-ngrok:
+	docker stop $(NGROK_SERVICE)
