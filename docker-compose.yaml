@@ -46,8 +46,6 @@ services:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     env_file:
       - ./ngrok.env
-    depends_on:
-      - backend-service
     volumes:
       - ./ngrok/settings.yaml:/etc/ngrok.yaml
     ports:
