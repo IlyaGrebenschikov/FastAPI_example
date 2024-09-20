@@ -38,3 +38,7 @@ stop-ngrok:
 
 stop-redis:
 	docker stop $(REDIS_SERVICE)
+
+redis-monitor:
+	docker exec -it $(REDIS_SERVICE) redis-cli monitor
+	

@@ -1,9 +1,8 @@
-import asyncio
 from typing import Optional
 
 import redis.asyncio as aioredis
 
-from backend.src.core.settings import RedisSettings, get_redis_settings
+from backend.src.core.settings import RedisSettings
 
 
 def _convert_key(key: Optional[str | int]) -> str:
@@ -26,7 +25,9 @@ class RedisClient:
     async def get_dict_all(self, key: Optional[str | int]) -> Optional[dict]:
         return await self._client.hgetall(_convert_key(key))
 
+    async def delete(self, *keys: Optional[str | int]) -> Optional[int]:
+        return await self._client.delete(*{_convert_key(key) for key in keys})
+
 
 def get_redis_client(redis_settings: RedisSettings) -> RedisClient:
     return RedisClient(aioredis.from_url(redis_settings.get_url, decode_responses=True))
-
