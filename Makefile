@@ -1,6 +1,7 @@
 BACKEND_SERVICE = backend-service
 DB_SERVICE = db-service
 NGROK_SERVICE = ngrok
+REDIS_SERVICE = redis
 
 build-all:
 	docker compose --env-file ./backend.env --env-file ./ngrok.env build
@@ -15,19 +16,25 @@ up-all:
 	docker compose --env-file ./backend.env --env-file ./ngrok.env up
 
 up-backend:
-	docker compose --env-file ./backend.env up $(BACKEND_SERVICE) $(DB_SERVICE)
+	docker compose --env-file ./backend.env up $(BACKEND_SERVICE) $(DB_SERVICE) $(REDIS_SERVICE)
 
 up-db:
 	docker compose --env-file ./backend.env up $(DB_SERVICE)
+
+up-redis:
+	docker compose --env-file ./backend.env up $(REDIS_SERVICE)
 
 stop-all:
 	docker stop $(BACKEND_SERVICE) $(DB_SERVICE) $(NGROK_SERVICE)
 
 stop-backend:
-	docker stop $(BACKEND_SERVICE) $(DB_SERVICE)
+	docker stop $(BACKEND_SERVICE) $(DB_SERVICE) $(REDIS_SERVICE)
 
 stop-db:
 	docker stop $(DB_SERVICE)
 
 stop-ngrok:
 	docker stop $(NGROK_SERVICE)
+
+stop-redis:
+	docker stop $(REDIS_SERVICE)

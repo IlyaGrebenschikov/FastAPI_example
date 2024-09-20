@@ -23,6 +23,9 @@ class EnvSettings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
+    REDIS_HOST: str
+    REDIS_PORT: int
+
 
 class DatabaseSettings(EnvSettings):
     @property
@@ -55,9 +58,19 @@ class JWTSettings:
     jwt_expiration: Final[int] = 30
 
 
+class RedisSettings(EnvSettings):
+    @property
+    def get_url(self) -> str:
+        return f'redis://:@{self.REDIS_HOST}:{self.REDIS_PORT}'
+
+
 def get_db_settings() -> DatabaseSettings:
     return DatabaseSettings()
 
 
 def get_jwt_settings() -> JWTSettings:
     return JWTSettings()
+
+
+def get_redis_settings() -> RedisSettings:
+    return RedisSettings()

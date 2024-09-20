@@ -54,8 +54,20 @@ services:
     networks:
       - app-network
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    env_file:
+      - ./backend.env
+    ports:
+      - 6379:6379
+    networks:
+      app-network:
+
+
 volumes:
   postgres_data:
 
 networks:
   app-network:
+    driver: bridge
