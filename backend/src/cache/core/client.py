@@ -1,33 +1,50 @@
-from typing import Optional
+from typing import Optional, Type
+from datetime import timedelta
 
 import redis.asyncio as aioredis
 
 from backend.src.core.settings import RedisSettings
 
 
-def _convert_key(key: Optional[str | int]) -> str:
-    return str(key)
-
-
 class RedisClient:
-    def __init__(self, client: aioredis.Redis):
+    def __init__(self, client: aioredis.Redis) -> None:
         self._client = client
 
-    async def get_one(self, key: Optional[str | int]) -> Optional[str]:
-        return await self._client.get(_convert_key(key))
+    @classmethod
+    def from_url(cls: Type['RedisClient'], settings: RedisSettings) -> 'RedisClient':
+        return cls(
+            client=aioredis.from_url(
+                settings.get_url,
+                decode_responses=True
+            )
+        )
 
-    async def set_one(self, key: Optional[str | int], value: Optional[str | int]) -> Optional[bool]:
-        return await self._client.set(_convert_key(key), _convert_key(value))
+    @staticmethod
+    def _convert_key(key: Optional[str | int]) -> str:
+        return str(key)
+
+    async def get_one(self, key: Optional[str | int]) -> Optional[str]:
+        return await self._client.get(self._convert_key(key))
+
+    async def set_one(
+            self,
+            key: Optional[str | int],
+            value: Optional[str | int],
+            expire: Optional[timedelta | int]
+    ) -> Optional[bool]:
+        return await self._client.set(self._convert_key(key), self._convert_key(value), ex=expire)
 
     async def set_dict(self, key: Optional[str | int], value: Optional[dict]) -> Optional[int]:
-        return await self._client.hset(_convert_key(key), mapping=value)
+        return await self._client.hset(self._convert_key(key), mapping=value)
 
     async def get_dict_all(self, key: Optional[str | int]) -> Optional[dict]:
-        return await self._client.hgetall(_convert_key(key))
+        return await self._client.hgetall(self._convert_key(key))
 
     async def delete(self, *keys: Optional[str | int]) -> Optional[int]:
-        return await self._client.delete(*{_convert_key(key) for key in keys})
+        return await self._client.delete(*{self._convert_key(key) for key in keys})
 
+    async def set_expire(self, key: Optional[str | int], time: Optional[timedelta | int]) -> Optional[bool]:
+        return await self._client.expire(self._convert_key(key), time)
 
-def get_redis_client(redis_settings: RedisSettings) -> RedisClient:
-    return RedisClient(aioredis.from_url(redis_settings.get_url, decode_responses=True))
+    async def get_ttl(self, key: Optional[str | int]) -> Optional[int]:
+        return await self._client.ttl(self._convert_key(key))

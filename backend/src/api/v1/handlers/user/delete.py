@@ -14,11 +14,11 @@ class DeleteUserHandler:
             self,
             gateway: Annotated[DBGateway, Depends(Stub(DBGateway))],
             cache: Annotated[RedisClient, Depends(Stub(RedisClient))]
-    ):
+    ) -> None:
         self._gateway = gateway
         self._cache = cache
 
-    async def execute(self, current_user: UserInDBSchema):
+    async def execute(self, current_user: UserInDBSchema) -> UserResponseSchema:
         async with self._gateway:
             await self._gateway.manager.create_transaction()
             result = await self._gateway.user().delete(current_user.id)

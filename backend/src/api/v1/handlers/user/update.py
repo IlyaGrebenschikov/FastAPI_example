@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import timedelta
 
 from fastapi import Depends
 from sqlalchemy.exc import IntegrityError
@@ -20,7 +21,7 @@ class UpdateUserHandler:
             gateway: Annotated[DBGateway, Depends(Stub(DBGateway))],
             hasher: Annotated[BcryptHasher, Depends(Stub(BcryptHasher))],
             cache: Annotated[RedisClient, Depends(Stub(RedisClient))],
-    ):
+    ) -> None:
         self._gateway = gateway
         self._hasher = hasher
         self._cache = cache
@@ -35,10 +36,13 @@ class UpdateUserHandler:
             try:
                 await self._gateway.manager.create_transaction()
                 result = await self._gateway.user().update(current_user.id, **filtered_data)
+
                 await self._cache.set_dict(
                     current_user.id,
                     convert_sending(from_model_to_dto(result, UserInDBSchema).model_dump())
                 )
+                # Todo Change it so that the timedelta is taken from .env.
+                await self._cache.set_expire(current_user.id, timedelta(minutes=30))
 
                 return from_model_to_dto(result, UserResponseSchema)
 

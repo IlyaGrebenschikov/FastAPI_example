@@ -1,4 +1,5 @@
 from typing import Annotated
+from datetime import timedelta
 
 from fastapi import Depends
 
@@ -41,5 +42,9 @@ class GetCurrentUserHandler:
             raise NotFoundException('User not found')
 
         converted_result = from_model_to_dto(result, UserInDBSchema)
+
         await self._cache.set_dict(user_id, convert_sending(converted_result.model_dump()))
+        # Todo Change it so that the timedelta is taken from .env.
+        await self._cache.set_expire(user_id, timedelta(minutes=30))
+
         return converted_result
