@@ -8,7 +8,7 @@ from backend.src.services.security.bcrypt_hasher import BcryptHasher
 from backend.src.services.security.token_jwt import TokenJWT
 from backend.src.database.gateway import DBGateway
 from backend.src.common.exceptions import UnAuthorizedException
-from backend.src.common.dto.token import Token, TokenSubject
+from backend.src.common.dto.token_jwt import Token, TokenSubject
 from backend.src.common.dto.user import UserInDBSchema
 from backend.src.common.exceptions import NotFoundException
 from backend.src.common.converters.database import from_model_to_dto

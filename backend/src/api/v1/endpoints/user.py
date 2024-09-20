@@ -52,7 +52,7 @@ async def get_user(
         handler: Annotated[GetCurrentUserHandler, Depends(GetCurrentUserHandler)]
 ) -> UserResponseSchema:
     try:
-        return await handler.execute()
+        return UserResponseSchema(**(await handler.execute()).model_dump())
 
     except NotFoundException as not_found:
         raise HTTPException(status.HTTP_404_NOT_FOUND, not_found.get_dict())

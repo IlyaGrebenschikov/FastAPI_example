@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from backend.src.api.v1.handlers.auth.login import LoginHandler
 from backend.src.common.exceptions import NotFoundException, UnAuthorizedException
-from backend.src.common.dto.token import Token
+from backend.src.common.dto.token_jwt import Token
 from backend.src.common.dto.docs import BadRequestError, NotFoundError
 
 
