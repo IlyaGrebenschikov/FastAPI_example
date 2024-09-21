@@ -11,8 +11,8 @@ from backend.src.services.security.bcrypt_hasher import BcryptHasher
 from backend.src.cache.core.client import RedisClient
 from backend.src.common.converters.database import from_model_to_dto
 from backend.src.common.converters.user import none_filter
-from backend.src.common.exceptions import ConflictException
 from backend.src.common.converters.user import convert_sending
+from backend.src.common.exceptions import ConflictException
 
 
 class UpdateUserHandler:

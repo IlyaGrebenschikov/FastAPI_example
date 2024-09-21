@@ -22,7 +22,7 @@ def init_dependencies(
     engine = create_engine(db_settings.get_url_obj)
     session = create_async_session_maker(engine)
     db_factory = create_database_factory(TransactionManager, session)
-    redis_client = RedisClient.from_url(redis_settings)
+    redis_client = RedisClient.from_url(redis_settings.get_url)
 
     jwt_token = TokenJWT(jwt_settings)
 

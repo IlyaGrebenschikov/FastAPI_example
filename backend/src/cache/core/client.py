@@ -11,10 +11,10 @@ class RedisClient:
         self._client = client
 
     @classmethod
-    def from_url(cls: Type['RedisClient'], settings: RedisSettings) -> 'RedisClient':
+    def from_url(cls: Type['RedisClient'], url: str) -> 'RedisClient':
         return cls(
             client=aioredis.from_url(
-                settings.get_url,
+                url,
                 decode_responses=True
             )
         )

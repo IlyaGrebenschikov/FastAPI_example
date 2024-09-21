@@ -4,7 +4,7 @@ from datetime import datetime
 from backend.src.common.types import DTOType
 
 
-def none_filter(data: Optional[DTOType | dict]) -> dict:
+def none_filter(data: Optional[DTOType]) -> dict:
     return {k: v for k, v in data.model_dump().items() if v}
 
 

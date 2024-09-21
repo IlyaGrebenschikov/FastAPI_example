@@ -10,44 +10,40 @@ def get_root_dir_path() -> Path:
     return Path(__file__).resolve().parent.parent.parent.parent
 
 
-class EnvSettings(BaseSettings):
+class DatabaseSettings(BaseSettings):
     root_dir_path: DirectoryPath = get_root_dir_path()
     model_config = SettingsConfigDict(
         env_file=f'{root_dir_path}/backend.env',
         env_file_encoding='utf-8',
+        env_prefix='POSTGRES_',
+        extra='ignore'
     )
+    HOST: str
+    PORT: int
+    USER: str
+    PASSWORD: str
+    DB: str
 
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-
-    REDIS_HOST: str
-    REDIS_PORT: int
-
-
-class DatabaseSettings(EnvSettings):
     @property
     def get_url_obj(self) -> URL:
         return URL.create(
             'postgresql+asyncpg',
-            username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD,
-            database=self.POSTGRES_DB,
-            host=self.POSTGRES_HOST,
-            port=self.POSTGRES_PORT
+            username=self.USER,
+            password=self.PASSWORD,
+            database=self.DB,
+            host=self.HOST,
+            port=self.PORT
         )
 
     @property
     def get_url_str(self) -> str:
         return (
             f'postgresql+asyncpg://'
-            f'{self.POSTGRES_USER}:'
-            f'{self.POSTGRES_PASSWORD}@'
-            f'{self.POSTGRES_HOST}:'
-            f'{self.POSTGRES_PORT}/'
-            f'{self.POSTGRES_DB}'
+            f'{self.USER}:'
+            f'{self.PASSWORD}@'
+            f'{self.HOST}:'
+            f'{self.PORT}/'
+            f'{self.DB}'
         )
 
 
@@ -58,10 +54,21 @@ class JWTSettings:
     jwt_expiration: Final[int] = 30
 
 
-class RedisSettings(EnvSettings):
+class RedisSettings(BaseSettings):
+    root_dir_path: DirectoryPath = get_root_dir_path()
+    model_config = SettingsConfigDict(
+        env_file=f'{root_dir_path}/backend.env',
+        env_file_encoding='utf-8',
+        env_prefix='REDIS_',
+        extra='ignore'
+    )
+
+    HOST: str
+    PORT: int
+
     @property
     def get_url(self) -> str:
-        return f'redis://:@{self.REDIS_HOST}:{self.REDIS_PORT}'
+        return f'redis://:@{self.HOST}:{self.PORT}'
 
 
 def get_db_settings() -> DatabaseSettings:
