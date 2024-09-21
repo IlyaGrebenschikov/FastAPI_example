@@ -39,4 +39,9 @@ redis-monitor:
 
 redis-cli:
 	docker exec -it $(REDIS_SERVICE) redis-cli
-	
+
+create-certs-windows:
+	powershell ./certs.ps1
+
+create-certs-unix:
+	bash ./certs.sh
