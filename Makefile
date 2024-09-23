@@ -44,4 +44,4 @@ create-certs-windows:
 	powershell ./scripts/certs.ps1
 
 create-certs-unix:
-	bash ./scripts./certs.sh
+	bash ./scripts/certs.sh
