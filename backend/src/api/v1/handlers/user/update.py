@@ -13,6 +13,7 @@ from backend.src.common.converters.database import from_model_to_dto
 from backend.src.common.converters.user import none_filter
 from backend.src.common.converters.user import convert_sending
 from backend.src.common.exceptions import ConflictException
+from backend.src.core.settings import RedisSettings
 
 
 class UpdateUserHandler:
@@ -21,10 +22,12 @@ class UpdateUserHandler:
             gateway: Annotated[DBGateway, Depends(Stub(DBGateway))],
             hasher: Annotated[BcryptHasher, Depends(Stub(BcryptHasher))],
             cache: Annotated[RedisClient, Depends(Stub(RedisClient))],
+            cache_settings: Annotated[RedisSettings, Depends(Stub(RedisSettings))],
     ) -> None:
         self._gateway = gateway
         self._hasher = hasher
         self._cache = cache
+        self._cache_settings = cache_settings
 
     async def execute(self, current_user: UserInDBSchema, query: UpdateUserQuerySchema) -> UserResponseSchema:
         filtered_data = none_filter(query)
@@ -41,8 +44,7 @@ class UpdateUserHandler:
                     current_user.id,
                     convert_sending(from_model_to_dto(result, UserInDBSchema).model_dump())
                 )
-                # Todo Change it so that the timedelta is taken from .env.
-                await self._cache.set_expire(current_user.id, timedelta(minutes=30))
+                await self._cache.set_expire(current_user.id, timedelta(minutes=self._cache_settings.USER_TTL))
 
                 return from_model_to_dto(result, UserResponseSchema)
 

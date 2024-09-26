@@ -33,6 +33,7 @@ def init_dependencies(
     app.dependency_overrides[TokenJWT] = singleton(jwt_token)
     app.dependency_overrides[BcryptHasher] = singleton(bcrypt_hasher)
     app.dependency_overrides[RedisClient] = singleton(redis_client)
+    app.dependency_overrides[RedisSettings] = singleton(redis_settings)
 
 
 oauth2_scheme = OAuth2PasswordBearer('/api/v1/token')  # TODO remove global scheme

@@ -13,6 +13,7 @@ from backend.src.services.security.token_jwt import TokenJWT
 from backend.src.utils.providers.stub import Stub
 from backend.src.settings.dependencies import oauth2_scheme
 from backend.src.cache.core.client import RedisClient
+from backend.src.core.settings import RedisSettings
 
 
 class GetCurrentUserHandler:
@@ -21,11 +22,13 @@ class GetCurrentUserHandler:
             gateway: Annotated[DBGateway, Depends(Stub(DBGateway))],
             jwt: Annotated[TokenJWT, Depends(Stub(TokenJWT))],
             cache: Annotated[RedisClient, Depends(Stub(RedisClient))],
+            cache_settings: Annotated[RedisSettings, Depends(Stub(RedisSettings))],
             token: Annotated[str, Depends(oauth2_scheme)]
     ) -> None:
         self._gateway = gateway
         self._jwt = jwt
         self._cache = cache
+        self._cache_settings = cache_settings
         self._token = token
 
     async def execute(self) -> UserInDBSchema:
@@ -44,7 +47,6 @@ class GetCurrentUserHandler:
         converted_result = from_model_to_dto(result, UserInDBSchema)
 
         await self._cache.set_dict(user_id, convert_sending(converted_result.model_dump()))
-        # Todo Change it so that the timedelta is taken from .env.
-        await self._cache.set_expire(user_id, timedelta(minutes=30))
+        await self._cache.set_expire(user_id, timedelta(minutes=self._cache_settings.USER_TTL))
 
         return converted_result

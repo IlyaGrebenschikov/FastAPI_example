@@ -65,6 +65,7 @@ class RedisSettings(BaseSettings):
 
     HOST: str
     PORT: int
+    USER_TTL: int
 
     @property
     def get_url(self) -> str:
