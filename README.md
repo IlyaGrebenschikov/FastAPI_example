@@ -47,4 +47,4 @@ If you don't want to start the `Ngrok` service then use `make up-backend` instea
 - [x] Docker support
 - [x] Cache
 - [ ] Tests
-- [ ] Logging
+- [x] Logging
