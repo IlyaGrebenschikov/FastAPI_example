@@ -64,9 +64,69 @@ services:
     networks:
       app-network:
 
+  grafana:
+    profiles: [ "grafana" ]
+    image: grafana/grafana:9.5.2
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    expose:
+      - "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - app-network
+    volumes:
+      - grafana.data:/var/lib/grafana:rw
+      - ./grafana/provisioning:/etc/grafana/provisioning:rw
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - VIRTUAL_HOST=user_service.grafana
+      - NETWORK_ACCESS=internal
+      - VIRTUAL_PORT=3000
+
+  loki:
+    profiles: [ "grafana" ]
+    image: grafana/loki:2.8.2
+    container_name: loki
+    hostname: loki
+    expose:
+      - "3100"
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/config.yaml:/etc/loki/config.yaml:ro
+      - loki.data:/tmp/:rw
+    command: -config.file=/etc/loki/config.yaml
+    restart: unless-stopped
+    networks:
+      - app-network
+
+
+  vector:
+    profiles: [ "grafana" ]
+    image: timberio/vector:0.29.1-alpine
+    container_name: vector
+    hostname: vector
+    restart: unless-stopped
+    expose:
+      - "8383"
+    networks:
+      - app-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./vector/vector.toml:/etc/vector/vector.toml:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
 volumes:
   postgres_data:
+  grafana.data:
+  loki.data:
 
 networks:
   app-network:

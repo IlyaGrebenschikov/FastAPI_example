@@ -1,0 +1,18 @@
+[sources.docker]
+type = "docker_logs"
+docker_host = "/var/run/docker.sock"
+include_containers = ["backend-service", "db-service", "redis"]
+
+[transforms.message]
+type = "remap"
+inputs = ["docker"]
+drop_on_error = true
+source = ".message"
+
+[sinks.loki_sync_id]
+type = "loki"
+inputs = ["message"]
+encoding.codec = "json"
+labels.event = "log"
+labels.container_name = "{{container_name}}"
+endpoint = "http://loki:3100"
