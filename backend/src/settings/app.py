@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 import uvicorn
@@ -5,7 +6,14 @@ from fastapi import FastAPI
 
 from backend.src.settings.endpoints import init_routers
 from backend.src.settings.dependencies import init_dependencies
-from backend.src.core.settings import DatabaseSettings, JWTSettings, RedisSettings
+from backend.src.core.settings import DatabaseSettings, JWTSettings, RedisSettings, get_logger_settings
+from backend.src.core.logger import setup_logger, setup_logger_file_handler, setup_logger_stream_handler
+
+
+logger_settings = get_logger_settings()
+logger_file_handler = setup_logger_file_handler(logger_settings, logging.INFO, 'app')
+logger_stream_handler = setup_logger_stream_handler(logger_settings, logging.INFO)
+logger = setup_logger(__name__, logging.INFO, logger_file_handler, logger_stream_handler)
 
 
 def init_app(
@@ -16,6 +24,7 @@ def init_app(
         docs_url: Optional[str] = "/docs",
         redoc_url: Optional[str] = "/redoc",
 ) -> FastAPI:
+    logger.debug('Initialize API')
     app = FastAPI(
         title=title,
         docs_url=docs_url,
@@ -28,4 +37,5 @@ def init_app(
 
 
 def start_app(app: FastAPI, host: str = '0.0.0.0', port: int = 8080) -> None:
+    logger.info('Running API')
     uvicorn.run(app, host=host, port=port)

@@ -1,5 +1,7 @@
+import logging
 from pathlib import Path
 from typing import Final
+from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import DirectoryPath
@@ -72,6 +74,11 @@ class RedisSettings(BaseSettings):
         return f'redis://:@{self.HOST}:{self.PORT}'
 
 
+class LoggerSettings:
+    dir_path = (get_root_dir_path() / 'logs' / 'backend')
+    formater = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s\n')
+
+
 def get_db_settings() -> DatabaseSettings:
     return DatabaseSettings()
 
@@ -82,3 +89,8 @@ def get_jwt_settings() -> JWTSettings:
 
 def get_redis_settings() -> RedisSettings:
     return RedisSettings()
+
+
+@lru_cache(typed=True)
+def get_logger_settings() -> LoggerSettings:
+    return LoggerSettings()

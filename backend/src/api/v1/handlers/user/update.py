@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 from datetime import timedelta
 
@@ -14,6 +15,14 @@ from backend.src.common.converters.user import none_filter
 from backend.src.common.converters.user import convert_sending
 from backend.src.common.exceptions import ConflictException
 from backend.src.core.settings import RedisSettings
+from backend.src.core.logger import setup_logger, setup_logger_file_handler, setup_logger_stream_handler
+from backend.src.core.settings import get_logger_settings
+
+
+logger_settings = get_logger_settings()
+logger_file_handler = setup_logger_file_handler(logger_settings, logging.INFO, 'user_service')
+logger_stream_handler = setup_logger_stream_handler(logger_settings, logging.INFO)
+logger = setup_logger(__name__, logging.INFO, logger_file_handler, logger_stream_handler)
 
 
 class UpdateUserHandler:
@@ -48,5 +57,6 @@ class UpdateUserHandler:
 
                 return from_model_to_dto(result, UserResponseSchema)
 
-            except IntegrityError:
+            except IntegrityError as ie:
+                logger.error(f'IntegrityError - {ie}')
                 raise ConflictException('A user with this data already exists')
