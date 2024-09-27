@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from backend.src.database.core.connection import create_engine, create_async_session_maker
 from backend.src.database.gateway import DBGateway
 from backend.src.database.core.manager import TransactionManager
-from backend.src.core.settings import DatabaseSettings, JWTSettings, RedisSettings, get_logger_settings
+from backend.src.core.settings import DatabaseSettings, JWTSettings, RedisSettings
 from backend.src.services.security.token_jwt import TokenJWT
 from backend.src.services.security.bcrypt_hasher import BcryptHasher
 from backend.src.services.security.pwd_context import get_pwd_context
@@ -16,9 +16,8 @@ from backend.src.cache.core.client import RedisClient
 from backend.src.core.logger import setup_logger, setup_logger_file_handler, setup_logger_stream_handler
 
 
-logger_settings = get_logger_settings()
-logger_file_handler = setup_logger_file_handler(logger_settings, logging.DEBUG, 'app')
-logger_stream_handler = setup_logger_stream_handler(logger_settings, logging.DEBUG)
+logger_file_handler = setup_logger_file_handler(logging.DEBUG, 'app')
+logger_stream_handler = setup_logger_stream_handler(logging.DEBUG)
 logger = setup_logger(__name__, logging.DEBUG, logger_file_handler, logger_stream_handler)
 
 

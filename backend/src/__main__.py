@@ -5,7 +5,7 @@ from backend.src.core.settings import get_db_settings, get_jwt_settings, get_red
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, filename='base.log', filemode='a')
+    logging.basicConfig(level=logging.INFO, filemode='a')
 
     db_settings = get_db_settings()
     jwt_settings = get_jwt_settings()

@@ -6,13 +6,12 @@ from fastapi import FastAPI
 
 from backend.src.settings.endpoints import init_routers
 from backend.src.settings.dependencies import init_dependencies
-from backend.src.core.settings import DatabaseSettings, JWTSettings, RedisSettings, get_logger_settings
+from backend.src.core.settings import DatabaseSettings, JWTSettings, RedisSettings
 from backend.src.core.logger import setup_logger, setup_logger_file_handler, setup_logger_stream_handler
 
 
-logger_settings = get_logger_settings()
-logger_file_handler = setup_logger_file_handler(logger_settings, logging.INFO, 'app')
-logger_stream_handler = setup_logger_stream_handler(logger_settings, logging.INFO)
+logger_file_handler = setup_logger_file_handler(logging.INFO, 'app')
+logger_stream_handler = setup_logger_stream_handler(logging.INFO)
 logger = setup_logger(__name__, logging.INFO, logger_file_handler, logger_stream_handler)
 
 

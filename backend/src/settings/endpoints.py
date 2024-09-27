@@ -6,12 +6,10 @@ from backend.src.api.v1.endpoints.healthcheck import healthcheck_router
 from backend.src.api.v1.endpoints.user import user_router
 from backend.src.api.v1.endpoints.auth import auth_router
 from backend.src.core.logger import setup_logger, setup_logger_file_handler, setup_logger_stream_handler
-from backend.src.core.settings import get_logger_settings
 
 
-logger_settings = get_logger_settings()
-logger_file_handler = setup_logger_file_handler(logger_settings, logging.DEBUG, 'app')
-logger_stream_handler = setup_logger_stream_handler(logger_settings, logging.DEBUG)
+logger_file_handler = setup_logger_file_handler(logging.DEBUG, 'app')
+logger_stream_handler = setup_logger_stream_handler(logging.DEBUG)
 logger = setup_logger(__name__, logging.DEBUG, logger_file_handler, logger_stream_handler)
 
 

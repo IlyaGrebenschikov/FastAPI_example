@@ -25,7 +25,7 @@ def setup_logger(
     return logger
 
 
-def setup_logger_file_handler(settings: LoggerSettings, level: LevelType, file_name: str) -> logging.FileHandler:
+def setup_logger_file_handler(level: LevelType, file_name: str, settings: LoggerSettings = LoggerSettings()) -> logging.FileHandler:
     file_path = (settings.dir_path / f'{file_name}.log')
     handler = logging.FileHandler(file_path)
     handler.setFormatter(settings.formater)
@@ -34,7 +34,7 @@ def setup_logger_file_handler(settings: LoggerSettings, level: LevelType, file_n
     return handler
 
 
-def setup_logger_stream_handler(settings: LoggerSettings, level: LevelType) -> logging.StreamHandler:
+def setup_logger_stream_handler(level: LevelType, settings: LoggerSettings = LoggerSettings()) -> logging.StreamHandler:
     handler = logging.StreamHandler()
     handler.setFormatter(settings.formater)
     handler.setLevel(level)
