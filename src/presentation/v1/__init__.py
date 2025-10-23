@@ -7,13 +7,14 @@ from .controllers import (
     setup_controllers,
     )
 from .handlers import setup_exception_handlers
-from src.presentation.settings import AppSettings
+from .middlewares import setup_middlewares
+from .settings import V1APISettings, load_v1_api_settings
 
 log = logging.getLogger(__name__)
 
 
 def init_app_v1(
-    settings: AppSettings, 
+    settings: V1APISettings, 
     **kwargs: Any
     ) -> tuple[str, FastAPI, Optional[str]]:
     log.info("Initialize V1 API")
@@ -22,9 +23,14 @@ def init_app_v1(
         **kwargs
         )
 
-    setup_controllers(
-        app,
-    )
-    setup_exception_handlers(app)
+    setup_controllers()
+    setup_exception_handlers()
+    setup_middlewares()
 
     return ("/api/v1", app, None)
+
+
+__all__ = (
+    "init_app_v1",
+    "load_v1_api_settings"
+)
