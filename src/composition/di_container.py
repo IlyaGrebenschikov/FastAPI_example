@@ -14,7 +14,7 @@ def setup_dependencies(
         app: FastAPI,
         infra_settings: InfrastructureSettings,
 ) -> None:
-    log.info('Initialize infrastructure dependencies')
+    log.info("Setting up dependencies.")
     database_provider = DatabaseProvider(infra_settings)
     container = make_async_container(
         database_provider,
