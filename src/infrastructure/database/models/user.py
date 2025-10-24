@@ -7,7 +7,7 @@ from .mixins import (
     )
 
 class UserModel(ModelWithIDMixin, ModelWithTimeMixin, Base):
-    login: Mapped[str]
+    username: Mapped[str]
     email: Mapped[str]
     password: Mapped[str]
 
