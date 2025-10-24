@@ -17,11 +17,11 @@ from src.infrastructure.database import (
     create_sa_engine,
     create_sa_session_factory
 )
-from src.infrastructure.database.repositories import UserRepository, RepositoryFactory
+from src.infrastructure.database.repositories import RepositoryFactory
 from src.infrastructure.database.mappers import UsersRepositoryMapper
 
 
-class InfrastructureProvider(Provider):
+class DatabaseProvider(Provider):
     def __init__(
             self,
             infrastructure_settings: InfrastructureSettings,

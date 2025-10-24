@@ -31,6 +31,7 @@ def init_app_v1(
 
 
 __all__ = (
+    "V1APISettings",
     "init_app_v1",
     "load_v1_api_settings"
 )
