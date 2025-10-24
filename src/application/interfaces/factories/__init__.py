@@ -1,7 +1,7 @@
-from .users_factory import IUserFactory
-from .repository import IRepositoryFactory
+from .users import IUsersFactory
+from .repository import IRepositoriesFactory
 
 __all__ = (
-    "IUserFactory",
-    "IRepositoryFactory",
+    "IUsersFactory",
+    "IRepositoriesFactory",
 )

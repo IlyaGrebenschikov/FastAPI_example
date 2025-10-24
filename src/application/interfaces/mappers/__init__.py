@@ -1,5 +1,5 @@
-from .users_mappers import IUsersMapper
+from .users_repository import IUsersRepositoryMapper
 
 __all__ = (
-    "IUsersMapper",
+    "IUsersRepositoryMapper",
 )

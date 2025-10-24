@@ -1,5 +1,5 @@
-from .users_interface import IUserRepository
+from .users import IUsersRepository
 
 __all__ = (
-    "IUserRepository",
+    "IUsersRepository",
 )
