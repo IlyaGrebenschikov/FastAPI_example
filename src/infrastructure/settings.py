@@ -17,7 +17,7 @@ class DatabaseSettings(BaseSettings):
         env_prefix='DB_',
         extra='ignore'
     )
-    driver_name: str = 'postgresql+asyncpg'
+    drivername: str = 'postgresql+asyncpg'
     host: str
     port: int
     username: str
@@ -33,7 +33,7 @@ class DatabaseSettings(BaseSettings):
     @property
     def url_str(self) -> str:
         return (
-            f'{self.driver_name}://'
+            f'{self.drivername}://'
             f'{self.username}:'
             f'{self.password}@'
             f'{self.host}:'

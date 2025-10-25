@@ -17,9 +17,10 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
     async def create_user(self, user: User) -> User:
         sqla_user = self._mapper.domain_to_persistence(user)
 
-        async with self._session_factory as session:
+        async with self._session_factory() as session:
             async with session.begin():
                 session.add(sqla_user)
-                await session.refresh(sqla_user)
+
+            await session.refresh(sqla_user)
 
         return self._mapper.persistence_to_domain(sqla_user)
