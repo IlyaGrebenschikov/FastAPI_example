@@ -42,7 +42,7 @@ class DatabaseProvider(Provider):
     def users_repository_mapper(self) -> IUsersRepositoryMapper:
         return UsersRepositoryMapper()
 
-    @provide(scope=Scope.REQUEST)
+    @provide(scope=Scope.APP)
     def users_repository(
             self,
             session_factory: async_sessionmaker[AsyncSession],
