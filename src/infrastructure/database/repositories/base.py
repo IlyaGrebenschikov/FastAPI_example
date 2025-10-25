@@ -1,9 +1,9 @@
 from abc import ABC
 from typing import TypeVar
 
-Session = TypeVar('Session')
+SessionFactory = TypeVar('SessionFactory')
 
 
 class BaseRepository(ABC):
-    def __init__(self, session: Session):
-        self._session = session
+    def __init__(self, session_factory: SessionFactory):
+        self._session_factory = session_factory
