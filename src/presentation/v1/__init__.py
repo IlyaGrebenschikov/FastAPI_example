@@ -5,6 +5,7 @@ from fastapi import FastAPI
 
 from .controllers import (
     setup_controllers,
+    users_router
     )
 from .handlers import setup_exception_handlers
 from .middlewares import setup_middlewares
@@ -23,7 +24,7 @@ def init_app_v1(
         **kwargs
         )
 
-    setup_controllers()
+    setup_controllers(app, users_router)
     setup_exception_handlers()
     setup_middlewares()
 
