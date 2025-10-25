@@ -1,7 +1,9 @@
 from abc import ABC
+from typing import TypeVar
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+Session = TypeVar('Session')
+
 
 class BaseRepository(ABC):
-    def __init__(self, session_factory: async_sessionmaker[AsyncSession]):
-        self._session = session_factory()
+    def __init__(self, session: Session):
+        self._session = session

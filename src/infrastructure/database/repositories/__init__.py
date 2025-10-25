@@ -1,7 +1,5 @@
-from .user import UserRepository
-from .factory import RepositoryFactory
+from .user import SQLAlchemyUserRepository
 
 __all__ = (
-    "RepositoryFactory",
-    "UserRepository",
+    "SQLAlchemyUserRepository",
 )

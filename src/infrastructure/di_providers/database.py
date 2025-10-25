@@ -1,3 +1,5 @@
+from typing import AsyncIterable
+
 from dishka import (
     Provider,
     Scope,
@@ -9,7 +11,6 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker
 )
 
-from src.application.interfaces.factories import IRepositoriesFactory
 from src.application.interfaces.repositories.users import IUsersRepository
 from src.application.interfaces.mappers.users_repository import IUsersRepositoryMapper
 from src.infrastructure import InfrastructureSettings
@@ -17,8 +18,8 @@ from src.infrastructure.database import (
     create_sa_engine,
     create_sa_session_factory
 )
-from src.infrastructure.database.repositories import RepositoryFactory
 from src.infrastructure.database.mappers import UsersRepositoryMapper
+from src.infrastructure.database.repositories import SQLAlchemyUserRepository
 
 
 class DatabaseProvider(Provider):
@@ -44,14 +45,14 @@ class DatabaseProvider(Provider):
         return UsersRepositoryMapper()
 
     @provide(scope=Scope.APP)
-    def repository_factory(self) -> IRepositoriesFactory:
-        return RepositoryFactory()
+    async def get_session(self, session_factory: async_sessionmaker[AsyncSession]) -> AsyncIterable[AsyncSession]:
+        async with session_factory() as session:
+            yield session
 
     @provide(scope=Scope.REQUEST)
     def users_repository(
             self,
-            repository_factory: IRepositoriesFactory,
-            session_factory: async_sessionmaker[AsyncSession],
+            session: AsyncIterable[AsyncSession],
             mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
-        return repository_factory.create_user_repository(session_factory, mapper)
+        return SQLAlchemyUserRepository(session, mapper)
