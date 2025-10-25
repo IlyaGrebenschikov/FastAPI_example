@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from mixins import TimestampMixin, UUIDMixin
+from .mixins import TimestampMixin, UUIDMixin
 
 @dataclass
 class User(UUIDMixin, TimestampMixin):

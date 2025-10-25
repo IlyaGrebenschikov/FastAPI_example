@@ -1,5 +1,3 @@
-from typing import AsyncIterable
-
 from dishka import (
     Provider,
     Scope,
@@ -44,15 +42,10 @@ class DatabaseProvider(Provider):
     def users_repository_mapper(self) -> IUsersRepositoryMapper:
         return UsersRepositoryMapper()
 
-    @provide(scope=Scope.APP)
-    async def get_session(self, session_factory: async_sessionmaker[AsyncSession]) -> AsyncIterable[AsyncSession]:
-        async with session_factory() as session:
-            yield session
-
     @provide(scope=Scope.REQUEST)
     def users_repository(
             self,
-            session: AsyncIterable[AsyncSession],
+            session_factory: async_sessionmaker[AsyncSession],
             mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
-        return SQLAlchemyUserRepository(session, mapper)
+        return SQLAlchemyUserRepository(session_factory, mapper)
