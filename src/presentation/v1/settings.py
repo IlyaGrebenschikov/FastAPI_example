@@ -10,7 +10,7 @@ class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        env_prefix="app_",
+        env_prefix="APP_",
         extra="ignore",
     )
     
@@ -24,7 +24,7 @@ class CORSSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        env_prefix="cors_",
+        env_prefix="CORS_",
         extra="ignore"
     )
     methods: list[str] = ["*"]

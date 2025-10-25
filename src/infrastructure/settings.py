@@ -14,7 +14,7 @@ class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file='.env',
         env_file_encoding='utf-8',
-        env_prefix='db_',
+        env_prefix='DB_',
         extra='ignore'
     )
     driver_name: str = 'postgresql+asyncpg'
