@@ -1,3 +1,5 @@
+from typing import AsyncGenerator, Any
+
 from dishka import (
     Provider,
     Scope,
@@ -38,14 +40,23 @@ class DatabaseProvider(Provider):
     def db_session_factory(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
         return create_sa_session_factory(engine)
 
+    @provide(scope=Scope.REQUEST)
+    async def get_session(self, session_factory: async_sessionmaker[AsyncSession]) -> AsyncGenerator[AsyncSession, Any]:
+        session = session_factory()
+
+        try:
+            yield session
+        finally:
+            await session.close()
+
     @provide(scope=Scope.APP)
     def users_repository_mapper(self) -> IUsersRepositoryMapper:
         return UsersRepositoryMapper()
 
-    @provide(scope=Scope.APP)
+    @provide(scope=Scope.REQUEST)
     def users_repository(
             self,
-            session_factory: async_sessionmaker[AsyncSession],
+            session: AsyncSession,
             mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
-        return SQLAlchemyUserRepository(session_factory, mapper)
+        return SQLAlchemyUserRepository(session, mapper)
