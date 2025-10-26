@@ -4,7 +4,10 @@ from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 from fastapi import FastAPI
 
-from src.application.di_providers import ServicesProvider
+from src.application.di_providers.services import (
+    UsersServiceProvider,
+    HasherServiceProvider
+)
 from src.infrastructure import InfrastructureSettings
 from src.infrastructure.di_providers import DatabaseProvider
 
@@ -16,11 +19,10 @@ def setup_dependencies(
         infra_settings: InfrastructureSettings,
 ) -> None:
     log.info("Setting up dependencies.")
-    database_provider = DatabaseProvider(infra_settings)
-    services_provider = ServicesProvider()
     container = make_async_container(
-        database_provider,
-        services_provider
+        DatabaseProvider(infra_settings),
+        UsersServiceProvider(),
+        HasherServiceProvider()
     )
 
     setup_dishka(container=container, app=app)

@@ -6,11 +6,11 @@ from dishka import (
 
 from src.application.interfaces.mappers import IUsersServiceMapper
 from src.application.interfaces.repositories import IUsersRepository
-from src.application.interfaces.services import IUsersService
+from src.application.interfaces.services import IUsersService, IHasherService
 from src.application.mappers import UserServiceMapper
 from src.application.services import UsersService
 
-class ServicesProvider(Provider):
+class UsersServiceProvider(Provider):
     def __init__(self, scope=None, component=None):
         super().__init__(scope, component)
 
@@ -23,5 +23,6 @@ class ServicesProvider(Provider):
             self,
             repository: IUsersRepository,
             mapper: IUsersServiceMapper,
+            hasher: IHasherService
     ) -> IUsersService:
-        return UsersService(repository, mapper)
+        return UsersService(repository, mapper, hasher)
