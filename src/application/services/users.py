@@ -1,3 +1,5 @@
+import logging
+
 from src.application.dto import (
     CreateUserDTO,
     UserResponseDTO
@@ -8,6 +10,9 @@ from src.application.interfaces.services import (
     IUsersService,
     IHasherService
 )
+
+log = logging.getLogger(__name__)
+
 
 class UsersService(IUsersService):
     def __init__(
@@ -20,7 +25,12 @@ class UsersService(IUsersService):
         self._mapper = mapper
         self._hasher = hasher
 
+    # TODO need custom http exceptions
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
+        if await self._repository.exists_user(username=user.username, email=user.email):
+            log.info("Attempt to create user with existing credentials")
+            raise ValueError(f'User {user.username} already exists')
+
         user.password = self._hasher.hash_password(user.password)
 
         domain_user = self._mapper.create_dto_to_domain(user)

@@ -1,3 +1,4 @@
+import logging
 from typing import AsyncGenerator, Any
 
 from dishka import (
@@ -21,6 +22,8 @@ from src.infrastructure.database import (
 from src.infrastructure.database.mappers import UsersRepositoryMapper
 from src.infrastructure.database.repositories import SQLAlchemyUserRepository
 
+log = logging.getLogger(__name__)
+
 
 class DatabaseProvider(Provider):
     def __init__(
@@ -40,14 +43,16 @@ class DatabaseProvider(Provider):
     def db_session_factory(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
         return create_sa_session_factory(engine)
 
+    # TODO need to added Transaction Manager
     @provide(scope=Scope.REQUEST)
     async def get_session(self, session_factory: async_sessionmaker[AsyncSession]) -> AsyncGenerator[AsyncSession, Any]:
-        session = session_factory()
-
-        try:
-            yield session
-        finally:
-            await session.close()
+        async with session_factory() as session:
+            try:
+                async with session.begin():
+                    yield session
+            except Exception as exc:
+                log.info(f"Transaction failed: {exc}")
+                raise
 
     @provide(scope=Scope.APP)
     def users_repository_mapper(self) -> IUsersRepositoryMapper:
