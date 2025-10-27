@@ -12,12 +12,14 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker
 )
 
-from src.application.interfaces.repositories.users import IUsersRepository
+from src.application.interfaces.database import ITransactionManager
+from src.application.interfaces.database.repositories.users import IUsersRepository
 from src.application.interfaces.mappers.users_repository import IUsersRepositoryMapper
 from src.infrastructure import InfrastructureSettings
 from src.infrastructure.database import (
     create_sa_engine,
-    create_sa_session_factory
+    create_sa_session_factory,
+    TransactionManager,
 )
 from src.infrastructure.database.mappers import UsersRepositoryMapper
 from src.infrastructure.database.repositories import SQLAlchemyUserRepository
@@ -43,16 +45,9 @@ class DatabaseProvider(Provider):
     def db_session_factory(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
         return create_sa_session_factory(engine)
 
-    # TODO need to added Transaction Manager
     @provide(scope=Scope.REQUEST)
-    async def get_session(self, session_factory: async_sessionmaker[AsyncSession]) -> AsyncGenerator[AsyncSession, Any]:
-        async with session_factory() as session:
-            try:
-                async with session.begin():
-                    yield session
-            except Exception as exc:
-                log.info(f"Transaction failed: {exc}")
-                raise
+    def transaction_manager(self, session_factory: async_sessionmaker[AsyncSession]) -> ITransactionManager:
+        return TransactionManager(session_factory)
 
     @provide(scope=Scope.APP)
     def users_repository_mapper(self) -> IUsersRepositoryMapper:
@@ -61,7 +56,7 @@ class DatabaseProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def users_repository(
             self,
-            session: AsyncSession,
+            transaction_manager: ITransactionManager,
             mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
-        return SQLAlchemyUserRepository(session, mapper)
+        return SQLAlchemyUserRepository(transaction_manager.session, mapper)

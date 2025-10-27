@@ -4,8 +4,9 @@ from dishka import (
     provide
 )
 
+from src.application.interfaces.database import ITransactionManager
 from src.application.interfaces.mappers import IUsersServiceMapper
-from src.application.interfaces.repositories import IUsersRepository
+from src.application.interfaces.database.repositories import IUsersRepository
 from src.application.interfaces.services import IUsersService, IHasherService
 from src.application.mappers import UserServiceMapper
 from src.application.services import UsersService
@@ -23,6 +24,7 @@ class UsersServiceProvider(Provider):
             self,
             repository: IUsersRepository,
             mapper: IUsersServiceMapper,
-            hasher: IHasherService
+            hasher: IHasherService,
+            transaction_manager: ITransactionManager,
     ) -> IUsersService:
-        return UsersService(repository, mapper, hasher)
+        return UsersService(repository, mapper, hasher, transaction_manager)

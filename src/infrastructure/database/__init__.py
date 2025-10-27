@@ -1,6 +1,11 @@
-from .connection import create_sa_engine, create_sa_session_factory
+from .connection import (
+    create_sa_engine,
+    create_sa_session_factory
+)
+from .transaction_manager import TransactionManager
 
 __all__ = (
     "create_sa_engine",
-    "create_sa_session_factory"
+    "create_sa_session_factory",
+    "TransactionManager",
 )

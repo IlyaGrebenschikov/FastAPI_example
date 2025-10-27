@@ -13,8 +13,8 @@ from sqlalchemy import (
 )
 
 from .base import BaseRepository
+from src.application.interfaces.database.repositories import IUsersRepository
 from src.application.interfaces.mappers import IUsersRepositoryMapper
-from src.application.interfaces.repositories import IUsersRepository
 from src.domain.entities import User
 from src.infrastructure.database.models import UserModel
 
