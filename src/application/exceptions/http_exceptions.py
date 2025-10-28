@@ -1,4 +1,8 @@
-from typing import Any, Dict, Optional
+from typing import (
+    Any,
+    Dict,
+    Optional
+)
 
 class AppException(Exception):
     def __init__(

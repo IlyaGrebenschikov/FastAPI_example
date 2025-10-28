@@ -4,6 +4,7 @@ from src.application.dto import (
     CreateUserDTO,
     UserResponseDTO
 )
+from src.application.exceptions.http_exceptions import ConflictError
 from src.application.interfaces.database import ITransactionManager
 from src.application.interfaces.database.repositories import IUsersRepository
 from src.application.interfaces.mappers import IUsersServiceMapper
@@ -28,13 +29,13 @@ class UsersService(IUsersService):
         self._hasher = hasher
         self._transaction_manager = transaction_manager
 
-    # TODO need custom http exceptions
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
+
             if await self._repository.exists_user(username=user.username, email=user.email):
                 log.info("Attempt to create user with existing credentials")
-                raise ValueError(f'User {user.username} already exists')
+                raise ConflictError(f'User {user.username} already exists')
 
             user.password = self._hasher.hash_password(user.password)
 
