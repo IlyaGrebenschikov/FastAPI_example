@@ -25,7 +25,7 @@ def init_app_v1(
         )
 
     setup_controllers(app, users_router)
-    setup_exception_handlers()
+    setup_exception_handlers(app)
     setup_middlewares()
 
     return ("/api/v1", app, None)
