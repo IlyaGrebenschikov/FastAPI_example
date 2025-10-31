@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -6,6 +7,9 @@ from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
 )
+
+log = logging.getLogger(__name__)
+
 
 class JWTSettings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -42,7 +46,8 @@ class ApplicationSettings(BaseSettings):
     jwt: JWTSettings
 
 
-def load_application_settings(jwt: Optional[JWTSettings]) -> ApplicationSettings:
+def load_application_settings(jwt: Optional[JWTSettings] = None) -> ApplicationSettings:
+    log.info("Loading application settings.")
     return ApplicationSettings(
         jwt=jwt or JWTSettings()
     )
