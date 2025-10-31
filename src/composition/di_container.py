@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from .settings import Settings
 from src.application.di_providers.services import (
+    AuthServiceProvider,
     UsersServiceProvider,
     HasherServiceProvider
 )
@@ -22,7 +23,8 @@ def setup_dependencies(
     container = make_async_container(
         DatabaseProvider(settings.infrastructure_settings),
         UsersServiceProvider(),
-        HasherServiceProvider()
+        HasherServiceProvider(),
+        AuthServiceProvider(settings.application_settings.jwt),
     )
 
     setup_dishka(container=container, app=app)
