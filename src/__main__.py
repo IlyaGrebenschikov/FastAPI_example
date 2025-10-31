@@ -15,7 +15,7 @@ def main() -> None:
         )
     )
 
-    setup_dependencies(app, settings.infrastructure_settings)
+    setup_dependencies(app, settings)
     run_uvicorn_server(app, settings.server_settings.uvicorn)
 
 
