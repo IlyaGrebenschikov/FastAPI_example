@@ -10,7 +10,7 @@ def init_app(
     *sub_apps: tuple[str, FastAPI, Optional[str]],
     **kwargs: Any
 ) -> FastAPI:
-    log.info('Initialize General API')
+    log.debug('Initialize General API')
     app = FastAPI(
         docs_url=None,
         redoc_url=None,

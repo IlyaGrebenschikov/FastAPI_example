@@ -19,7 +19,7 @@ def setup_dependencies(
         app: FastAPI,
         settings: Settings,
 ) -> None:
-    log.info("Setting up dependencies.")
+    log.debug("Setting up dependencies.")
     container = make_async_container(
         DatabaseProvider(settings.infrastructure_settings),
         UsersServiceProvider(),

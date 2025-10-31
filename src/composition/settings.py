@@ -35,7 +35,7 @@ def load_settings(
         infrastructure_settings: Optional[InfrastructureSettings] = None,
         application_settings: Optional[ApplicationSettings] = None,
 ) -> Settings:
-    log.info("Loading core settings.")
+    log.debug("Loading core settings.")
     return Settings(
         server_settings=server_settings or load_server_settings(),
         v1_api_settings=v1_api_settings or load_v1_api_settings(),

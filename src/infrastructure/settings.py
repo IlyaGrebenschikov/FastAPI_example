@@ -49,7 +49,7 @@ class InfrastructureSettings(BaseSettings):
 def load_infrastructure_settings(
     database: Optional[DatabaseSettings] = None,
     ) -> InfrastructureSettings:
-    log.info("Loading infrastructure settings.")
+    log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
         database=database or DatabaseSettings(),
     )

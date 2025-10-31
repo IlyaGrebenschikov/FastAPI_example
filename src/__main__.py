@@ -7,7 +7,7 @@ from .presentation.servers import run_uvicorn_server
 from .presentation.v1 import init_app_v1
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
     settings = load_settings()
     app = init_app(
         init_app_v1(

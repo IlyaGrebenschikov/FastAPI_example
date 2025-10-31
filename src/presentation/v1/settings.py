@@ -41,7 +41,7 @@ def load_v1_api_settings(
     app: AppSettings = None,
     cors: CORSSettings = None,
     ) -> V1APISettings:
-    log.info("Loading presentation settings.")
+    log.debug("Loading presentation settings.")
     return V1APISettings(
         app=app or AppSettings(),
         cors=cors or CORSSettings(),

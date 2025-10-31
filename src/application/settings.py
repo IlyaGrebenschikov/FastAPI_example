@@ -47,7 +47,7 @@ class ApplicationSettings(BaseSettings):
 
 
 def load_application_settings(jwt: Optional[JWTSettings] = None) -> ApplicationSettings:
-    log.info("Loading application settings.")
+    log.debug("Loading application settings.")
     return ApplicationSettings(
         jwt=jwt or JWTSettings()
     )

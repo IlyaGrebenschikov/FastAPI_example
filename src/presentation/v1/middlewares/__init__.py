@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 def setup_middlewares(app: FastAPI, settings: V1APISettings) -> None:
-    log.info("Setting up middlewares")
+    log.debug("Setting up middlewares")
     setup_cors_middleware(app, settings.cors)
 
 

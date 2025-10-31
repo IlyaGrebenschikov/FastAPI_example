@@ -25,7 +25,7 @@ def init_app_v1(
     v1_settings: V1APISettings,
     **kwargs: Any
     ) -> tuple[str, FastAPI, Optional[str]]:
-    log.info("Initialize V1 API")
+    log.debug("Initialize V1 API")
     app = FastAPI(
         **v1_settings.app.model_dump(),
         **kwargs
