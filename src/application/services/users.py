@@ -30,16 +30,32 @@ class UsersService(IUsersService):
         self._transaction_manager = transaction_manager
 
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
+        log.info(
+            "Creating user with username: '%s', email: '%s'",
+            user.username, user.email
+        )
+
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
+            log.debug("Transaction started for user creation")
 
             if await self._repository.exists_user(username=user.username, email=user.email):
-                log.info("Attempt to create user with existing credentials")
-                raise ConflictError(f'User {user.username} already exists')
+                log.warning(
+                    "User creation failed - user already exists with username: '%s' or email: '%s'",
+                    user.username, user.email
+                )
+                raise ConflictError(f"User already exists with username: {user.username} or email: {user.email}")
 
             user.password = self._hasher.hash_password(user.password)
+            log.debug("Hashing password for user '%s'", user.username)
 
             domain_user = self._mapper.create_dto_to_domain(user)
+            log.debug(
+                "Mapped CreateUserDTO to domain user with ID: %s",
+                getattr(domain_user, 'id', 'unknown')
+            )
+
             repository_result = await self._repository.create_user(domain_user)
+            log.debug("User created in repository with ID: %s", repository_result.id)
 
         return self._mapper.domain_to_response_dto(repository_result)
