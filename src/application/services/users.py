@@ -53,14 +53,12 @@ class UsersService(IUsersService):
             user.password = self._hasher.hash_password(user.password)
             log.debug("Hashing password for user '%s'", user.username)
 
-            domain_user = self._mapper.create_dto_to_domain(user)
             log.debug(
                 "Mapped CreateUserDTO to domain user with ID: %s",
-                getattr(domain_user, 'id', 'unknown')
+                getattr(user, 'id', 'unknown')
             )
 
-            repository_result = await self._repository.create_user(domain_user)
-            log.debug("User created in repository with ID: %s", repository_result.id)
+            repository_result = await self._repository.create_user(user.model_dump())
 
         return self._mapper.domain_to_response_dto(repository_result)
 

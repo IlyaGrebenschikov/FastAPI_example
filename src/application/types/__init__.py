@@ -1,5 +1,6 @@
-from .user import UpdateUserType
+from .user import UpdateUserType, CreateUserType
 
 __all__ = (
-    "UpdateUserType"
+    "UpdateUserType",
+    "CreateUserType",
 )

@@ -5,11 +5,11 @@ from typing import (
 )
 from uuid import UUID
 
-from src.application.types import UpdateUserType
+from src.application.types import UpdateUserType, CreateUserType
 from src.domain.entities import User
 
 class IUsersRepository(Protocol):
-    async def create_user(self, user: User) -> User: ...
+    async def create_user(self, user: Unpack[CreateUserType]) -> User: ...
 
     async def exists_user(
             self,

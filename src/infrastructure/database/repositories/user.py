@@ -11,10 +11,11 @@ from sqlalchemy import (
     exists,
     select,
     update,
+    insert,
     or_
 )
 
-from src.application.types import UpdateUserType
+from src.application.types import UpdateUserType, CreateUserType
 from .base import BaseRepository
 from src.application.interfaces.database.repositories import IUsersRepository
 from src.application.interfaces.mappers import IUsersRepositoryMapper
@@ -34,14 +35,10 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
     def _model(self) -> Type[UserModel]:
         return UserModel
 
-    async def create_user(self, user: User) -> User:
-        sqla_user = self._mapper.domain_to_persistence(user)
+    async def create_user(self, user: Unpack[CreateUserType]) -> User:
+        stmt = insert(self._model).values(user).returning(self._model)
 
-        self._session.add(sqla_user)
-        await self._session.flush()
-        await self._session.refresh(sqla_user)
-
-        return cast(User, self._mapper.persistence_to_domain(sqla_user))
+        return cast(User, self._mapper.persistence_to_domain((await self._session.scalars(stmt)).first()))
 
     async def exists_user(
             self,
