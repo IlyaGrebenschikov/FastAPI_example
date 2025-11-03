@@ -62,8 +62,21 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
 
         return cast(bool, await self._session.scalar(stmt))
 
-    async def get_user(self, username) -> User:
-        clause = self._model.username == username
+    async def get_user(
+            self,
+            user_id: Optional[UUID | str] = None,
+            username: Optional[str] = None,
+    ) -> User:
+        if not any([user_id, username]):
+            raise TypeError("At least one identifier must be provided")
+
+        conditions = []
+        if user_id:
+            conditions.append(self._model.id == user_id)
+        if username:
+            conditions.append(self._model.username == username)
+
+        clause = or_(*conditions)
         stmt = select(self._model).where(clause)
 
         return cast(

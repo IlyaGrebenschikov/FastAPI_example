@@ -4,13 +4,14 @@ from src.application.dto import (
     CreateUserDTO,
     UserResponseDTO
 )
-from src.application.exceptions.http_exceptions import ConflictError
+from src.application.exceptions.http_exceptions import ConflictError, NotFoundError
 from src.application.interfaces.database import ITransactionManager
 from src.application.interfaces.database.repositories import IUsersRepository
 from src.application.interfaces.mappers import IUsersServiceMapper
 from src.application.interfaces.services import (
+    IAuthService,
     IUsersService,
-    IHasherService
+    IHasherService,
 )
 
 log = logging.getLogger(__name__)
@@ -22,12 +23,14 @@ class UsersService(IUsersService):
             repository: IUsersRepository,
             mapper: IUsersServiceMapper,
             hasher: IHasherService,
-            transaction_manager: ITransactionManager
+            transaction_manager: ITransactionManager,
+            auth: IAuthService,
     ):
         self._repository = repository
         self._mapper = mapper
         self._hasher = hasher
         self._transaction_manager = transaction_manager
+        self._auth = auth
 
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
         log.info(
@@ -59,3 +62,15 @@ class UsersService(IUsersService):
             log.debug("User created in repository with ID: %s", repository_result.id)
 
         return self._mapper.domain_to_response_dto(repository_result)
+
+    async def get_user(self, token: str) -> UserResponseDTO:
+        user_id = self._auth.get_sub_from_token(token)
+
+        async with self._transaction_manager:
+            result = await self._repository.get_user(user_id=user_id)
+
+        if not result:
+            log.warning("User retrieval failed - user not found with ID: %s", user_id)
+            raise NotFoundError("User not found")
+
+        return self._mapper.domain_to_response_dto(result)

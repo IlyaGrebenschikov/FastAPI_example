@@ -11,9 +11,13 @@ class IUsersRepository(Protocol):
 
     async def exists_user(
             self,
-            user_id: Optional[UUID] = None,
+            user_id: Optional[UUID | str] = None,
             username: Optional[str] = None,
             email: Optional[str] = None
     ) -> bool: ...
 
-    async def get_user(self, username: str) -> Optional[User]: ...
+    async def get_user(
+            self,
+            user_id: Optional[UUID | str] = None,
+            username: Optional[str] = None,
+    ) -> Optional[User]: ...

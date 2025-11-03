@@ -30,7 +30,7 @@ class AuthService(IAuthService):
 
     async def login(self, query: OAuth2PasswordRequestForm) -> Token:
         async with self._transaction_manager:
-            user = await self._user_repository.get_user(query.username)
+            user = await self._user_repository.get_user(username=query.username)
 
         if not self._hasher.verify_password(query.password, user.password):
             log.debug("Password verification failed")

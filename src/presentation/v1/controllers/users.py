@@ -11,7 +11,7 @@ from src.application.dto import (
     CreateUserDTO,
     UserResponseDTO
 )
-from src.presentation.v1.docs import ConflictError
+from src.presentation.v1.docs import ConflictError, NotFoundError
 from src.application.interfaces.services import IUsersService
 
 users_router = APIRouter(prefix="/users", tags=["users"], route_class=DishkaRoute)
@@ -27,3 +27,16 @@ users_router = APIRouter(prefix="/users", tags=["users"], route_class=DishkaRout
 )
 async def create_user(user: CreateUserDTO, service: FromDishka[IUsersService]) -> UserResponseDTO:
     return await service.create_user(user)
+
+
+# TODO need to add oauth2_scheme
+@users_router.get(
+    "",
+    status_code=status.HTTP_200_OK,
+    response_model=UserResponseDTO,
+    responses={
+    status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
+}
+)
+async def get_user(token: str, service: FromDishka[IUsersService]) -> UserResponseDTO:
+    return await service.get_user(token)
