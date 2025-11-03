@@ -12,7 +12,8 @@ from dishka.integrations.fastapi import (
 
 from src.application.dto import (
     CreateUserDTO,
-    UserResponseDTO
+    UserResponseDTO,
+    UpdateUserDTO
 )
 from src.presentation.v1.dependencies import get_bearer_token
 from src.presentation.v1.docs import ConflictError, NotFoundError
@@ -46,3 +47,19 @@ async def get_user(
         service: FromDishka[IUsersService]
 ) -> UserResponseDTO:
     return await service.get_user(token)
+
+
+@users_router.patch(
+    "",
+    status_code=status.HTTP_200_OK,
+    response_model=UserResponseDTO,
+    responses={
+        status.HTTP_409_CONFLICT: {'model': ConflictError},
+    }
+)
+async def update_user(
+        token: Annotated[str, Security(get_bearer_token)],
+        service: FromDishka[IUsersService],
+        data: UpdateUserDTO
+) -> UserResponseDTO:
+    return await service.update_user(token, data)

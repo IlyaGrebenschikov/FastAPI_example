@@ -2,7 +2,8 @@ import logging
 
 from src.application.dto import (
     CreateUserDTO,
-    UserResponseDTO
+    UserResponseDTO,
+    UpdateUserDTO
 )
 from src.application.exceptions.http_exceptions import ConflictError, NotFoundError
 from src.application.interfaces.database import ITransactionManager
@@ -74,3 +75,30 @@ class UsersService(IUsersService):
             raise NotFoundError("User not found")
 
         return self._mapper.domain_to_response_dto(result)
+
+    async def update_user(self, token: str, data: UpdateUserDTO) -> UserResponseDTO:
+        user_id = self._auth.get_sub_from_token(token)
+
+        async with self._transaction_manager:
+            await self._transaction_manager.create_transaction()
+            log.debug("Transaction started for user update")
+
+            current_user = await self._repository.get_user(user_id=user_id)
+
+            if data.username:
+                if (data.username != current_user.username) and await self._repository.exists_user(username=data.username):
+                    log.warning("User update failed - user already exists with username: '%s'", data.username)
+                    raise ConflictError(f"User already exists with username: {data.username}")
+
+            if data.email:
+                if (data.email != current_user.email) and await self._repository.exists_user(email=data.email):
+                    log.warning("User update failed - user already exists with email: '%s'", data.email)
+                    raise ConflictError(f"User already exists with email: {data.email}")
+
+            if data.password:
+                data.password = self._hasher.hash_password(data.password)
+
+            user = await self._repository.update_user(user_id, data.model_dump(exclude_unset=True, exclude_none=True))
+            log.debug("User updated in repository with ID: %s", user.id)
+
+        return self._mapper.domain_to_response_dto(user)
