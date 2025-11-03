@@ -68,5 +68,5 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
 
         return cast(
             User,
-            self._mapper.persistence_to_domain(await self._session.execute(stmt).scalars().first())
+            self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
         )
