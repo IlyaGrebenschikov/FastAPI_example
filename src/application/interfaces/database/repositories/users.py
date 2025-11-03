@@ -1,9 +1,11 @@
 from typing import (
     Protocol,
     Optional,
+    Unpack
 )
 from uuid import UUID
 
+from src.application.types import UpdateUserType
 from src.domain.entities import User
 
 class IUsersRepository(Protocol):
@@ -20,4 +22,10 @@ class IUsersRepository(Protocol):
             self,
             user_id: Optional[UUID | str] = None,
             username: Optional[str] = None,
-    ) -> Optional[User]: ...
+    ) -> User: ...
+
+    async def update_user(
+            self,
+            user_id: UUID | str,
+            data: Unpack[UpdateUserType],
+    ) -> User: ...

@@ -1,6 +1,7 @@
 from typing import (
     Type,
     Optional,
+    Unpack,
     cast
 )
 from uuid import UUID
@@ -9,9 +10,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import (
     exists,
     select,
+    update,
     or_
 )
 
+from src.application.types import UpdateUserType
 from .base import BaseRepository
 from src.application.interfaces.database.repositories import IUsersRepository
 from src.application.interfaces.mappers import IUsersRepositoryMapper
@@ -83,3 +86,13 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
             User,
             self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
         )
+
+    async def update_user(
+            self,
+            user_id: UUID | str,
+            data: Unpack[UpdateUserType],
+    ) -> User:
+        clause = self._model.id == user_id
+        stmt = update(self._model).where(clause).values(**data).returning(self._model)
+
+        return cast(User, (await self._session.execute(stmt)).scalars().first())
