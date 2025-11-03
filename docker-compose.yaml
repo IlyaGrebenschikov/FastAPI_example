@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
-      - api_pg_data:/var/lib/postgresql/data
+      - pg_root:/var/lib/postgresql
     ports:
       - "5432:5432"
     healthcheck:
@@ -22,7 +22,7 @@ services:
       - .env
 
 volumes:
-  api_pg_data:
+  pg_root:
 
 networks:
   api.network:
