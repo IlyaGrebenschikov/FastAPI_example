@@ -45,7 +45,6 @@ class TokenJWTService(ITokenJWTService):
 
         return token
 
-
     def verify_token(self, token: str) -> dict:
         log.debug("Verifying token")
 

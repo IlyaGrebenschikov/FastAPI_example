@@ -4,8 +4,16 @@ from dishka import (
     provide
 )
 
-from src.application.interfaces.services import ITokenJWTService
-from src.application.services import TokenJWTService
+from src.application.interfaces.database import ITransactionManager
+from src.application.interfaces.database.repositories import IUsersRepository
+from src.application.interfaces.services import (
+    IAuthService,
+    ITokenJWTService, IHasherService
+)
+from src.application.services import (
+    AuthService,
+    TokenJWTService
+)
 from src.application.settings import JWTSettings
 
 class AuthServiceProvider(Provider):
@@ -16,3 +24,13 @@ class AuthServiceProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def jwt_token(self) -> ITokenJWTService:
         return TokenJWTService(self._settings)
+
+    @provide(scope=Scope.REQUEST)
+    def auth_service(
+            self,
+            repository: IUsersRepository,
+            token_jwt: ITokenJWTService,
+            hasher: IHasherService,
+            transaction_manager: ITransactionManager,
+        ) -> IAuthService:
+        return AuthService(repository, token_jwt, hasher, transaction_manager)

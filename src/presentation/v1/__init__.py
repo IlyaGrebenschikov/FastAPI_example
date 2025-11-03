@@ -7,6 +7,7 @@ from typing import (
 from fastapi import FastAPI
 
 from .controllers import (
+    auth_router,
     setup_controllers,
     users_router
     )
@@ -31,7 +32,7 @@ def init_app_v1(
         **kwargs
         )
 
-    setup_controllers(app, users_router)
+    setup_controllers(app, users_router, auth_router)
     setup_exception_handlers(app)
     setup_middlewares(app, v1_settings)
 

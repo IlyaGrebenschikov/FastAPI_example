@@ -3,9 +3,11 @@ from .user import (
     UserResponseDTO,
     UpdateUserDTO
 )
+from .token import Token
 
 __all__ = (
     "CreateUserDTO",
     "UserResponseDTO",
     "UpdateUserDTO",
+    "Token"
 )
