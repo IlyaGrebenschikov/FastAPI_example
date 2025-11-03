@@ -1,5 +1,8 @@
+from typing import Annotated
+
 from fastapi import (
     APIRouter,
+    Security,
     status
 )
 from dishka.integrations.fastapi import (
@@ -11,6 +14,7 @@ from src.application.dto import (
     CreateUserDTO,
     UserResponseDTO
 )
+from src.presentation.v1.dependencies import get_bearer_token
 from src.presentation.v1.docs import ConflictError, NotFoundError
 from src.application.interfaces.services import IUsersService
 
@@ -29,7 +33,6 @@ async def create_user(user: CreateUserDTO, service: FromDishka[IUsersService]) -
     return await service.create_user(user)
 
 
-# TODO need to add oauth2_scheme
 @users_router.get(
     "",
     status_code=status.HTTP_200_OK,
@@ -38,5 +41,8 @@ async def create_user(user: CreateUserDTO, service: FromDishka[IUsersService]) -
     status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
 }
 )
-async def get_user(token: str, service: FromDishka[IUsersService]) -> UserResponseDTO:
+async def get_user(
+        token: Annotated[str, Security(get_bearer_token)],
+        service: FromDishka[IUsersService]
+) -> UserResponseDTO:
     return await service.get_user(token)

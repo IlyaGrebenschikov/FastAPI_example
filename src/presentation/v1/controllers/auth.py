@@ -6,7 +6,8 @@ from dishka.integrations.fastapi import (
 )
 from fastapi import (
     APIRouter,
-    status, Depends
+    Depends,
+    status,
 )
 from fastapi.security import OAuth2PasswordRequestForm
 
