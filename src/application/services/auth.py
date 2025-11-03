@@ -40,3 +40,6 @@ class AuthService(IAuthService):
         log.debug("Access token created")
 
         return Token(access_token=access_token, token_type="Bearer")
+
+    def get_sub_from_token(self, token: str) -> str:
+        return str(self._token_jwt.verify_token(token)["sub"])
