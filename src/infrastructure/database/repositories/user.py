@@ -38,7 +38,7 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
         await self._session.flush()
         await self._session.refresh(sqla_user)
 
-        return self._mapper.persistence_to_domain(sqla_user)
+        return cast(User, self._mapper.persistence_to_domain(sqla_user))
 
     async def exists_user(
             self,
@@ -61,3 +61,12 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
         stmt = exists(select(self._model).where(clause)).select()
 
         return cast(bool, await self._session.scalar(stmt))
+
+    async def get_user(self, username) -> User:
+        clause = self._model.username == username
+        stmt = select(self._model).where(clause)
+
+        return cast(
+            User,
+            self._mapper.persistence_to_domain(await self._session.execute(stmt).scalars().first())
+        )
