@@ -29,3 +29,8 @@ class IUsersRepository(Protocol):
             user_id: UUID | str,
             data: Unpack[UpdateUserType],
     ) -> User: ...
+
+    async def delete_user(
+            self,
+            user_id: UUID | str,
+    ) -> User: ...

@@ -63,3 +63,14 @@ async def update_user(
         data: UpdateUserDTO
 ) -> UserResponseDTO:
     return await service.update_user(token, data)
+
+@users_router.delete(
+    "",
+    status_code=status.HTTP_200_OK,
+    response_model=UserResponseDTO,
+)
+async def delete_user(
+        token: Annotated[str, Security(get_bearer_token)],
+        service: FromDishka[IUsersService]
+) -> UserResponseDTO:
+    return await service.delete_user(token)

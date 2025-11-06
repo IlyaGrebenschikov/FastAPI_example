@@ -12,7 +12,8 @@ from sqlalchemy import (
     select,
     update,
     insert,
-    or_
+    or_,
+    delete
 )
 
 from src.application.types import UpdateUserType, CreateUserType
@@ -91,5 +92,14 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
     ) -> User:
         clause = self._model.id == user_id
         stmt = update(self._model).where(clause).values(**data).returning(self._model)
+
+        return cast(User, (await self._session.execute(stmt)).scalars().first())
+
+    async def delete_user(
+            self,
+            user_id: UUID | str,
+    ) -> User:
+        clause = self._model.id == user_id
+        stmt = delete(self._model).where(clause).returning(self._model)
 
         return cast(User, (await self._session.execute(stmt)).scalars().first())

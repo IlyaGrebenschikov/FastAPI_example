@@ -100,3 +100,14 @@ class UsersService(IUsersService):
             log.debug("User updated in repository with ID: %s", user.id)
 
         return self._mapper.domain_to_response_dto(user)
+
+    async def delete_user(self, token: str) -> UserResponseDTO:
+        user_id = self._auth.get_sub_from_token(token)
+
+        async with self._transaction_manager:
+            await self._transaction_manager.create_transaction()
+
+            user = await self._repository.delete_user(user_id=user_id)
+            log.debug("User deleted in repository with ID: %s", user.id)
+
+        return self._mapper.domain_to_response_dto(user)
