@@ -66,6 +66,10 @@ class UsersService(IUsersService):
         user_id = self._auth.get_sub_from_token(token)
 
         async with self._transaction_manager:
+            if not await self._repository.exists_user(user_id=user_id):
+                log.warning("User getting failed - user does not exist with id: '%s'", user_id)
+                raise NotFoundError(f"User not found")
+
             result = await self._repository.get_user(user_id=user_id)
 
         if not result:
