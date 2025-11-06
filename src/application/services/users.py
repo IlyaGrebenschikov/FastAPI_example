@@ -85,6 +85,10 @@ class UsersService(IUsersService):
             await self._transaction_manager.create_transaction()
             log.debug("Transaction started for user update")
 
+            if not await self._repository.exists_user(user_id=user_id):
+                log.warning("User update failed - user does not exist with id: '%s'", user_id)
+                raise NotFoundError(f"User not found")
+
             current_user = await self._repository.get_user(user_id=user_id)
 
             if data.username:

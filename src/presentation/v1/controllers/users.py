@@ -55,6 +55,7 @@ async def get_user(
     response_model=UserResponseDTO,
     responses={
         status.HTTP_409_CONFLICT: {'model': ConflictError},
+        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
     }
 )
 async def update_user(
@@ -68,6 +69,9 @@ async def update_user(
     "",
     status_code=status.HTTP_200_OK,
     response_model=UserResponseDTO,
+    responses={
+        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
+    }
 )
 async def delete_user(
         token: Annotated[str, Security(get_bearer_token)],
