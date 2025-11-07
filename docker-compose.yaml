@@ -1,5 +1,6 @@
 services:
   postgres:
+    profiles: [ "api", "migrations" ]
     image: postgres:latest
     container_name: api.pg
     restart: unless-stopped
@@ -22,6 +23,7 @@ services:
       - .env
 
   api:
+    profiles: [ "api" ]
     container_name: api
     build:
       context: .
@@ -47,6 +49,7 @@ services:
       start_period: 40s
 
   migrations:
+    profiles: [ "migrations" ]
     image: api
     build:
       context: .
