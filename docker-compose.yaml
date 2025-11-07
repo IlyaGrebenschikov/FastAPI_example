@@ -46,6 +46,24 @@ services:
       retries: 3
       start_period: 40s
 
+  migrations:
+    image: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api.pg.migrations
+    volumes:
+      - ./src/infrastructure/database/migrations/versions:/usr/api/src/database/migrations/versions
+      - ./alembic.ini:/app/alembic.ini:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - api.network.pg
+    command: bash -c 'alembic upgrade head'
+    env_file:
+      - .env
+
 volumes:
   pg_root:
 
