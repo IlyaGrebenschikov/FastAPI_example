@@ -21,6 +21,31 @@ services:
     env_file:
       - .env
 
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - api.network
+      - api.network.pg
+    volumes:
+      - ./src:/usr/api/src
+    env_file:
+      - .env
+    command: python -m src
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import sys; sys.exit(0)" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 volumes:
   pg_root:
 
