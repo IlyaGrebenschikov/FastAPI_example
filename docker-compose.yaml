@@ -67,8 +67,56 @@ services:
     env_file:
       - .env
 
+  grafana:
+    profiles: [ "monitoring" ]
+    image: grafana/grafana:latest
+    container_name: api.monitoring.grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./monitoring/grafana/datasourses/grafana-config.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana.data:/var/lib/grafana:rw
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall lokiLogsDataplane
+    networks:
+      - api.network.monitoring
+
+  loki:
+    profiles: [ "monitoring" ]
+    image: grafana/loki:latest
+    container_name: api.monitoring.loki
+    hostname: api.monitoring.loki
+    expose:
+      - "3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yaml:/etc/loki/config.yaml:ro
+      - loki.data:/tmp/:rw
+    command: -config.file=/etc/loki/config.yaml
+    restart: unless-stopped
+    networks:
+      - api.network.monitoring
+
+  promtail:
+    profiles: [ "monitoring" ]
+    image: grafana/promtail:3.0.0
+    container_name: api.monitoring.promtail
+    volumes:
+      - ./monitoring/promtail/promtail-config.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
+    networks:
+      - api.network.monitoring
+
 volumes:
   pg_root:
+  loki.data:
+  grafana.data:
 
 networks:
   api.network:
@@ -76,4 +124,5 @@ networks:
     driver: bridge
   api.network.pg:
     name: api.network.pg
-    driver: bridge
+  api.network.monitoring:
+    name: api.network.monitoring
