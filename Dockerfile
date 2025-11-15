@@ -6,17 +6,18 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /usr/api
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl \
-    && pip install --upgrade pip \
-    && pip install poetry \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc git \
+    && rm -rf /var/lib/apt/lists/
 
-COPY pyproject.toml ./
+RUN pip install --no-cache-dir uv
 
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-root --no-interaction --no-ansi
-
-COPY src ./src
+COPY ./pyproject.toml ./uv.lock ./
+RUN uv venv -p 3.13 \
+    && uv sync --all-extras --no-install-project
+COPY ./src ./src
+RUN uv sync --all-extras --no-editable
 
 COPY alembic.ini ./
+
+CMD ["uv", "run", "api"]
