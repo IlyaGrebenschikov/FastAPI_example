@@ -1,5 +1,5 @@
 [project]
-name = "fastapi-example"
+name = "fastapi_example"
 version = "0.1.0"
 description = ""
 authors = [
@@ -21,6 +21,8 @@ dependencies = [
     "cryptography (>=46.0.3,<47.0.0)"
 ]
 
+[project.scripts]
+api = "fastapi_example.__main__:main"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
