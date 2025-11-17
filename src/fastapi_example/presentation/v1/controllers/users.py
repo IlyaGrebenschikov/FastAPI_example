@@ -1,14 +1,7 @@
 from typing import Annotated
 
-from fastapi import (
-    APIRouter,
-    Security,
-    status
-)
-from dishka.integrations.fastapi import (
-    DishkaRoute,
-    FromDishka
-)
+from fastapi import APIRouter, Security, status
+from dishka.integrations.fastapi import DishkaRoute, FromDishka
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
@@ -19,7 +12,11 @@ from fastapi_example.presentation.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.v1.docs import ConflictError, NotFoundError
 from fastapi_example.application.interfaces.services import IUsersService
 
-users_router = APIRouter(prefix="/users", tags=["users"], route_class=DishkaRoute)
+users_router = APIRouter(
+    prefix="/users",
+    tags=["users"],
+    route_class=DishkaRoute
+)
 
 
 @users_router.post(
@@ -30,7 +27,10 @@ users_router = APIRouter(prefix="/users", tags=["users"], route_class=DishkaRout
         status.HTTP_409_CONFLICT: {'model': ConflictError},
     },
 )
-async def create_user(user: CreateUserDTO, service: FromDishka[IUsersService]) -> UserResponseDTO:
+async def create_user(
+        user: CreateUserDTO,
+        service: FromDishka[IUsersService]
+) -> UserResponseDTO:
     return await service.create_user(user)
 
 
@@ -64,6 +64,7 @@ async def update_user(
         data: UpdateUserDTO
 ) -> UserResponseDTO:
     return await service.update_user(token, data)
+
 
 @users_router.delete(
     "",

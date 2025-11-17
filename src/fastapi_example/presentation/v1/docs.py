@@ -4,33 +4,25 @@ class BaseDoc(BaseModel):
     message: str
 
 
-class UnAuthorizedError(BaseDoc):
-    pass
+class UnAuthorizedError(BaseDoc): ...
 
 
-class NotFoundError(BaseDoc):
-    pass
+class NotFoundError(BaseDoc): ...
 
 
-class BadRequestError(BaseDoc):
-    pass
+class BadRequestError(BaseDoc): ...
 
 
-class TooManyRequestsError(BaseDoc):
-    pass
+class TooManyRequestsError(BaseDoc): ...
 
 
-class ServiceUnavailableError(BaseDoc):
-    pass
+class ServiceUnavailableError(BaseDoc): ...
 
 
-class ForbiddenError(BaseDoc):
-    pass
+class ForbiddenError(BaseDoc): ...
 
 
-class ServiceNotImplementedError(BaseDoc):
-    pass
+class ServiceNotImplementedError(BaseDoc): ...
 
 
-class ConflictError(BaseDoc):
-    pass
+class ConflictError(BaseDoc): ...

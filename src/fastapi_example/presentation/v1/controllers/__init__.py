@@ -14,6 +14,6 @@ def setup_controllers(app: FastAPI, *routers: APIRouter) -> None:
 
 __all__ = (
     "auth_router",
+    "users_router",
     "setup_controllers",
-    "users_router"
 )

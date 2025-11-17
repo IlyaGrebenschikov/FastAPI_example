@@ -13,7 +13,6 @@ class AppSettings(BaseSettings):
         env_prefix="APP_",
         extra="ignore",
     )
-    
     title: Optional[str] = "FastAPI"
     version: Optional[str] = "0.1.0"
     docs_url: Optional[str] = "/docs"

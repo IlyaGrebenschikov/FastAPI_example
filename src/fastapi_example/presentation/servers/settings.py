@@ -23,7 +23,7 @@ class ServerSettings(BaseSettings):
 
 
 def load_server_settings(
-    uvicorn: UvicornServerSettings = None,
+    uvicorn: Optional[UvicornServerSettings] = None,
     ) -> ServerSettings:
     log.debug("Loading server settings.")
     return ServerSettings(

@@ -1,10 +1,7 @@
 import logging
 from typing import Optional
 
-from pydantic_settings import (
-    BaseSettings,
-    SettingsConfigDict
-)
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
 log = logging.getLogger(__name__)
@@ -12,12 +9,12 @@ log = logging.getLogger(__name__)
 
 class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file='.env',
-        env_file_encoding='utf-8',
-        env_prefix='DB_',
-        extra='ignore'
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="DB_",
+        extra="ignore"
     )
-    drivername: str = 'postgresql+asyncpg'
+    drivername: str = "postgresql+asyncpg"
     host: str
     port: int
     username: str
@@ -33,12 +30,12 @@ class DatabaseSettings(BaseSettings):
     @property
     def url_str(self) -> str:
         return (
-            f'{self.drivername}://'
-            f'{self.username}:'
-            f'{self.password}@'
-            f'{self.host}:'
-            f'{self.port}/'
-            f'{self.database}'
+            f"{self.drivername}://"
+            f"{self.username}:"
+            f"{self.password}@"
+            f"{self.host}:"
+            f"{self.port}/"
+            f"{self.database}"
         )
 
 

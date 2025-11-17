@@ -1,25 +1,25 @@
 from typing import (
-    Type,
     Optional,
     Unpack,
+    Type,
     cast
 )
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import (
+    delete,
     exists,
     select,
-    update,
     insert,
     or_,
-    delete
+    update,
 )
 
-from fastapi_example.application.types import UpdateUserType, CreateUserType
 from .base import BaseRepository
 from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 from fastapi_example.application.interfaces.mappers import IUsersRepositoryMapper
+from fastapi_example.application.types import CreateUserType, UpdateUserType
 from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel
 

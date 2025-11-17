@@ -1,14 +1,10 @@
-class DatabaseError(Exception):
-    pass
+class DatabaseError(Exception): ...
 
 
-class CommitError(DatabaseError):
-    pass
+class CommitError(DatabaseError): ...
 
 
-class RollbackError(DatabaseError):
-    pass
+class RollbackError(DatabaseError): ...
 
 
-class InvalidParamsError(DatabaseError):
-    pass
+class InvalidParamsError(DatabaseError): ...

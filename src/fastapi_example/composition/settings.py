@@ -21,6 +21,7 @@ from fastapi_example.presentation.v1 import (
 
 log = logging.getLogger(__name__)
 
+
 @dataclass
 class Settings:
     server_settings: ServerSettings

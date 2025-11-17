@@ -1,11 +1,6 @@
 import logging
-from typing import AsyncGenerator, Any
 
-from dishka import (
-    Provider,
-    Scope,
-    provide
-)
+from dishka import Provider, Scope, provide
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncEngine,
@@ -17,9 +12,9 @@ from fastapi_example.application.interfaces.database.repositories.users import I
 from fastapi_example.application.interfaces.mappers.users_repository import IUsersRepositoryMapper
 from fastapi_example.infrastructure import InfrastructureSettings
 from fastapi_example.infrastructure.database import (
+    TransactionManager,
     create_sa_engine,
     create_sa_session_factory,
-    TransactionManager,
 )
 from fastapi_example.infrastructure.database.mappers import UsersRepositoryMapper
 from fastapi_example.infrastructure.database.repositories import SQLAlchemyUserRepository

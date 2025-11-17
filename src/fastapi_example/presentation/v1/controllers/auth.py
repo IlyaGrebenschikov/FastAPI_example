@@ -1,21 +1,19 @@
 from typing import Annotated
 
-from dishka.integrations.fastapi import (
-    DishkaRoute,
-    FromDishka
-)
-from fastapi import (
-    APIRouter,
-    Depends,
-    status,
-)
+from dishka.integrations.fastapi import DishkaRoute, FromDishka
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_example.application.dto import Token
 from fastapi_example.application.interfaces.services import IAuthService
 from fastapi_example.presentation.v1.docs import NotFoundError
 
-auth_router = APIRouter(prefix="/token", tags=["token"], route_class=DishkaRoute)
+auth_router = APIRouter(
+    prefix="/token",
+    tags=["token"],
+    route_class=DishkaRoute
+)
+
 
 @auth_router.post(
     "",

@@ -5,7 +5,7 @@ from .connection import (
 from .transaction_manager import TransactionManager
 
 __all__ = (
+    "TransactionManager",
     "create_sa_engine",
     "create_sa_session_factory",
-    "TransactionManager",
 )

@@ -4,13 +4,13 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_example.application.dto import Token
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
+from fastapi_example.application.interfaces.database import ITransactionManager
+from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     ITokenJWTService,
     IHasherService
 )
-from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 
 log = logging.getLogger(__name__)
 

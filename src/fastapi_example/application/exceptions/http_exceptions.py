@@ -31,33 +31,25 @@ class DetailedError(AppException):
         return f"{type(self).__name__}: {self.content}\nHeaders: {self.headers or ''}"
 
 
-class UnAuthorizedError(DetailedError):
-    pass
+class UnAuthorizedError(DetailedError): ...
 
 
-class NotFoundError(DetailedError):
-    pass
+class NotFoundError(DetailedError): ...
 
 
-class BadRequestError(DetailedError):
-    pass
+class BadRequestError(DetailedError): ...
 
 
-class TooManyRequestsError(DetailedError):
-    pass
+class TooManyRequestsError(DetailedError): ...
 
 
-class ServiceUnavailableError(DetailedError):
-    pass
+class ServiceUnavailableError(DetailedError): ...
 
 
-class ForbiddenError(DetailedError):
-    pass
+class ForbiddenError(DetailedError): ...
 
 
-class ServiceNotImplementedError(DetailedError):
-    pass
+class ServiceNotImplementedError(DetailedError): ...
 
 
-class ConflictError(DetailedError):
-    pass
+class ConflictError(DetailedError): ...

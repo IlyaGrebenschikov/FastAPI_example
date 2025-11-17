@@ -1,10 +1,7 @@
 from sqlalchemy.orm import Mapped
 
 from .base import Base
-from .mixins import (
-    ModelWithTimeMixin,
-    ModelWithIDMixin
-    )
+from .mixins import ModelWithTimeMixin, ModelWithIDMixin
 
 class UserModel(ModelWithIDMixin, ModelWithTimeMixin, Base):
     username: Mapped[str]

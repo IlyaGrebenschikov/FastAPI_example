@@ -1,14 +1,8 @@
 import logging
 from functools import partial
-from typing import (
-    Awaitable,
-    Callable
-)
+from typing import Awaitable, Callable
 
-from fastapi import (
-    FastAPI,
-    status
-)
+from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse

@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Any
+from typing import Any, Optional
 
 from fastapi import FastAPI
 
@@ -10,7 +10,7 @@ def init_app(
     *sub_apps: tuple[str, FastAPI, Optional[str]],
     **kwargs: Any
 ) -> FastAPI:
-    log.debug('Initialize General API')
+    log.debug("Initialize General API")
     app = FastAPI(
         docs_url=None,
         redoc_url=None,
@@ -20,5 +20,5 @@ def init_app(
 
     for apps in sub_apps:
         app.mount(*apps)
-        
+
     return app

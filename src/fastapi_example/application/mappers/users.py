@@ -1,7 +1,4 @@
-from datetime import datetime
-from uuid import uuid4
-
-from fastapi_example.application.dto import UserResponseDTO, CreateUserDTO
+from fastapi_example.application.dto import UserResponseDTO
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.domain.entities import User
 

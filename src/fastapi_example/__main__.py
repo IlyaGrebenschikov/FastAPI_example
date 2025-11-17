@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from .composition import setup_dependencies, load_settings
+from .composition import load_settings, setup_dependencies
 from .presentation import init_app
 from .presentation.servers import run_uvicorn_server
 from .presentation.v1 import init_app_v1
