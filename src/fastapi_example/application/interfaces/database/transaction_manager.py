@@ -1,8 +1,8 @@
-from contextlib import AbstractAsyncContextManager
 from typing import (
+    AsyncIterator,
     Protocol,
     Optional,
-    Type
+    Type,
 )
 from types import TracebackType
 
@@ -29,4 +29,4 @@ class ITransactionManager(Protocol):
     @property
     def session(self) -> AsyncSession: ...
 
-    def read_only(self) -> AbstractAsyncContextManager[AsyncSession]: ...
+    def read_only(self) -> AsyncIterator[AsyncSession]: ...

@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from types import TracebackType
-from typing import Optional, Type, Union, AsyncIterator
+from typing import (
+    AsyncIterator,
+    Optional,
+    Type,
+    Union
+)
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
