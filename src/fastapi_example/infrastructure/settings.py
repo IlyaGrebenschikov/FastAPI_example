@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -49,17 +50,18 @@ class UvicornServerSettings(BaseSettings):
     port: Optional[int] = 8080
 
 
-class InfrastructureSettings(BaseSettings):
+@dataclass
+class InfrastructureSettings:
     database: DatabaseSettings
     server: UvicornServerSettings
 
 
 def load_infrastructure_settings(
-        database: Optional[DatabaseSettings] = None,
-        server: Optional[UvicornServerSettings] = None,
+        database_settings: Optional[DatabaseSettings] = None,
+        server_settings: Optional[UvicornServerSettings] = None,
     ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
-        database=database or DatabaseSettings(),
-        server=server or UvicornServerSettings(),
+        database=database_settings or DatabaseSettings(),
+        server=server_settings or UvicornServerSettings(),
     )

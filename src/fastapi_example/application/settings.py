@@ -48,6 +48,6 @@ class ApplicationSettings:
     jwt: JWTSettings
 
 
-def load_application_settings(jwt: Optional[JWTSettings] = None) -> ApplicationSettings:
+def load_application_settings(jwt_settings: Optional[JWTSettings] = None) -> ApplicationSettings:
     log.debug("Loading application settings.")
-    return ApplicationSettings(jwt=jwt or JWTSettings())
+    return ApplicationSettings(jwt=jwt_settings or JWTSettings())
