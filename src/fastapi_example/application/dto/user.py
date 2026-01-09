@@ -21,3 +21,7 @@ class UserResponseDTO(BaseSchema):
     email: str
     created_at: str
     updated_at: str
+
+
+class DeleteUserDTO(BaseSchema):
+    password: str

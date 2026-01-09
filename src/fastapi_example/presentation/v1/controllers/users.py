@@ -5,11 +5,12 @@ from dishka.integrations.fastapi import DishkaRoute, FromDishka
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
+    DeleteUserDTO,
     UserResponseDTO,
     UpdateUserDTO
 )
 from fastapi_example.presentation.v1.dependencies import get_bearer_token
-from fastapi_example.presentation.v1.docs import ConflictError, NotFoundError
+from fastapi_example.presentation.v1.docs import ConflictError, NotFoundError, ForbiddenError
 from fastapi_example.application.interfaces.services import IUsersService
 
 users_router = APIRouter(
@@ -72,10 +73,12 @@ async def update_user(
     response_model=UserResponseDTO,
     responses={
         status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
+        status.HTTP_403_FORBIDDEN: {'model': ForbiddenError},
     }
 )
 async def delete_user(
         token: Annotated[str, Security(get_bearer_token)],
-        service: FromDishka[IUsersService]
+        service: FromDishka[IUsersService],
+        data: DeleteUserDTO,
 ) -> UserResponseDTO:
-    return await service.delete_user(token)
+    return await service.delete_user(token, data)

@@ -2,6 +2,7 @@ from typing import Protocol
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
+    DeleteUserDTO,
     UserResponseDTO,
     UpdateUserDTO
 )
@@ -17,4 +18,4 @@ class IUsersService(Protocol):
             data: UpdateUserDTO,
     ) -> UserResponseDTO: ...
 
-    async def delete_user(self, token: str) -> UserResponseDTO: ...
+    async def delete_user(self, token: str, data: DeleteUserDTO) -> UserResponseDTO: ...

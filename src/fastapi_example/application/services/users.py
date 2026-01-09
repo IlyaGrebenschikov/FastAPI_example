@@ -2,12 +2,14 @@ import logging
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
+    DeleteUserDTO,
     UserResponseDTO,
     UpdateUserDTO
 )
 from fastapi_example.application.exceptions.http_exceptions import (
     ConflictError,
-    NotFoundError
+    NotFoundError,
+    ForbiddenError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import IUsersRepository
@@ -97,16 +99,29 @@ class UsersService(IUsersService):
 
             user = await self._repository.update_user(user_id, data.model_dump(exclude_unset=True, exclude_none=True))
 
-        log.debug("User updated with ID: %s", user.id)
+        log.info("User updated with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(user)
 
-    async def delete_user(self, token: str) -> UserResponseDTO:
+    async def delete_user(self, token: str, data: DeleteUserDTO) -> UserResponseDTO:
         user_id = self._auth.get_sub_from_token(token)
 
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
 
-            user = await self._repository.delete_user(user_id=user_id)
+            if not await self._repository.exists_user(user_id=user_id):
+                log.warning("User deletion failed - user does not exist with id: '%s'", user_id)
+                raise NotFoundError(f"User not found")
 
-        log.debug("User deleted in repository with ID: %s", user.id)
-        return self._mapper.domain_to_response_dto(user)
+            current_user = await self._repository.get_user(user_id=user_id)
+
+            if not self._hasher.verify_password(data.password, current_user.password):
+                log.warning(
+                    "User deletion failed - incorrect password confirmation for user ID: '%s'",
+                    user_id
+                )
+                raise ForbiddenError("Incorrect password confirmation")
+
+            result = await self._repository.delete_user(user_id=user_id)
+
+        log.info("User deleted with ID: %s", result.id)
+        return self._mapper.domain_to_response_dto(result)
