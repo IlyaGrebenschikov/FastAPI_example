@@ -3,20 +3,20 @@ import sys
 
 from .composition import load_settings, setup_dependencies
 from .presentation import init_app
-from .presentation.servers import run_uvicorn_server
 from .presentation.v1 import init_app_v1
+from fastapi_example.infrastructure.servers import run_uvicorn_server
 
 def main() -> None:
     logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
     settings = load_settings()
     app = init_app(
         init_app_v1(
-            settings.v1_api_settings
+            settings.presentation.v1_api
         )
     )
 
     setup_dependencies(app, settings)
-    run_uvicorn_server(app, settings.server_settings.uvicorn)
+    run_uvicorn_server(app, settings.infrastructure.server)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@ from typing import Any, Optional
 
 from fastapi import FastAPI
 
+from .settings import PresentationSettings, load_presentation_settings
+
 log = logging.getLogger(__name__)
 
 
@@ -22,3 +24,10 @@ def init_app(
         app.mount(*apps)
 
     return app
+
+
+__all__ = (
+    "PresentationSettings",
+    "load_presentation_settings",
+    "init_app",
+)

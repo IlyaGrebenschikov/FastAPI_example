@@ -3,7 +3,7 @@ import logging
 import uvicorn
 from fastapi import FastAPI
 
-from .settings import UvicornServerSettings
+from fastapi_example.infrastructure.settings import UvicornServerSettings
 
 log = logging.getLogger(__name__)
 

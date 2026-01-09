@@ -1,4 +1,5 @@
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
@@ -42,12 +43,11 @@ class JWTSettings(BaseSettings):
         return Path(__file__).parent.parent.parent / ".certs"
 
 
-class ApplicationSettings(BaseSettings):
+@dataclass
+class ApplicationSettings:
     jwt: JWTSettings
 
 
 def load_application_settings(jwt: Optional[JWTSettings] = None) -> ApplicationSettings:
     log.debug("Loading application settings.")
-    return ApplicationSettings(
-        jwt=jwt or JWTSettings()
-    )
+    return ApplicationSettings(jwt=jwt or JWTSettings())

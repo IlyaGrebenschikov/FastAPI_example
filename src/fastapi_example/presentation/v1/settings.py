@@ -1,10 +1,7 @@
-import logging
+from dataclasses import dataclass
 from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-log = logging.getLogger(__name__)
-
 
 class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -31,17 +28,17 @@ class CORSSettings(BaseSettings):
     origins: list[str] = ["*"]
 
 
-class V1APISettings(BaseSettings):
+@dataclass
+class V1APISettings:
     app: AppSettings
     cors: CORSSettings
 
 
 def load_v1_api_settings(
-    app: AppSettings = None,
-    cors: CORSSettings = None,
+    app_settings: Optional[AppSettings] = None,
+    cors_settings: Optional[CORSSettings] = None,
     ) -> V1APISettings:
-    log.debug("Loading presentation settings.")
     return V1APISettings(
-        app=app or AppSettings(),
-        cors=cors or CORSSettings(),
+        app=app_settings or AppSettings(),
+        cors=cors_settings or CORSSettings(),
     )

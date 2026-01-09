@@ -21,10 +21,10 @@ def setup_dependencies(
 ) -> None:
     log.debug("Setting up dependencies.")
     container = make_async_container(
-        DatabaseProvider(settings.infrastructure_settings),
+        DatabaseProvider(settings.infrastructure.database),
         UsersServiceProvider(),
         HasherServiceProvider(),
-        AuthServiceProvider(settings.application_settings.jwt),
+        AuthServiceProvider(settings.application.jwt),
     )
 
     setup_dishka(container=container, app=app)

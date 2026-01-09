@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories.users import IUsersRepository
 from fastapi_example.application.interfaces.mappers.users_repository import IUsersRepositoryMapper
-from fastapi_example.infrastructure import InfrastructureSettings
+from fastapi_example.infrastructure import DatabaseSettings
 from fastapi_example.infrastructure.database import (
     TransactionManager,
     create_sa_engine,
@@ -25,16 +25,16 @@ log = logging.getLogger(__name__)
 class DatabaseProvider(Provider):
     def __init__(
             self,
-            infrastructure_settings: InfrastructureSettings,
+            database_settings: DatabaseSettings,
             scope=None,
             component=None
     ):
         super().__init__(scope, component)
-        self._infrastructure_settings = infrastructure_settings
+        self._database_settings = database_settings
 
     @provide(scope=Scope.APP)
     def db_engine(self) -> AsyncEngine:
-        return create_sa_engine(self._infrastructure_settings.database.url_obj)
+        return create_sa_engine(self._database_settings.url_obj)
 
     @provide(scope=Scope.APP)
     def db_session_factory(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
