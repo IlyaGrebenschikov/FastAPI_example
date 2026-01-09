@@ -1,5 +1,5 @@
+from contextlib import AbstractAsyncContextManager
 from typing import (
-    AsyncIterator,
     Protocol,
     Optional,
     Type,
@@ -29,4 +29,4 @@ class ITransactionManager(Protocol):
     @property
     def session(self) -> AsyncSession: ...
 
-    def read_only(self) -> AsyncIterator[AsyncSession]: ...
+    def read_only(self) -> AbstractAsyncContextManager[AsyncSession]: ...
