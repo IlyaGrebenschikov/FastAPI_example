@@ -1,5 +1,3 @@
-import logging
-
 from dishka import Provider, Scope, provide
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -17,10 +15,7 @@ from fastapi_example.infrastructure.database import (
     create_sa_session_factory,
 )
 from fastapi_example.infrastructure.database.mappers import UsersRepositoryMapper
-from fastapi_example.infrastructure.database.repositories import SQLAlchemyUserRepository
-
-log = logging.getLogger(__name__)
-
+from fastapi_example.infrastructure.database.repositories import SQLAlchemyUsersRepository
 
 class DatabaseProvider(Provider):
     def __init__(
@@ -54,4 +49,4 @@ class DatabaseProvider(Provider):
             transaction_manager: ITransactionManager,
             mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
-        return SQLAlchemyUserRepository(transaction_manager.session, mapper)
+        return SQLAlchemyUsersRepository(transaction_manager.session, mapper)

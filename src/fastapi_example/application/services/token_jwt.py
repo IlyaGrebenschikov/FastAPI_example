@@ -10,21 +10,16 @@ import jwt
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
 from fastapi_example.application.interfaces.services import ITokenJWTService
 from fastapi_example.application.settings import JWTSettings
+from fastapi_example.application.types import TokenDecoded, TokenPayload
 
 log = logging.getLogger(__name__)
 
 
-# TODO need typed dict for return annotation
 class TokenJWTService(ITokenJWTService):
     def __init__(self, settings: JWTSettings) -> None:
         self._settings = settings
 
-    def create_access_token(self, data: dict) -> str:
-        log.debug(
-            "Creating access token for subject '%s'",
-            data.get('sub', 'unknown')
-        )
-
+    def create_access_token(self, data: TokenPayload) -> str:
         to_encode = data.copy()
         expiration = datetime.now(timezone.utc) + timedelta(minutes=self._settings.expiration)
         to_encode.update({
@@ -42,24 +37,15 @@ class TokenJWTService(ITokenJWTService):
             data.get('sub', 'unknown'),
             expiration.isoformat()
         )
-
         return token
 
-    def verify_token(self, token: str) -> dict:
-        log.debug("Verifying token")
-
+    def verify_token(self, token: str) -> TokenDecoded:
         try:
-            decoded_data = jwt.decode(
+            decoded_data: TokenDecoded = jwt.decode(
                 token,
                 self._settings.public_key,
                 algorithms=[self._settings.algorithm]
             )
-
-            log.debug(
-                "Token successfully decoded for subject '%s'",
-                decoded_data.get('sub', 'unknown')
-            )
-
         except jwt.ExpiredSignatureError:
             log.warning("Token expired")
             raise UnAuthorizedError('Token expired')
@@ -72,4 +58,8 @@ class TokenJWTService(ITokenJWTService):
             log.warning("Token missing subject field")
             raise UnAuthorizedError('Token missing subject')
 
+        log.debug(
+            "Token successfully decoded for subject '%s'",
+            decoded_data.get('sub', 'unknown')
+        )
         return decoded_data

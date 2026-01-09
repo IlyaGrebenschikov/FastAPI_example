@@ -11,6 +11,7 @@ from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
     IHasherService
 )
+from fastapi_example.application.types import TokenPayload
 
 log = logging.getLogger(__name__)
 
@@ -36,10 +37,14 @@ class AuthService(IAuthService):
             log.debug("Password verification failed")
             raise UnAuthorizedError("Incorrect login or password")
 
-        access_token = self._token_jwt.create_access_token({"sub": str(user.id), "scopes": query.scopes})
-        log.debug("Access token created")
+        token_payload: TokenPayload = {
+            "sub": str(user.id),
+            "scopes": query.scopes
+        }
+        access_token = self._token_jwt.create_access_token(token_payload)
 
+        log.debug("Access token created")
         return Token(access_token=access_token, token_type="Bearer")
 
     def get_sub_from_token(self, token: str) -> str:
-        return str(self._token_jwt.verify_token(token)["sub"])
+        return str(self._token_jwt.verify_token(token).get("sub"))

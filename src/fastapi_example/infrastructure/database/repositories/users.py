@@ -22,7 +22,7 @@ from fastapi_example.application.types import CreateUserType, UpdateUserType
 from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel
 
-class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
+class SQLAlchemyUsersRepository(BaseRepository, IUsersRepository):
     def __init__(
             self,
             session: AsyncSession,
