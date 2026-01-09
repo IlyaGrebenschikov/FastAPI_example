@@ -56,32 +56,19 @@ class UsersService(IUsersService):
         return self._mapper.domain_to_response_dto(repository_result)
 
     async def get_user(self, token: str) -> UserResponseDTO:
-        user_id = self._auth.get_sub_from_token(token)
+        user_id = await self._auth.get_sub_from_token(token)
 
         async with self._transaction_manager:
-            if not await self._repository.exists_user(user_id=user_id):
-                log.warning("User getting failed - user does not exist with id: '%s'", user_id)
-                raise NotFoundError(f"User not found")
-
             result = await self._repository.get_user(user_id=user_id)
-
-        if not result:
-            log.warning("User retrieval failed - user not found with ID: %s", user_id)
-            raise NotFoundError("User not found")
 
         log.info("User received with ID: %s", result.id)
         return self._mapper.domain_to_response_dto(result)
 
     async def update_user(self, token: str, data: UpdateUserDTO) -> UserResponseDTO:
-        user_id = self._auth.get_sub_from_token(token)
+        user_id = await self._auth.get_sub_from_token(token)
 
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
-
-            if not await self._repository.exists_user(user_id=user_id):
-                log.warning("User update failed - user does not exist with id: '%s'", user_id)
-                raise NotFoundError(f"User not found")
-
             current_user = await self._repository.get_user(user_id=user_id)
 
             if data.username:
@@ -103,15 +90,10 @@ class UsersService(IUsersService):
         return self._mapper.domain_to_response_dto(user)
 
     async def delete_user(self, token: str, data: DeleteUserDTO) -> UserResponseDTO:
-        user_id = self._auth.get_sub_from_token(token)
+        user_id = await self._auth.get_sub_from_token(token)
 
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
-
-            if not await self._repository.exists_user(user_id=user_id):
-                log.warning("User deletion failed - user does not exist with id: '%s'", user_id)
-                raise NotFoundError(f"User not found")
-
             current_user = await self._repository.get_user(user_id=user_id)
 
             if not self._hasher.verify_password(data.password, current_user.password):
