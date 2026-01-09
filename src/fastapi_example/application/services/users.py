@@ -37,14 +37,8 @@ class UsersService(IUsersService):
         self._auth = auth
 
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
-        log.info(
-            "Creating user with username: '%s', email: '%s'",
-            user.username, user.email
-        )
-
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
-            log.debug("Transaction started for user creation")
 
             if await self._repository.exists_user(username=user.username, email=user.email):
                 log.warning(
@@ -54,15 +48,9 @@ class UsersService(IUsersService):
                 raise ConflictError(f"User already exists with username: {user.username} or email: {user.email}")
 
             user.password = self._hasher.hash_password(user.password)
-            log.debug("Hashing password for user '%s'", user.username)
-
-            log.debug(
-                "Mapped CreateUserDTO to domain user with ID: %s",
-                getattr(user, 'id', 'unknown')
-            )
-
             repository_result = await self._repository.create_user(user.model_dump())
 
+        log.info("User created with username: '%s', email: '%s'",user.username, user.email)
         return self._mapper.domain_to_response_dto(repository_result)
 
     async def get_user(self, token: str) -> UserResponseDTO:
@@ -79,6 +67,7 @@ class UsersService(IUsersService):
             log.warning("User retrieval failed - user not found with ID: %s", user_id)
             raise NotFoundError("User not found")
 
+        log.info("User received with ID:", result.id)
         return self._mapper.domain_to_response_dto(result)
 
     async def update_user(self, token: str, data: UpdateUserDTO) -> UserResponseDTO:
@@ -86,7 +75,6 @@ class UsersService(IUsersService):
 
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
-            log.debug("Transaction started for user update")
 
             if not await self._repository.exists_user(user_id=user_id):
                 log.warning("User update failed - user does not exist with id: '%s'", user_id)
@@ -108,8 +96,8 @@ class UsersService(IUsersService):
                 data.password = self._hasher.hash_password(data.password)
 
             user = await self._repository.update_user(user_id, data.model_dump(exclude_unset=True, exclude_none=True))
-            log.debug("User updated in repository with ID: %s", user.id)
 
+        log.debug("User updated with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(user)
 
     async def delete_user(self, token: str) -> UserResponseDTO:
@@ -119,6 +107,6 @@ class UsersService(IUsersService):
             await self._transaction_manager.create_transaction()
 
             user = await self._repository.delete_user(user_id=user_id)
-            log.debug("User deleted in repository with ID: %s", user.id)
 
+        log.debug("User deleted in repository with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(user)

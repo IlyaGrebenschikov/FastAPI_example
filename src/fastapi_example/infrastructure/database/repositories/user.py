@@ -2,7 +2,6 @@ from typing import (
     Optional,
     Unpack,
     Type,
-    cast
 )
 from uuid import UUID
 
@@ -39,7 +38,7 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
     async def create_user(self, user: Unpack[CreateUserType]) -> User:
         stmt = insert(self._model).values(user).returning(self._model)
 
-        return cast(User, self._mapper.persistence_to_domain((await self._session.scalars(stmt)).first()))
+        return self._mapper.persistence_to_domain((await self._session.scalars(stmt)).first())
 
     async def exists_user(
             self,
@@ -61,7 +60,7 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
         clause = or_(*conditions)
         stmt = exists(select(self._model).where(clause)).select()
 
-        return cast(bool, await self._session.scalar(stmt))
+        return await self._session.scalar(stmt)
 
     async def get_user(
             self,
@@ -80,10 +79,7 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
         clause = or_(*conditions)
         stmt = select(self._model).where(clause)
 
-        return cast(
-            User,
-            self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
-        )
+        return self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
 
     async def update_user(
             self,
@@ -93,7 +89,7 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
         clause = self._model.id == user_id
         stmt = update(self._model).where(clause).values(**data).returning(self._model)
 
-        return cast(User, (await self._session.execute(stmt)).scalars().first())
+        return self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
 
     async def delete_user(
             self,
@@ -102,4 +98,4 @@ class SQLAlchemyUserRepository(BaseRepository, IUsersRepository):
         clause = self._model.id == user_id
         stmt = delete(self._model).where(clause).returning(self._model)
 
-        return cast(User, (await self._session.execute(stmt)).scalars().first())
+        return self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
