@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from types import TracebackType
-from typing import Optional, Type, Union
+from typing import Optional, Type, Union, AsyncIterator
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
@@ -69,3 +70,8 @@ class TransactionManager(ITransactionManager):
     @property
     def session(self) -> AsyncSession:
         return self._session
+
+    @asynccontextmanager
+    async def read_only(self) -> AsyncIterator[AsyncSession]:
+        async with self._session.begin():
+            yield self._session
