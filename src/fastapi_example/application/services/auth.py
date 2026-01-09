@@ -31,6 +31,10 @@ class AuthService(IAuthService):
 
     async def login(self, query: OAuth2PasswordRequestForm) -> Token:
         async with self._transaction_manager:
+            if not await self._user_repository.exists_user(username=query.username):
+                log.warning("User not found with username '%s'", query.username)
+                raise UnAuthorizedError("Incorrect login or password")
+
             user = await self._user_repository.get_user(username=query.username)
 
         if not self._hasher.verify_password(query.password, user.password):
