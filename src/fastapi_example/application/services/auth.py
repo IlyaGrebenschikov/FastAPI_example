@@ -43,8 +43,16 @@ class AuthService(IAuthService):
         }
         access_token = self._token_jwt.create_access_token(token_payload)
 
-        log.debug("Access token created")
+        log.info(
+            "User '%s' (ID: %s) successfully logged in",
+            query.username,
+            user.id
+        )
         return Token(access_token=access_token, token_type="Bearer")
 
     def get_sub_from_token(self, token: str) -> str:
-        return str(self._token_jwt.verify_token(token).get("sub"))
+        token_data = self._token_jwt.verify_token(token)
+        sub = token_data.get("sub")
+
+        log.debug("Extracted subject '%s' from token", sub)
+        return sub

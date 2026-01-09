@@ -67,7 +67,7 @@ class UsersService(IUsersService):
             log.warning("User retrieval failed - user not found with ID: %s", user_id)
             raise NotFoundError("User not found")
 
-        log.info("User received with ID:", result.id)
+        log.info("User received with ID: %s", result.id)
         return self._mapper.domain_to_response_dto(result)
 
     async def update_user(self, token: str, data: UpdateUserDTO) -> UserResponseDTO:
