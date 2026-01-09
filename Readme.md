@@ -44,8 +44,41 @@ CORS_METHODS=["*"]
 CORS_HEADERS=["*"]
 ```
 
-JWT uses RS256. Keys are read from `.certs/jwt-private.pem` and `.certs/jwt-public.pem`. Generate:
+### JWT Keys Setup
+JWT uses RS256 algorithm. Keys are read from `.certs/jwt-private.pem` and `.certs/jwt-public.pem`.
+
+#### Generate JWT Keys (Git Bash on Windows)
+If you're using Git Bash on Windows, follow these steps:
+
+1. Navigate to the project root directory:
+```bash
+cd /c/path/to/FastAPI_example
 ```
+
+2. Create the `.certs` directory:
+```bash
+mkdir -p .certs
+```
+
+3. Generate the private key (RSA 2048-bit):
+```bash
+openssl genrsa -out .certs/jwt-private.pem 2048
+```
+
+4. Extract the public key from the private key:
+```bash
+openssl rsa -in .certs/jwt-private.pem -pubout -out .certs/jwt-public.pem
+```
+
+5. Verify the keys were created:
+```bash
+ls -la .certs/
+```
+
+**Note:** Make sure `.certs/` is in your `.gitignore` file to prevent committing private keys to the repository.
+
+#### Alternative: Generate JWT Keys (Linux/macOS/WSL)
+```bash
 mkdir -p .certs
 openssl genrsa -out .certs/jwt-private.pem 2048
 openssl rsa -in .certs/jwt-private.pem -pubout -out .certs/jwt-public.pem

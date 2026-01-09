@@ -33,6 +33,7 @@ services:
       - api.network.pg
     volumes:
       - ./src:/usr/api/src
+      - ./.certs:/usr/api/.certs:ro
     env_file:
       - .env
     depends_on:

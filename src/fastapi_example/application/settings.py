@@ -40,7 +40,7 @@ class JWTSettings(BaseSettings):
         return key_path.read_text(encoding="utf-8")
 
     def _get_certs_path(self) -> Path:
-        return Path(__file__).parent.parent.parent / ".certs"
+        return Path(__file__).parents[3] / ".certs"
 
 
 @dataclass
