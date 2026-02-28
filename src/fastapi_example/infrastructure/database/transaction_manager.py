@@ -50,13 +50,13 @@ class TransactionManager(ITransactionManager):
         try:
             await self._session.commit()
         except SQLAlchemyError as err:
-            raise CommitError from err
+            raise CommitError(err) from err
 
     async def rollback(self) -> None:
         try:
             await self._session.rollback()
         except SQLAlchemyError as err:
-            raise RollbackError from err
+            raise RollbackError(err) from err
 
     async def create_transaction(self) -> None:
         if not self._session.in_transaction() and self._session.is_active:
