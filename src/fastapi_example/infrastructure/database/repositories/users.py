@@ -27,7 +27,7 @@ class SQLAlchemyUsersRepository(IUsersRepository):
             session: AsyncSession,
             mapper: IUsersRepositoryMapper
     ):
-        super().__init__(session)
+        self._session = session
         self._mapper = mapper
 
     @property
