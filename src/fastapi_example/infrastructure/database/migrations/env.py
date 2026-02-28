@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from fastapi_example.infrastructure.database.models import Base, UserModel
+from fastapi_example.infrastructure.database.models import Base, UserModel # noqa: F401
 from fastapi_example.infrastructure.settings import load_infrastructure_settings
 
 db_settings = load_infrastructure_settings().database

@@ -8,7 +8,6 @@ from fastapi_example.application.dto import (
 )
 from fastapi_example.application.exceptions.http_exceptions import (
     ConflictError,
-    NotFoundError,
     ForbiddenError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
