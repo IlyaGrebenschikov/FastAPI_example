@@ -10,7 +10,11 @@ from fastapi_example.application.di_providers.services import (
     UsersServiceProvider,
     HasherServiceProvider
 )
-from fastapi_example.infrastructure.di_providers import DatabaseProvider
+from fastapi_example.infrastructure.di_providers import (
+    DatabaseProvider,
+    MappersProvider,
+    RepositoriesProvider
+)
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +26,8 @@ def setup_dependencies(
     log.debug("Setting up dependencies.")
     container = make_async_container(
         DatabaseProvider(settings.infrastructure.database),
+        MappersProvider(),
+        RepositoriesProvider(),
         UsersServiceProvider(),
         HasherServiceProvider(),
         AuthServiceProvider(settings.application.jwt),
