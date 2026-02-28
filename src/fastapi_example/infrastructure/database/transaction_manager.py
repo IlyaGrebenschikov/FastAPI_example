@@ -6,14 +6,12 @@ from typing import (
     AsyncIterator,
     Optional,
     Type,
-    Union
 )
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncSessionTransaction,
-    async_sessionmaker,
 )
 
 from .exceptions import CommitError, RollbackError
@@ -26,13 +24,9 @@ class TransactionManager(ITransactionManager):
     )
 
     def __init__(
-        self, session_or_factory: Union[AsyncSession, async_sessionmaker[AsyncSession]]
+        self, session: AsyncSession
     ) -> None:
-        if isinstance(session_or_factory, async_sessionmaker):
-            self._session = session_or_factory()
-        else:
-            self._session = session_or_factory
-
+        self._session = session
         self._transaction: Optional[AsyncSessionTransaction] = None
 
     async def __aexit__(

@@ -33,4 +33,5 @@ class DatabaseProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     def transaction_manager(self, session_factory: async_sessionmaker[AsyncSession]) -> ITransactionManager:
-        return TransactionManager(session_factory)
+        session = session_factory()
+        return TransactionManager(session)
