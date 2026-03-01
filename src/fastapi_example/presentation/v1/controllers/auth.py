@@ -29,6 +29,7 @@ async def token(
     credentials = LoginCredentials(
         username=query.username,
         password=query.password,
+        scopes=query.scopes,
     )
 
     return await auth_service.login(credentials)
