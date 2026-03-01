@@ -31,7 +31,7 @@ def setup_dependencies(
         RepositoriesProvider(),
         UsersServiceProvider(),
         HasherServiceProvider(),
-        AuthServiceProvider(settings.application.jwt),
+        AuthServiceProvider(settings.infrastructure.jwt),
         TokenServiceProvider()
     )
 

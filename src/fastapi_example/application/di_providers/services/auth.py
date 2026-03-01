@@ -8,13 +8,14 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 from fastapi_example.application.interfaces.services import (
     IAuthService,
-    ITokenJWTService, IHasherService
+    ITokenJWTService,
+    IHasherService
 )
 from fastapi_example.application.services import (
     AuthService,
     TokenJWTService
 )
-from fastapi_example.application.settings import JWTSettings
+from fastapi_example.infrastructure.settings import JWTSettings
 
 class AuthServiceProvider(Provider):
     def __init__(self, settings: JWTSettings, scope=None, component=None):
