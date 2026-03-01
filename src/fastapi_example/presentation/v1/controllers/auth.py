@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_example.application.dto import Token
 from fastapi_example.application.interfaces.services import IAuthService
+from fastapi_example.application.types import LoginCredentials
 from fastapi_example.presentation.v1.docs import NotFoundError
 
 auth_router = APIRouter(
@@ -25,4 +26,9 @@ async def token(
         query: Annotated[OAuth2PasswordRequestForm, Depends()],
         auth_service: FromDishka[IAuthService]
 ) -> Token:
-    return await auth_service.login(query)
+    credentials = LoginCredentials(
+        username=query.username,
+        password=query.password,
+    )
+
+    return await auth_service.login(credentials)

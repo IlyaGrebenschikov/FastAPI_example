@@ -1,7 +1,5 @@
 import logging
 
-from fastapi.security import OAuth2PasswordRequestForm
-
 from fastapi_example.application.dto import Token
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
 from fastapi_example.application.interfaces.database import ITransactionManager
@@ -11,10 +9,9 @@ from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
     IHasherService
 )
-from fastapi_example.application.types import TokenPayload
+from fastapi_example.application.types import TokenPayload, LoginCredentials
 
 log = logging.getLogger(__name__)
-
 
 class AuthService(IAuthService):
     def __init__(
@@ -29,27 +26,27 @@ class AuthService(IAuthService):
         self._hasher = hasher
         self._transaction_manager = transaction_manager
 
-    async def login(self, query: OAuth2PasswordRequestForm) -> Token:
+    async def login(self, credentials: LoginCredentials) -> Token:
         async with self._transaction_manager:
-            if not await self._user_repository.exists_user(username=query.username):
-                log.warning("User not found with username '%s'", query.username)
+            if not await self._user_repository.exists_user(username=credentials.username):
+                log.warning("User not found with username '%s'", credentials.username)
                 raise UnAuthorizedError("Incorrect login or password")
 
-            user = await self._user_repository.get_user(username=query.username)
+            user = await self._user_repository.get_user(username=credentials.username)
 
-        if not self._hasher.verify_password(query.password, user.password):
+        if not self._hasher.verify_password(credentials.password, user.password):
             log.debug("Password verification failed")
             raise UnAuthorizedError("Incorrect login or password")
 
         token_payload: TokenPayload = {
             "sub": str(user.id),
-            "scopes": query.scopes
+            "scopes": credentials.scopes
         }
         access_token = self._token_jwt.create_access_token(token_payload)
 
         log.info(
             "User '%s' (ID: %s) successfully logged in",
-            query.username,
+            credentials.username,
             user.id
         )
         return Token(access_token=access_token, token_type="Bearer")

@@ -1,8 +1,7 @@
 from typing import Protocol
 
-from fastapi.security import OAuth2PasswordRequestForm
-
 from fastapi_example.application.dto import Token
+from fastapi_example.application.types import LoginCredentials
 
 class IAuthService(Protocol):
-    async def login(self, query: OAuth2PasswordRequestForm) -> Token: ...
+    async def login(self, credentials: LoginCredentials) -> Token: ...
