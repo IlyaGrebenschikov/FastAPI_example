@@ -7,7 +7,11 @@ from dishka import (
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
-from fastapi_example.application.interfaces.services import IUsersService, IHasherService, IAuthService
+from fastapi_example.application.interfaces.services import (
+    IUsersService,
+    IHasherService,
+    ITokenService
+)
 from fastapi_example.application.mappers import UserServiceMapper
 from fastapi_example.application.services import UsersService
 
@@ -26,6 +30,6 @@ class UsersServiceProvider(Provider):
             mapper: IUsersServiceMapper,
             hasher: IHasherService,
             transaction_manager: ITransactionManager,
-            auth: IAuthService,
+            token: ITokenService,
     ) -> IUsersService:
-        return UsersService(repository, mapper, hasher, transaction_manager, auth)
+        return UsersService(repository, mapper, hasher, transaction_manager, token)

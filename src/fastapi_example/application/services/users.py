@@ -14,13 +14,12 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.services import (
-    IAuthService,
+    ITokenService,
     IUsersService,
     IHasherService,
 )
 
 log = logging.getLogger(__name__)
-
 
 class UsersService(IUsersService):
     def __init__(
@@ -29,13 +28,13 @@ class UsersService(IUsersService):
             mapper: IUsersServiceMapper,
             hasher: IHasherService,
             transaction_manager: ITransactionManager,
-            auth: IAuthService,
+            token: ITokenService,
     ):
         self._repository = repository
         self._mapper = mapper
         self._hasher = hasher
         self._transaction_manager = transaction_manager
-        self._auth = auth
+        self._token = token
 
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
         async with self._transaction_manager:
@@ -55,7 +54,7 @@ class UsersService(IUsersService):
         return self._mapper.domain_to_response_dto(repository_result)
 
     async def get_user(self, token: str) -> UserResponseDTO:
-        user_id = await self._auth.get_sub_from_token(token)
+        user_id = await self._token.get_user_id_from_token(token)
 
         async with self._transaction_manager:
             result = await self._repository.get_user(user_id=user_id)
@@ -64,7 +63,7 @@ class UsersService(IUsersService):
         return self._mapper.domain_to_response_dto(result)
 
     async def update_user(self, token: str, data: UpdateUserDTO) -> UserResponseDTO:
-        user_id = await self._auth.get_sub_from_token(token)
+        user_id = await self._token.get_user_id_from_token(token)
 
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()
@@ -89,7 +88,7 @@ class UsersService(IUsersService):
         return self._mapper.domain_to_response_dto(user)
 
     async def delete_user(self, token: str, data: DeleteUserDTO) -> UserResponseDTO:
-        user_id = await self._auth.get_sub_from_token(token)
+        user_id = await self._token.get_user_id_from_token(token)
 
         async with self._transaction_manager:
             await self._transaction_manager.create_transaction()

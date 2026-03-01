@@ -53,22 +53,3 @@ class AuthService(IAuthService):
             user.id
         )
         return Token(access_token=access_token, token_type="Bearer")
-
-    async def get_sub_from_token(self, token: str) -> str:
-        token_data = self._token_jwt.verify_token(token)
-        sub = token_data.get("sub")
-
-        if not sub:
-            log.warning("Token missing subject field")
-            raise UnAuthorizedError('Token missing subject')
-
-        async with self._transaction_manager.read_only():
-            if not await self._user_repository.exists_user(user_id=sub):
-                log.warning(
-                    "Token validation failed - user does not exist with ID: '%s'",
-                    sub
-                )
-                raise UnAuthorizedError("User not found")
-
-        log.debug("Extracted and verified subject '%s' from token", sub)
-        return sub
