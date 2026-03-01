@@ -10,7 +10,12 @@ from fastapi_example.application.dto import (
     UpdateUserDTO
 )
 from fastapi_example.presentation.v1.dependencies import get_bearer_token
-from fastapi_example.presentation.v1.docs import ConflictError, NotFoundError, ForbiddenError
+from fastapi_example.presentation.v1.docs import (
+    ConflictError,
+    NotFoundError,
+    UnAuthorizedError,
+    ForbiddenError
+)
 from fastapi_example.application.interfaces.services import IUsersService
 
 users_router = APIRouter(
@@ -40,6 +45,7 @@ async def create_user(
     status_code=status.HTTP_200_OK,
     response_model=UserResponseDTO,
     responses={
+    status.HTTP_401_UNAUTHORIZED: {'model': UnAuthorizedError},
     status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
 }
 )

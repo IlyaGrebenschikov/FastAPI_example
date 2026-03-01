@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+from typing import Optional
 
 @dataclass
 class LoginCredentials:
     username: str
     password: str
-    scopes: list[str] = None
+    scopes: Optional[list[str]] = None

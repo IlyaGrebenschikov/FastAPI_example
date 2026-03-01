@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_example.application.dto import Token
 from fastapi_example.application.interfaces.services import IAuthService
 from fastapi_example.application.types import LoginCredentials
-from fastapi_example.presentation.v1.docs import NotFoundError
+from fastapi_example.presentation.v1.docs import UnAuthorizedError
 
 auth_router = APIRouter(
     prefix="/token",
@@ -20,7 +20,7 @@ auth_router = APIRouter(
     "",
     response_model=Token,
     status_code=status.HTTP_201_CREATED, responses={
-        status.HTTP_401_UNAUTHORIZED: {'model': NotFoundError},
+        status.HTTP_401_UNAUTHORIZED: {'model': UnAuthorizedError},
     })
 async def token(
         query: Annotated[OAuth2PasswordRequestForm, Depends()],
