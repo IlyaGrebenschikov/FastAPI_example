@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import (
 from .exceptions import CommitError, RollbackError
 from fastapi_example.application.interfaces.database import ITransactionManager
 
-class TransactionManager(ITransactionManager):
+class TransactionManager(ITransactionManager[AsyncSession]):
     __slots__ = (
         "_session",
         "_transaction",
@@ -71,6 +71,6 @@ class TransactionManager(ITransactionManager):
         return self._session
 
     @asynccontextmanager
-    async def read_only(self) -> AsyncIterator[AsyncSession]:
+    async def read_only(self) -> AsyncIterator[AsyncSession]:  # type: ignore[misc]
         async with self._session.begin():
             yield self._session

@@ -1,14 +1,16 @@
-from contextlib import AbstractAsyncContextManager
 from typing import (
     Protocol,
     Optional,
     Type,
+    TypeVar,
+    AsyncContextManager,
 )
 from types import TracebackType
 
-from sqlalchemy.ext.asyncio import AsyncSession
+SessionT = TypeVar("SessionT")
 
-class ITransactionManager(Protocol):
+
+class ITransactionManager(Protocol[SessionT]):
     async def __aexit__(
             self,
             exc_type: Optional[Type[BaseException]],
@@ -16,7 +18,7 @@ class ITransactionManager(Protocol):
             traceback: Optional[TracebackType],
     ) -> None: ...
 
-    async def __aenter__(self) -> "ITransactionManager": ...
+    async def __aenter__(self) -> "ITransactionManager[SessionT]": ...
 
     async def commit(self) -> None: ...
 
@@ -27,6 +29,6 @@ class ITransactionManager(Protocol):
     async def close_transaction(self) -> None: ...
 
     @property
-    def session(self) -> AsyncSession: ...
+    def session(self) -> SessionT: ...
 
-    def read_only(self) -> AbstractAsyncContextManager[AsyncSession]: ...
+    def read_only(self) -> AsyncContextManager[SessionT]: ...
