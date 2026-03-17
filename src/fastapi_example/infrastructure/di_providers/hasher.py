@@ -5,10 +5,10 @@ from dishka import (
 )
 from pwdlib import PasswordHash
 
-from fastapi_example.application.interfaces.services import IHasherService
-from fastapi_example.application.services import Argon2HasherService
+from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.infrastructure.security import Argon2Hasher
 
-class HasherServiceProvider(Provider):
+class HasherProvider(Provider):
     def __init__(self, scope=None, component=None):
         super().__init__(scope, component)
 
@@ -17,5 +17,5 @@ class HasherServiceProvider(Provider):
         return PasswordHash.recommended()
 
     @provide(scope=Scope.APP)
-    def argon2_hasher(self, hasher: PasswordHash) -> IHasherService:
-        return Argon2HasherService(hasher)
+    def argon2_hasher(self, hasher: PasswordHash) -> IHasher:
+        return Argon2Hasher(hasher)

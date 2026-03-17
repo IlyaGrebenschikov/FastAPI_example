@@ -7,10 +7,10 @@ from fastapi_example.application.interfaces.database.repositories import IUsersR
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     ITokenJWTService,
-    IHasherService,
     TokenPayload,
     LoginCredentials
 )
+from fastapi_example.application.interfaces.security import IHasher
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class AuthService(IAuthService):
             self,
             user_repository: IUsersRepository,
             token_jwt: ITokenJWTService,
-            hasher: IHasherService,
+            hasher: IHasher,
             transaction_manager: ITransactionManager
     ) -> None:
         self._user_repository = user_repository

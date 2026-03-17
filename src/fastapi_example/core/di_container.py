@@ -8,13 +8,13 @@ from .settings import Settings
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     UsersServiceProvider,
-    HasherServiceProvider,
     TokenServiceProvider
 )
 from fastapi_example.infrastructure.di_providers import (
     DatabaseProvider,
     MappersProvider,
-    RepositoriesProvider
+    RepositoriesProvider,
+    HasherProvider
 )
 
 log = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ def setup_dependencies(
         MappersProvider(),
         RepositoriesProvider(),
         UsersServiceProvider(),
-        HasherServiceProvider(),
+        HasherProvider(),
         AuthServiceProvider(settings.infrastructure.jwt),
         TokenServiceProvider()
     )

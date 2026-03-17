@@ -9,9 +9,9 @@ from fastapi_example.application.interfaces.database.repositories import IUsersR
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.services import (
     IUsersService,
-    IHasherService,
     ITokenService
 )
+from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.mappers import UserServiceMapper
 from fastapi_example.application.services import UsersService
 
@@ -28,7 +28,7 @@ class UsersServiceProvider(Provider):
             self,
             repository: IUsersRepository,
             mapper: IUsersServiceMapper,
-            hasher: IHasherService,
+            hasher: IHasher,
             transaction_manager: ITransactionManager,
             token: ITokenService,
     ) -> IUsersService:

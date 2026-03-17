@@ -147,8 +147,8 @@ docker compose --profile migrations up --build
 
 ### What’s in DI
 Dishka container registers:
-- `DatabaseProvider` (engine, sessions, transactions)
-- `UsersServiceProvider`, `HasherServiceProvider`, `AuthServiceProvider` (JWT)
+- `DatabaseProvider` (engine, sessions, transactions), `HasherProvider`
+- `UsersServiceProvider`, `AuthServiceProvider` (JWT)
 
 ### Logging
 `logging.basicConfig` sets DEBUG on startup (`__main__.py`). In Docker, container logs are scraped by Promtail and visible in Grafana (Loki).

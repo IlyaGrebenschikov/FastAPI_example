@@ -1,8 +1,8 @@
 from pwdlib import PasswordHash
 
-from fastapi_example.application.interfaces.services import IHasherService
+from fastapi_example.application.interfaces.security import IHasher
 
-class Argon2HasherService(IHasherService):
+class Argon2Hasher(IHasher):
     def __init__(self, hasher: PasswordHash):
         self._hasher = hasher
 

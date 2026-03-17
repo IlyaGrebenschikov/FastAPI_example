@@ -9,8 +9,8 @@ from fastapi_example.application.interfaces.database.repositories import IUsersR
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     ITokenJWTService,
-    IHasherService
 )
+from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.services import (
     AuthService,
     TokenJWTService
@@ -31,7 +31,7 @@ class AuthServiceProvider(Provider):
             self,
             repository: IUsersRepository,
             token_jwt: ITokenJWTService,
-            hasher: IHasherService,
+            hasher: IHasher,
             transaction_manager: ITransactionManager,
         ) -> IAuthService:
         return AuthService(repository, token_jwt, hasher, transaction_manager)

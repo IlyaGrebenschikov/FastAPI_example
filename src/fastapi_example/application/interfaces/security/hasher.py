@@ -1,6 +1,6 @@
 from typing import Protocol
 
-class IHasherService(Protocol):
+class IHasher(Protocol):
     def hash_password(self, password: str) -> str: ...
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool: ...

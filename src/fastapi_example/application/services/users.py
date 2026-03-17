@@ -16,8 +16,8 @@ from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.services import (
     ITokenService,
     IUsersService,
-    IHasherService,
 )
+from fastapi_example.application.interfaces.security import IHasher
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class UsersService(IUsersService):
             self,
             repository: IUsersRepository,
             mapper: IUsersServiceMapper,
-            hasher: IHasherService,
+            hasher: IHasher,
             transaction_manager: ITransactionManager,
             token: ITokenService,
     ):
