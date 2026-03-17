@@ -1,6 +1,6 @@
 services:
   postgres:
-    profiles: [ "api", "migrations" ]
+    profiles: [ "api", "migrations", "port-forwarder" ]
     image: postgres:latest
     container_name: api.pg
     restart: unless-stopped
@@ -10,8 +10,6 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - pg_root:/var/lib/postgresql
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
       interval: 5s
@@ -21,6 +19,20 @@ services:
       - api.network.pg
     env_file:
       - .env
+  
+  postgres_port_forwarder:
+    profiles: [ "port-forwarder" ]
+    image: alpine/socat:latest
+    container_name: api.pg.port_forwarder
+    ports:
+      - "127.0.0.1:5432:5432"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - api.network.pg
+    command: ["tcp-listen:5432,fork,reuseaddr", "tcp-connect:postgres:5432"]
+
 
   api:
     profiles: [ "api" ]
