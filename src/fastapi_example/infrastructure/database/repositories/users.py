@@ -15,9 +15,12 @@ from sqlalchemy import (
     update,
 )
 
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
+from fastapi_example.application.interfaces.database.repositories import (
+    IUsersRepository,
+    UpdateUserType,
+    CreateUserType
+)
 from fastapi_example.application.interfaces.mappers import IUsersRepositoryMapper
-from fastapi_example.application.types import CreateUserType, UpdateUserType
 from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel
 

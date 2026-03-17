@@ -1,6 +1,16 @@
-from typing import Protocol
+from typing import Protocol, TypedDict, NotRequired
 
-from fastapi_example.application.types import TokenDecoded, TokenPayload
+class TokenPayload(TypedDict):
+    sub: str
+    scopes: NotRequired[list[str]]
+
+
+class TokenDecoded(TypedDict):
+    sub: str
+    exp: int
+    iat: int
+    scopes: NotRequired[list[str]]
+
 
 class ITokenJWTService(Protocol):
     def create_access_token(self, data: TokenPayload) -> str: ...

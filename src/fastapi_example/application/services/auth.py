@@ -7,9 +7,10 @@ from fastapi_example.application.interfaces.database.repositories import IUsersR
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     ITokenJWTService,
-    IHasherService
+    IHasherService,
+    TokenPayload,
+    LoginCredentials
 )
-from fastapi_example.application.types import TokenPayload, LoginCredentials
 
 log = logging.getLogger(__name__)
 

@@ -1,12 +1,25 @@
 from typing import (
     Protocol,
     Optional,
-    Unpack
+    Unpack,
+    TypedDict,
+    NotRequired
 )
 from uuid import UUID
 
-from fastapi_example.application.types import UpdateUserType, CreateUserType
 from fastapi_example.domain.entities import User
+
+class UpdateUserType(TypedDict):
+    username: NotRequired[str]
+    email: NotRequired[str]
+    password: NotRequired[str]
+
+
+class CreateUserType(TypedDict):
+    username: str
+    email: str
+    password: str
+
 
 class IUsersRepository(Protocol):
     async def create_user(self, user: Unpack[CreateUserType]) -> User: ...
@@ -34,3 +47,4 @@ class IUsersRepository(Protocol):
             self,
             user_id: UUID | str,
     ) -> User: ...
+

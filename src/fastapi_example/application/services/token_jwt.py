@@ -8,8 +8,7 @@ from datetime import (
 import jwt
 
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
-from fastapi_example.application.interfaces.services import ITokenJWTService
-from fastapi_example.application.types import TokenDecoded, TokenPayload
+from fastapi_example.application.interfaces.services import ITokenJWTService, TokenDecoded, TokenPayload
 from fastapi_example.infrastructure.settings import JWTSettings
 
 log = logging.getLogger(__name__)
