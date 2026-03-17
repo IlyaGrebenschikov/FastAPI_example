@@ -1,22 +1,22 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Security, status
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
+from fastapi import APIRouter, Security, status
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
     DeleteUserDTO,
+    UpdateUserDTO,
     UserResponseDTO,
-    UpdateUserDTO
 )
+from fastapi_example.application.interfaces.services import IUsersService
 from fastapi_example.presentation.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.v1.docs import (
     ConflictError,
+    ForbiddenError,
     NotFoundError,
     UnAuthorizedError,
-    ForbiddenError
 )
-from fastapi_example.application.interfaces.services import IUsersService
 
 users_router = APIRouter(
     prefix="/users",
@@ -45,9 +45,9 @@ async def create_user(
     status_code=status.HTTP_200_OK,
     response_model=UserResponseDTO,
     responses={
-    status.HTTP_401_UNAUTHORIZED: {'model': UnAuthorizedError},
-    status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
-}
+        status.HTTP_401_UNAUTHORIZED: {'model': UnAuthorizedError},
+        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
+    }
 )
 async def get_user(
         token: Annotated[str, Security(get_bearer_token)],

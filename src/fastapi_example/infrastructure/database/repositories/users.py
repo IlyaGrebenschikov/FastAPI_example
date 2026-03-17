@@ -4,24 +4,25 @@ from typing import (
 )
 from uuid import UUID
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import (
     delete,
     exists,
-    select,
     insert,
     or_,
+    select,
     update,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_example.application.interfaces.database.repositories import (
+    CreateUserType,
     IUsersRepository,
     UpdateUserType,
-    CreateUserType
 )
 from fastapi_example.application.interfaces.mappers import IUsersRepositoryMapper
 from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel
+
 
 class SQLAlchemyUsersRepository(IUsersRepository):
     def __init__(

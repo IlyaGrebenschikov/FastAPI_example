@@ -1,12 +1,9 @@
-from dishka import (
-    Provider,
-    Scope,
-    provide
-)
+from dishka import Provider, Scope, provide
 from pwdlib import PasswordHash
 
 from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.infrastructure.security import Argon2Hasher
+
 
 class HasherProvider(Provider):
     def __init__(self, scope=None, component=None):

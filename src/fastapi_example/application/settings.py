@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 log = logging.getLogger(__name__)
 
+
 @dataclass
 class ApplicationSettings: ...
 

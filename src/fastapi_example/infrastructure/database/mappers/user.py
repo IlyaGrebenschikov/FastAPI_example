@@ -5,6 +5,7 @@ from fastapi_example.application.interfaces.mappers import IUsersRepositoryMappe
 from fastapi_example.domain.entities.user import User
 from fastapi_example.infrastructure.database.models import UserModel
 
+
 class UsersRepositoryMapper(IUsersRepositoryMapper):
     def persistence_to_domain(self, model_user: UserModel) -> User:
         return User(

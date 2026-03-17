@@ -1,10 +1,5 @@
-from .user import (
-    CreateUserDTO,
-    DeleteUserDTO,
-    UserResponseDTO,
-    UpdateUserDTO
-)
 from .token import Token
+from .user import CreateUserDTO, DeleteUserDTO, UpdateUserDTO, UserResponseDTO
 
 __all__ = (
     "CreateUserDTO",

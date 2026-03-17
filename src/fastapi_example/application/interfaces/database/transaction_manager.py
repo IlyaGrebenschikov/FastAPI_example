@@ -1,11 +1,11 @@
+from types import TracebackType
 from typing import (
-    Protocol,
+    AsyncContextManager,
     Optional,
+    Protocol,
     Type,
     TypeVar,
-    AsyncContextManager,
 )
-from types import TracebackType
 
 SessionT = TypeVar("SessionT")
 

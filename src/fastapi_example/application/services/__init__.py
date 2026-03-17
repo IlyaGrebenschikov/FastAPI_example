@@ -1,7 +1,7 @@
 from .auth import AuthService
-from .users import UsersService
-from .token_jwt import TokenJWTService
 from .token import TokenService
+from .token_jwt import TokenJWTService
+from .users import UsersService
 
 __all__ = (
     "AuthService",

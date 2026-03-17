@@ -1,12 +1,11 @@
 import logging
-
 from typing import cast
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
     DeleteUserDTO,
+    UpdateUserDTO,
     UserResponseDTO,
-    UpdateUserDTO
 )
 from fastapi_example.application.exceptions.http_exceptions import (
     ConflictError,
@@ -14,18 +13,19 @@ from fastapi_example.application.exceptions.http_exceptions import (
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
-    IUsersRepository,
     CreateUserType,
-    UpdateUserType
+    IUsersRepository,
+    UpdateUserType,
 )
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
+from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import (
     ITokenService,
     IUsersService,
 )
-from fastapi_example.application.interfaces.security import IHasher
 
 log = logging.getLogger(__name__)
+
 
 class UsersService(IUsersService):
     def __init__(
@@ -56,7 +56,7 @@ class UsersService(IUsersService):
             user.password = self._hasher.hash_password(user.password)
             repository_result = await self._repository.create_user(cast(CreateUserType, user.model_dump()))
 
-        log.info("User created with username: '%s', email: '%s'",user.username, user.email)
+        log.info("User created with username: '%s', email: '%s'", user.username, user.email)
         return self._mapper.domain_to_response_dto(repository_result)
 
     async def get_user(self, token: str) -> UserResponseDTO:
@@ -76,7 +76,8 @@ class UsersService(IUsersService):
             current_user = await self._repository.get_user(user_id=user_id)
 
             if data.username:
-                if (data.username != current_user.username) and await self._repository.exists_user(username=data.username):
+                if (data.username != current_user.username) and await self._repository.exists_user(
+                        username=data.username):
                     log.warning("User update failed - user already exists with username: '%s'", data.username)
                     raise ConflictError(f"User already exists with username: {data.username}")
 

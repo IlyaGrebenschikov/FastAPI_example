@@ -3,13 +3,16 @@ from uuid import UUID
 
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
+from fastapi_example.application.interfaces.database.repositories import (
+    IUsersRepository,
+)
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
-    ITokenService
+    ITokenService,
 )
 
 log = logging.getLogger(__name__)
+
 
 class TokenService(ITokenService):
     def __init__(

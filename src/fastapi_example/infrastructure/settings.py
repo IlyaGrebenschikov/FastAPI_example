@@ -9,6 +9,7 @@ from sqlalchemy import URL
 
 log = logging.getLogger(__name__)
 
+
 class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -91,10 +92,10 @@ def load_infrastructure_settings(
         database_settings: Optional[DatabaseSettings] = None,
         server_settings: Optional[UvicornServerSettings] = None,
         jwt_settings: Optional[JWTSettings] = None,
-    ) -> InfrastructureSettings:
+) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
-        database=database_settings or DatabaseSettings(), # type: ignore[call-arg]
+        database=database_settings or DatabaseSettings(),  # type: ignore[call-arg]
         server=server_settings or UvicornServerSettings(),
         jwt=jwt_settings or JWTSettings(),
     )

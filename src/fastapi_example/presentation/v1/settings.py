@@ -3,6 +3,7 @@ from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class AppSettings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -35,9 +36,9 @@ class V1APISettings:
 
 
 def load_v1_api_settings(
-    app_settings: Optional[AppSettings] = None,
-    cors_settings: Optional[CORSSettings] = None,
-    ) -> V1APISettings:
+        app_settings: Optional[AppSettings] = None,
+        cors_settings: Optional[CORSSettings] = None,
+) -> V1APISettings:
     return V1APISettings(
         app=app_settings or AppSettings(),
         cors=cors_settings or CORSSettings(),

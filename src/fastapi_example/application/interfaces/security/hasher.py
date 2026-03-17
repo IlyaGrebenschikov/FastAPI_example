@@ -1,5 +1,6 @@
 from typing import Protocol
 
+
 class IHasher(Protocol):
     def hash_password(self, password: str) -> str: ...
 

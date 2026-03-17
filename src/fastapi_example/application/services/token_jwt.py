@@ -1,15 +1,15 @@
 import logging
-from datetime import (
-    datetime,
-    timedelta,
-    timezone
-)
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import jwt
 
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
-from fastapi_example.application.interfaces.services import ITokenJWTService, TokenDecoded, TokenPayload
+from fastapi_example.application.interfaces.services import (
+    ITokenJWTService,
+    TokenDecoded,
+    TokenPayload,
+)
 from fastapi_example.infrastructure.settings import JWTSettings
 
 log = logging.getLogger(__name__)

@@ -2,9 +2,10 @@ import logging
 import sys
 
 from .core import load_settings, setup_dependencies
+from .infrastructure.servers import run_uvicorn_server
 from .presentation import init_app
 from .presentation.v1 import init_app_v1
-from .infrastructure.servers import run_uvicorn_server
+
 
 def main() -> None:
     logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)

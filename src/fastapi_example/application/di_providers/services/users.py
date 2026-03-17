@@ -1,19 +1,15 @@
-from dishka import (
-    Provider,
-    Scope,
-    provide
-)
+from dishka import Provider, Scope, provide
 
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
-from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
-from fastapi_example.application.interfaces.services import (
-    IUsersService,
-    ITokenService
+from fastapi_example.application.interfaces.database.repositories import (
+    IUsersRepository,
 )
+from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.services import ITokenService, IUsersService
 from fastapi_example.application.mappers import UserServiceMapper
 from fastapi_example.application.services import UsersService
+
 
 class UsersServiceProvider(Provider):
     def __init__(self, scope=None, component=None):

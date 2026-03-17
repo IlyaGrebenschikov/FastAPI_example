@@ -3,6 +3,7 @@ from uuid import UUID
 
 from .base import BaseSchema
 
+
 class CreateUserDTO(BaseSchema):
     username: str
     email: str

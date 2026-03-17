@@ -1,6 +1,6 @@
 from .auth import AuthServiceProvider
-from .users import UsersServiceProvider
 from .token import TokenServiceProvider
+from .users import UsersServiceProvider
 
 __all__ = (
     "AuthServiceProvider",

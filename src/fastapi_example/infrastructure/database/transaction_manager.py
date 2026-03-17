@@ -14,8 +14,10 @@ from sqlalchemy.ext.asyncio import (
     AsyncSessionTransaction,
 )
 
-from .exceptions import CommitError, RollbackError
 from fastapi_example.application.interfaces.database import ITransactionManager
+
+from .exceptions import CommitError, RollbackError
+
 
 class TransactionManager(ITransactionManager[AsyncSession]):
     __slots__ = (
@@ -24,16 +26,16 @@ class TransactionManager(ITransactionManager[AsyncSession]):
     )
 
     def __init__(
-        self, session: AsyncSession
+            self, session: AsyncSession
     ) -> None:
         self._session = session
         self._transaction: Optional[AsyncSessionTransaction] = None
 
     async def __aexit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+            self,
+            exc_type: Optional[Type[BaseException]],
+            exc_value: Optional[BaseException],
+            traceback: Optional[TracebackType],
     ) -> None:
         if self._transaction:
             if exc_type:

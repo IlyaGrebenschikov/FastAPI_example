@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from fastapi_example.infrastructure.database.models import Base, UserModel # noqa: F401
+from fastapi_example.infrastructure.database.models import Base, UserModel  # noqa: F401
 from fastapi_example.infrastructure.settings import load_infrastructure_settings
 
 db_settings = load_infrastructure_settings().database
@@ -16,7 +16,7 @@ db_settings = load_infrastructure_settings().database
 config = context.config
 config.set_main_option(
     "sqlalchemy.url", db_settings.url_str + '?async_fallback=True'
-    )
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -28,6 +28,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

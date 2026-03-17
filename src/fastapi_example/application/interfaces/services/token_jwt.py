@@ -1,4 +1,5 @@
-from typing import Protocol, TypedDict, NotRequired
+from typing import NotRequired, Protocol, TypedDict
+
 
 class TokenPayload(TypedDict):
     sub: str

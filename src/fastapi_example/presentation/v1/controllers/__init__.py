@@ -1,7 +1,8 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter, FastAPI
 
 from .auth import auth_router
 from .users import users_router
+
 
 def setup_controllers(app: FastAPI, *routers: APIRouter) -> None:
     v1_router = APIRouter()

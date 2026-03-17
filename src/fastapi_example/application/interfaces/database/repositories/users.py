@@ -1,12 +1,8 @@
-from typing import (
-    Protocol,
-    Optional,
-    TypedDict,
-    NotRequired
-)
+from typing import NotRequired, Optional, Protocol, TypedDict
 from uuid import UUID
 
 from fastapi_example.domain.entities import User
+
 
 class UpdateUserType(TypedDict):
     username: NotRequired[str]
@@ -46,4 +42,3 @@ class IUsersRepository(Protocol):
             self,
             user_id: UUID,
     ) -> User: ...
-

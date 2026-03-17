@@ -2,7 +2,7 @@ from .settings import (
     DatabaseSettings,
     InfrastructureSettings,
     JWTSettings,
-    load_infrastructure_settings
+    load_infrastructure_settings,
 )
 
 __all__ = (

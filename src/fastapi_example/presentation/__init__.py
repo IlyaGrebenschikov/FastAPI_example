@@ -9,8 +9,8 @@ log = logging.getLogger(__name__)
 
 
 def init_app(
-    *sub_apps: tuple[str, FastAPI, Optional[str]],
-    **kwargs: Any
+        *sub_apps: tuple[str, FastAPI, Optional[str]],
+        **kwargs: Any
 ) -> FastAPI:
     log.debug("Initialize General API")
     app = FastAPI(

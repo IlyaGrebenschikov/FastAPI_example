@@ -1,7 +1,7 @@
 from .database import DatabaseProvider
+from .hasher import HasherProvider
 from .mappers import MappersProvider
 from .repositories import RepositoriesProvider
-from .hasher import HasherProvider
 
 __all__ = (
     "DatabaseProvider",

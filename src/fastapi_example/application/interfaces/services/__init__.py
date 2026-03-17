@@ -1,7 +1,7 @@
 from .auth import IAuthService, LoginCredentials
-from .users import IUsersService
-from .token_jwt import ITokenJWTService, TokenPayload, TokenDecoded
 from .token import ITokenService
+from .token_jwt import ITokenJWTService, TokenDecoded, TokenPayload
+from .users import IUsersService
 
 __all__ = (
     "IAuthService",

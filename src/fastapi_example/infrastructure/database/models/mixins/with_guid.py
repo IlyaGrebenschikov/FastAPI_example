@@ -2,10 +2,8 @@ import uuid
 
 from sqlalchemy import text
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import (
-    Mapped,
-    mapped_column
-)
+from sqlalchemy.orm import Mapped, mapped_column
+
 
 class ModelWithIDMixin:
     id: Mapped[UUID] = mapped_column(

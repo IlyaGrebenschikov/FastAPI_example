@@ -1,4 +1,4 @@
-from .users import IUsersRepository, CreateUserType, UpdateUserType
+from .users import CreateUserType, IUsersRepository, UpdateUserType
 
 __all__ = (
     "CreateUserType",

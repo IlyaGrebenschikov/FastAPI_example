@@ -1,14 +1,11 @@
-from typing import (
-    Any,
-    Dict,
-    Optional
-)
+from typing import Any, Dict, Optional
+
 
 class AppException(Exception):
     def __init__(
-        self,
-        message: str = "App exception",
-        headers: Optional[Dict[str, Any]] = None,
+            self,
+            message: str = "App exception",
+            headers: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.content = {"message": message}
         self.headers = headers
@@ -19,10 +16,10 @@ class AppException(Exception):
 
 class DetailedError(AppException):
     def __init__(
-        self,
-        message: str,
-        headers: Optional[Dict[str, Any]] = None,
-        **additional: Any,
+            self,
+            message: str,
+            headers: Optional[Dict[str, Any]] = None,
+            **additional: Any,
     ) -> None:
         super().__init__(message=message, headers=headers)
         self.content |= additional

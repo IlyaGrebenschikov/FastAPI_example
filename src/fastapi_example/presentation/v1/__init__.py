@@ -12,14 +12,14 @@ log = logging.getLogger(__name__)
 
 
 def init_app_v1(
-    v1_settings: V1APISettings,
-    **kwargs: Any
-    ) -> tuple[str, FastAPI, Optional[str]]:
+        v1_settings: V1APISettings,
+        **kwargs: Any
+) -> tuple[str, FastAPI, Optional[str]]:
     log.debug("Initialize V1 API")
     app = FastAPI(
         **v1_settings.app.model_dump(),
         **kwargs
-        )
+    )
 
     setup_controllers(app, users_router, auth_router)
     setup_exception_handlers(app)

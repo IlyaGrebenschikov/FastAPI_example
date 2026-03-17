@@ -1,9 +1,5 @@
 from dishka import Provider, Scope, provide
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    AsyncEngine,
-    async_sessionmaker
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.infrastructure import DatabaseSettings
@@ -12,6 +8,7 @@ from fastapi_example.infrastructure.database import (
     create_sa_engine,
     create_sa_session_factory,
 )
+
 
 class DatabaseProvider(Provider):
     def __init__(

@@ -3,8 +3,14 @@ from dataclasses import dataclass
 from typing import Optional
 
 from fastapi_example.application import ApplicationSettings, load_application_settings
-from fastapi_example.infrastructure import InfrastructureSettings, load_infrastructure_settings
-from fastapi_example.presentation import PresentationSettings, load_presentation_settings
+from fastapi_example.infrastructure import (
+    InfrastructureSettings,
+    load_infrastructure_settings,
+)
+from fastapi_example.presentation import (
+    PresentationSettings,
+    load_presentation_settings,
+)
 
 log = logging.getLogger(__name__)
 
