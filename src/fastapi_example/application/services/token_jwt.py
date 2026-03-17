@@ -4,6 +4,7 @@ from datetime import (
     timedelta,
     timezone
 )
+from typing import Any
 
 import jwt
 
@@ -19,11 +20,12 @@ class TokenJWTService(ITokenJWTService):
         self._settings = settings
 
     def create_access_token(self, data: TokenPayload) -> str:
-        to_encode = data.copy()
+        to_encode: dict[str, Any] = {}
+        to_encode.update(data)
         expiration = datetime.now(timezone.utc) + timedelta(minutes=self._settings.expiration)
         to_encode.update({
-            "exp": expiration,
-            "iat": datetime.now(timezone.utc)
+            "exp": int(expiration.timestamp()),
+            "iat": int(datetime.now(timezone.utc).timestamp())
         })
         token = jwt.encode(
             to_encode,

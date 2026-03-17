@@ -39,10 +39,9 @@ class AuthService(IAuthService):
             log.debug("Password verification failed")
             raise UnAuthorizedError("Incorrect login or password")
 
-        token_payload: TokenPayload = {
-            "sub": str(user.id),
-            "scopes": credentials.scopes
-        }
+        token_payload: TokenPayload = {"sub": str(user.id)}
+        if credentials.scopes is not None:
+            token_payload["scopes"] = credentials.scopes
         access_token = self._token_jwt.create_access_token(token_payload)
 
         log.info(

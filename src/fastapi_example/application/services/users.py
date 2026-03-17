@@ -1,5 +1,7 @@
 import logging
 
+from typing import cast
+
 from fastapi_example.application.dto import (
     CreateUserDTO,
     DeleteUserDTO,
@@ -11,7 +13,11 @@ from fastapi_example.application.exceptions.http_exceptions import (
     ForbiddenError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
+from fastapi_example.application.interfaces.database.repositories import (
+    IUsersRepository,
+    CreateUserType,
+    UpdateUserType
+)
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.services import (
     ITokenService,
@@ -48,7 +54,7 @@ class UsersService(IUsersService):
                 raise ConflictError(f"User already exists with username: {user.username} or email: {user.email}")
 
             user.password = self._hasher.hash_password(user.password)
-            repository_result = await self._repository.create_user(user.model_dump())
+            repository_result = await self._repository.create_user(cast(CreateUserType, user.model_dump()))
 
         log.info("User created with username: '%s', email: '%s'",user.username, user.email)
         return self._mapper.domain_to_response_dto(repository_result)
@@ -82,7 +88,10 @@ class UsersService(IUsersService):
             if data.password:
                 data.password = self._hasher.hash_password(data.password)
 
-            user = await self._repository.update_user(user_id, data.model_dump(exclude_unset=True, exclude_none=True))
+            user = await self._repository.update_user(
+                user_id,
+                cast(UpdateUserType, data.model_dump(exclude_unset=True, exclude_none=True))
+            )
 
         log.info("User updated with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(user)

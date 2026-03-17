@@ -62,12 +62,10 @@ class JWTSettings(BaseSettings):
     expiration: int = 30
 
     @computed_field
-    @property
     def private_key(self) -> str:
         return self._get_key_file("jwt-private.pem")
 
     @computed_field
-    @property
     def public_key(self) -> str:
         return self._get_key_file("jwt-public.pem")
 
@@ -96,7 +94,7 @@ def load_infrastructure_settings(
     ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
-        database=database_settings or DatabaseSettings(),
+        database=database_settings or DatabaseSettings(), # type: ignore[call-arg]
         server=server_settings or UvicornServerSettings(),
         jwt=jwt_settings or JWTSettings(),
     )

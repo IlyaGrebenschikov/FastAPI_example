@@ -3,6 +3,8 @@ from typing import Protocol, TypedDict, NotRequired
 class TokenPayload(TypedDict):
     sub: str
     scopes: NotRequired[list[str]]
+    exp: NotRequired[int]
+    iat: NotRequired[int]
 
 
 class TokenDecoded(TypedDict):

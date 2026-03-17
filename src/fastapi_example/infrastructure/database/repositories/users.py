@@ -1,6 +1,5 @@
 from typing import (
     Optional,
-    Unpack,
     Type,
 )
 from uuid import UUID
@@ -37,8 +36,8 @@ class SQLAlchemyUsersRepository(IUsersRepository):
     def _model(self) -> Type[UserModel]:
         return UserModel
 
-    async def create_user(self, user: Unpack[CreateUserType]) -> User:
-        stmt = insert(self._model).values(user).returning(self._model)
+    async def create_user(self, user: CreateUserType) -> User:
+        stmt = insert(self._model).values(**user).returning(self._model)
 
         return self._mapper.persistence_to_domain((await self._session.scalars(stmt)).first())
 
@@ -62,11 +61,11 @@ class SQLAlchemyUsersRepository(IUsersRepository):
         clause = or_(*conditions)
         stmt = exists(select(self._model).where(clause)).select()
 
-        return await self._session.scalar(stmt)
+        return bool(await self._session.scalar(stmt))
 
     async def get_user(
             self,
-            user_id: Optional[UUID | str] = None,
+            user_id: Optional[UUID] = None,
             username: Optional[str] = None,
     ) -> User:
         if not any([user_id, username]):
@@ -85,8 +84,8 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
     async def update_user(
             self,
-            user_id: UUID | str,
-            data: Unpack[UpdateUserType],
+            user_id: UUID,
+            data: UpdateUserType,
     ) -> User:
         clause = self._model.id == user_id
         stmt = update(self._model).where(clause).values(**data).returning(self._model)
@@ -95,7 +94,7 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
     async def delete_user(
             self,
-            user_id: UUID | str,
+            user_id: UUID,
     ) -> User:
         clause = self._model.id == user_id
         stmt = delete(self._model).where(clause).returning(self._model)

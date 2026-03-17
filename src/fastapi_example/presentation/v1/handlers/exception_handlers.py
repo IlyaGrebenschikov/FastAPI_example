@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, cast
 
 from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
@@ -61,8 +61,8 @@ def setup_exception_handlers(app: FastAPI) -> None:
     )
     app.add_exception_handler(
         RequestValidationError,
-        validation_exception_handler
-        )
+        cast(Callable[[Request, Exception], JSONResponse], validation_exception_handler),
+    )
     app.add_exception_handler(
         Exception,
         unknown_exception_handler
