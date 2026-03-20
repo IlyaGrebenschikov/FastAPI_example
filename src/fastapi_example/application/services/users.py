@@ -44,8 +44,6 @@ class UsersService(IUsersService):
 
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
         async with self._transaction_manager:
-            await self._transaction_manager.create_transaction()
-
             if await self._repository.exists_user(username=user.username, email=user.email):
                 log.warning(
                     "User creation failed - user already exists with username: '%s' or email: '%s'",
@@ -72,7 +70,6 @@ class UsersService(IUsersService):
         user_id = await self._token.get_user_id_from_token(token)
 
         async with self._transaction_manager:
-            await self._transaction_manager.create_transaction()
             current_user = await self._repository.get_user(user_id=user_id)
 
             if data.username:
@@ -101,7 +98,6 @@ class UsersService(IUsersService):
         user_id = await self._token.get_user_id_from_token(token)
 
         async with self._transaction_manager:
-            await self._transaction_manager.create_transaction()
             current_user = await self._repository.get_user(user_id=user_id)
 
             if not self._hasher.verify_password(data.password, current_user.password):

@@ -39,7 +39,7 @@ class TokenService(ITokenService):
             log.warning("Invalid UUID in token subject: '%s'", sub)
             raise UnAuthorizedError('Invalid token subject')
 
-        async with self._transaction_manager.read_only():
+        async with self._transaction_manager:
             if not await self._user_repository.exists_user(user_id=user_id):
                 log.warning(
                     "Token validation failed - user does not exist with ID: '%s'",

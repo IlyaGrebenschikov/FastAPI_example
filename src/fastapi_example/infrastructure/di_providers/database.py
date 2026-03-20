@@ -1,3 +1,5 @@
+from typing import AsyncIterator
+
 from dishka import Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
@@ -29,6 +31,13 @@ class DatabaseProvider(Provider):
         return create_sa_session_factory(engine)
 
     @provide(scope=Scope.REQUEST)
-    def transaction_manager(self, session_factory: async_sessionmaker[AsyncSession]) -> ITransactionManager:
-        session = session_factory()
+    async def db_session(
+            self,
+            session_factory: async_sessionmaker[AsyncSession]
+    ) -> AsyncIterator[AsyncSession]:
+        async with session_factory() as session:
+            yield session
+
+    @provide(scope=Scope.REQUEST)
+    def transaction_manager(self, session: AsyncSession) -> ITransactionManager:
         return TransactionManager(session)

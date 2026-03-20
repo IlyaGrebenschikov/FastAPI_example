@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 from types import TracebackType
 from typing import (
-    AsyncIterator,
     Optional,
     Type,
 )
@@ -15,21 +13,21 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from fastapi_example.application.interfaces.database import ITransactionManager
-
 from .exceptions import CommitError, RollbackError
 
 
 class TransactionManager(ITransactionManager[AsyncSession]):
-    __slots__ = (
-        "_session",
-        "_transaction",
-    )
+    __slots__ = ("_session", "_transaction")
 
-    def __init__(
-            self, session: AsyncSession
-    ) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         self._session = session
         self._transaction: Optional[AsyncSessionTransaction] = None
+
+    async def __aenter__(self) -> TransactionManager:
+        if self._session.in_transaction():
+            raise RuntimeError("Session already in transaction")
+        self._transaction = await self._session.begin()
+        return self
 
     async def __aexit__(
             self,
@@ -37,42 +35,15 @@ class TransactionManager(ITransactionManager[AsyncSession]):
             exc_value: Optional[BaseException],
             traceback: Optional[TracebackType],
     ) -> None:
-        if self._transaction:
+        if not self._transaction:
+            return
+
+        try:
             if exc_type:
-                await self.rollback()
+                await self._session.rollback()
             else:
-                await self.commit()
-
-        await self.close_transaction()
-
-    async def __aenter__(self) -> TransactionManager:
-        return self
-
-    async def commit(self) -> None:
-        try:
-            await self._session.commit()
+                await self._session.commit()
         except SQLAlchemyError as err:
-            raise CommitError(err) from err
-
-    async def rollback(self) -> None:
-        try:
-            await self._session.rollback()
-        except SQLAlchemyError as err:
-            raise RollbackError(err) from err
-
-    async def create_transaction(self) -> None:
-        if not self._session.in_transaction() and self._session.is_active:
-            self._transaction = await self._session.begin()
-
-    async def close_transaction(self) -> None:
-        if self._session.is_active:
-            await self._session.close()
-
-    @property
-    def session(self) -> AsyncSession:
-        return self._session
-
-    @asynccontextmanager
-    async def read_only(self) -> AsyncIterator[AsyncSession]:  # type: ignore[misc]
-        async with self._session.begin():
-            yield self._session
+            raise (RollbackError if exc_type else CommitError)(err) from err
+        finally:
+            self._transaction = None
