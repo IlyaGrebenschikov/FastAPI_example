@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories.users import (
     IUsersRepository,
 )
@@ -16,7 +16,7 @@ class RepositoriesProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def users_repository(
             self,
-            transaction_manager: ITransactionManager,
+            session: AsyncSession,
             mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
-        return SQLAlchemyUsersRepository(transaction_manager.session, mapper)
+        return SQLAlchemyUsersRepository(session, mapper)
