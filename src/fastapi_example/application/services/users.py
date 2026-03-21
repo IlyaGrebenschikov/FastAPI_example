@@ -11,7 +11,7 @@ from fastapi_example.application.dto import (
 from fastapi_example.application.exceptions.http_exceptions import (
     ConflictError,
     ForbiddenError,
-    NotFoundError
+    NotFoundError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (

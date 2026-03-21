@@ -9,7 +9,10 @@ from fastapi_example.application.dto import (
     UpdateUserDTO,
     UserResponseDTO,
 )
-from fastapi_example.application.interfaces.services import IUsersService, ITokenJWTService
+from fastapi_example.application.interfaces.services import (
+    ITokenJWTService,
+    IUsersService,
+)
 from fastapi_example.presentation.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.v1.docs import (
     ConflictError,
@@ -34,10 +37,10 @@ users_router = APIRouter(
     },
 )
 async def create_user(
-        user: CreateUserDTO,
-        service: FromDishka[IUsersService]
+        data: CreateUserDTO,
+        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
 ) -> UserResponseDTO:
-    return await service.create_user(user)
+    return await user_service.create_user(data)
 
 
 @users_router.get(
@@ -51,8 +54,8 @@ async def create_user(
 )
 async def get_user(
         token: Annotated[str, Security(get_bearer_token)],
-        user_service: FromDishka[IUsersService],
-        jwt_service: FromDishka[ITokenJWTService]
+        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
+        jwt_service: Annotated[ITokenJWTService, FromDishka[ITokenJWTService]]
 ) -> UserResponseDTO:
     user_id = jwt_service.get_user_id_from_token(token)
     return await user_service.get_user(user_id)
@@ -70,8 +73,8 @@ async def get_user(
 async def update_user(
         token: Annotated[str, Security(get_bearer_token)],
         data: UpdateUserDTO,
-        user_service: FromDishka[IUsersService],
-        jwt_service: FromDishka[ITokenJWTService],
+        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
+        jwt_service: Annotated[ITokenJWTService, FromDishka[ITokenJWTService]]
 ) -> UserResponseDTO:
     user_id = jwt_service.get_user_id_from_token(token)
     return await user_service.update_user(user_id, data)
@@ -89,8 +92,8 @@ async def update_user(
 async def delete_user(
         token: Annotated[str, Security(get_bearer_token)],
         data: DeleteUserDTO,
-        user_service: FromDishka[IUsersService],
-        jwt_service: FromDishka[ITokenJWTService]
+        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
+        jwt_service: Annotated[ITokenJWTService, FromDishka[ITokenJWTService]]
 ) -> UserResponseDTO:
     user_id = jwt_service.get_user_id_from_token(token)
     return await user_service.delete_user(user_id, data)
