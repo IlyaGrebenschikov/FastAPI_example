@@ -1,5 +1,6 @@
 import logging
 from typing import cast
+from uuid import UUID
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
@@ -10,6 +11,7 @@ from fastapi_example.application.dto import (
 from fastapi_example.application.exceptions.http_exceptions import (
     ConflictError,
     ForbiddenError,
+    NotFoundError
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
@@ -19,10 +21,7 @@ from fastapi_example.application.interfaces.database.repositories import (
 )
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.security import IHasher
-from fastapi_example.application.interfaces.services import (
-    ITokenService,
-    IUsersService,
-)
+from fastapi_example.application.interfaces.services import IUsersService
 
 log = logging.getLogger(__name__)
 
@@ -34,13 +33,11 @@ class UsersService(IUsersService):
             mapper: IUsersServiceMapper,
             hasher: IHasher,
             transaction_manager: ITransactionManager,
-            token: ITokenService,
     ):
         self._repository = repository
         self._mapper = mapper
         self._hasher = hasher
         self._transaction_manager = transaction_manager
-        self._token = token
 
     async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
         async with self._transaction_manager:
@@ -57,19 +54,28 @@ class UsersService(IUsersService):
         log.info("User created with username: '%s', email: '%s'", user.username, user.email)
         return self._mapper.domain_to_response_dto(repository_result)
 
-    async def get_user(self, token: str) -> UserResponseDTO:
-        user_id = await self._token.get_user_id_from_token(token)
-
+    async def get_user(self, user_id: UUID) -> UserResponseDTO:
         async with self._transaction_manager:
+            if not await self._repository.exists_user(user_id=user_id):
+                log.warning(
+                    "User does not exist with ID: '%s'",
+                    user_id
+                )
+                raise NotFoundError("User not found")
             result = await self._repository.get_user(user_id=user_id)
 
         log.info("User received with ID: %s", result.id)
         return self._mapper.domain_to_response_dto(result)
 
-    async def update_user(self, token: str, data: UpdateUserDTO) -> UserResponseDTO:
-        user_id = await self._token.get_user_id_from_token(token)
-
+    async def update_user(self, user_id: UUID, data: UpdateUserDTO) -> UserResponseDTO:
         async with self._transaction_manager:
+            if not await self._repository.exists_user(user_id=user_id):
+                log.warning(
+                    "User does not exist with ID: '%s'",
+                    user_id
+                )
+                raise NotFoundError("User not found")
+
             current_user = await self._repository.get_user(user_id=user_id)
 
             if data.username:
@@ -94,10 +100,15 @@ class UsersService(IUsersService):
         log.info("User updated with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(user)
 
-    async def delete_user(self, token: str, data: DeleteUserDTO) -> UserResponseDTO:
-        user_id = await self._token.get_user_id_from_token(token)
-
+    async def delete_user(self, user_id: UUID, data: DeleteUserDTO) -> UserResponseDTO:
         async with self._transaction_manager:
+            if not await self._repository.exists_user(user_id=user_id):
+                log.warning(
+                    "User does not exist with ID: '%s'",
+                    user_id
+                )
+                raise NotFoundError("User not found")
+
             current_user = await self._repository.get_user(user_id=user_id)
 
             if not self._hasher.verify_password(data.password, current_user.password):

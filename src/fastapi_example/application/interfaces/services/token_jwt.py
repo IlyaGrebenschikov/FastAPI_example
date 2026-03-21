@@ -1,4 +1,5 @@
 from typing import NotRequired, Protocol, TypedDict
+from uuid import UUID
 
 
 class TokenPayload(TypedDict):
@@ -18,4 +19,6 @@ class TokenDecoded(TypedDict):
 class ITokenJWTService(Protocol):
     def create_access_token(self, data: TokenPayload) -> str: ...
 
-    def verify_token(self, token: str) -> TokenDecoded: ...
+    def _verify_token(self, token: str) -> TokenDecoded: ...
+
+    def get_user_id_from_token(self, token: str) -> UUID: ...

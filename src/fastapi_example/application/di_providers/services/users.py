@@ -6,7 +6,7 @@ from fastapi_example.application.interfaces.database.repositories import (
 )
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.security import IHasher
-from fastapi_example.application.interfaces.services import ITokenService, IUsersService
+from fastapi_example.application.interfaces.services import IUsersService
 from fastapi_example.application.mappers import UserServiceMapper
 from fastapi_example.application.services import UsersService
 
@@ -26,6 +26,5 @@ class UsersServiceProvider(Provider):
             mapper: IUsersServiceMapper,
             hasher: IHasher,
             transaction_manager: ITransactionManager,
-            token: ITokenService,
     ) -> IUsersService:
-        return UsersService(repository, mapper, hasher, transaction_manager, token)
+        return UsersService(repository, mapper, hasher, transaction_manager)

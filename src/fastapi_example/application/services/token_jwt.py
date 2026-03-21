@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any
+from uuid import UUID
 
 import jwt
 
@@ -40,7 +41,7 @@ class TokenJWTService(ITokenJWTService):
         )
         return token
 
-    def verify_token(self, token: str) -> TokenDecoded:
+    def _verify_token(self, token: str) -> TokenDecoded:
         try:
             decoded_data: TokenDecoded = jwt.decode(
                 token,
@@ -64,3 +65,13 @@ class TokenJWTService(ITokenJWTService):
             decoded_data.get('sub', 'unknown')
         )
         return decoded_data
+
+    def get_user_id_from_token(self, token: str) -> UUID:
+        token_data = self._verify_token(token)
+        user_id = UUID(token_data.get("sub"))
+
+        if not user_id:
+            log.warning("Token missing subject field")
+            raise UnAuthorizedError('Token missing subject')
+
+        return user_id

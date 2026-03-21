@@ -9,7 +9,7 @@ from fastapi_example.application.dto import (
     UpdateUserDTO,
     UserResponseDTO,
 )
-from fastapi_example.application.interfaces.services import IUsersService
+from fastapi_example.application.interfaces.services import IUsersService, ITokenJWTService
 from fastapi_example.presentation.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.v1.docs import (
     ConflictError,
@@ -51,9 +51,11 @@ async def create_user(
 )
 async def get_user(
         token: Annotated[str, Security(get_bearer_token)],
-        service: FromDishka[IUsersService]
+        user_service: FromDishka[IUsersService],
+        jwt_service: FromDishka[ITokenJWTService]
 ) -> UserResponseDTO:
-    return await service.get_user(token)
+    user_id = jwt_service.get_user_id_from_token(token)
+    return await user_service.get_user(user_id)
 
 
 @users_router.patch(
@@ -67,10 +69,12 @@ async def get_user(
 )
 async def update_user(
         token: Annotated[str, Security(get_bearer_token)],
-        service: FromDishka[IUsersService],
-        data: UpdateUserDTO
+        data: UpdateUserDTO,
+        user_service: FromDishka[IUsersService],
+        jwt_service: FromDishka[ITokenJWTService],
 ) -> UserResponseDTO:
-    return await service.update_user(token, data)
+    user_id = jwt_service.get_user_id_from_token(token)
+    return await user_service.update_user(user_id, data)
 
 
 @users_router.delete(
@@ -84,7 +88,9 @@ async def update_user(
 )
 async def delete_user(
         token: Annotated[str, Security(get_bearer_token)],
-        service: FromDishka[IUsersService],
         data: DeleteUserDTO,
+        user_service: FromDishka[IUsersService],
+        jwt_service: FromDishka[ITokenJWTService]
 ) -> UserResponseDTO:
-    return await service.delete_user(token, data)
+    user_id = jwt_service.get_user_id_from_token(token)
+    return await user_service.delete_user(user_id, data)

@@ -6,7 +6,6 @@ from fastapi import FastAPI
 
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
-    TokenServiceProvider,
     UsersServiceProvider,
 )
 from fastapi_example.infrastructure.di_providers import (
@@ -33,7 +32,6 @@ def setup_dependencies(
         UsersServiceProvider(),
         HasherProvider(),
         AuthServiceProvider(settings.infrastructure.jwt),
-        TokenServiceProvider()
     )
 
     setup_dishka(container=container, app=app)

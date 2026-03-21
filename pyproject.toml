@@ -21,6 +21,7 @@ dependencies = [
     "cryptography (>=46.0.3,<47.0.0)",
     "ruff>=0.15.4",
     "mypy>=1.19.1",
+    "aiohttp>=3.13.3",
 ]
 
 [project.scripts]

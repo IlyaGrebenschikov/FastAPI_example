@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -62,11 +61,11 @@ class JWTSettings(BaseSettings):
     algorithm: str = "RS256"
     expiration: int = 30
 
-    @computed_field
+    @property
     def private_key(self) -> str:
         return self._get_key_file("jwt-private.pem")
 
-    @computed_field
+    @property
     def public_key(self) -> str:
         return self._get_key_file("jwt-public.pem")
 
