@@ -10,6 +10,7 @@ Educational FastAPI service following Clean Architecture with Dishka DI, SQLAlch
 - [JWT Key Generation](#jwt-key-generation)
 - [Quick Start](#quick-start)
 - [Monitoring](#monitoring)
+- [Rate Limiting](#rate-limiting)
 - [Project Structure](#project-structure)
 - [Migrations](#migrations)
 - [API Overview](#api-overview)
@@ -23,6 +24,7 @@ Educational FastAPI service following Clean Architecture with Dishka DI, SQLAlch
 - JWT (RS256), pwdlib[argon2]
 - **uvicorn**, **uv** (package/runner)
 - **Docker** / Docker Compose
+- **Redis** (caching, rate limiting)
 - **Loki** + **Promtail** + **Grafana** (logging)
 
 ## Architecture
@@ -50,6 +52,10 @@ DB_DATABASE=fastapi_example
 
 UVICORN_SERVER_HOST=0.0.0.0
 UVICORN_SERVER_PORT=8080
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password
 
 APP_TITLE=FastAPI Example
 APP_VERSION=0.1.0
@@ -131,6 +137,13 @@ The `postgres_port_forwarder` service in Docker Compose allows direct connection
 - **Connect:** Use `localhost:5432` in DB tools (use variables from `.env`: `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`).
 - **Note:** Only works when the Postgres container is running and healthy. Not for production use — for development only.
 
+#### Redis Port Forwarder
+The `redis_port_forwarder` service forwards port 6379 from the Redis container to local port 127.0.0.1:6379 using `alpine/socat`. Useful for debugging or connecting external Redis clients (e.g., RedisInsight, another CLI).
+
+- **Start:** `docker compose --profile port-forwarder up`
+- **Connect:** Use `localhost:6379` with password from `.env` (`REDIS_PASSWORD`).
+- **Note:** Only works when the Redis container is running and healthy. Not for production use — for development only.
+
 ## Monitoring
 - **Loki** collects logs, **Promtail** reads Docker container logs, **Grafana** for dashboards.
 - Start:
@@ -139,11 +152,44 @@ The `postgres_port_forwarder` service in Docker Compose allows direct connection
   ```
 - Grafana: http://localhost:3000 (anonymous access enabled, Loki datasource provisioned via `monitoring/grafana/datasourses/grafana-config.yaml`).
 
+## Rate Limiting
+The project includes a custom rate limiter powered by **Redis**. It uses a sliding window algorithm to track request counts per identifier (e.g., IP address, user ID) and endpoint path.
+
+### How It Works
+- Each request is tracked with a unique timestamp-based key in Redis (sorted set).
+- Old entries outside the time window are automatically cleaned up.
+- If the request count exceeds the configured limit within the window, a `429 Too Many Requests` error is raised.
+
+### Implementation Details
+- **Service:** `RateLimiterService` — checks if the request limit is exceeded.
+- **Repository:** `RateLimiterCacheRepository` — interacts with Redis using `redis.asyncio`.
+- **Algorithm:** Sliding window with Redis sorted sets (`ZADD`, `ZREMRANGEBYSCORE`, `ZCARD`).
+
+### Usage in Endpoints
+Rate limiting is applied to all user-related endpoints (`/api/v1/users/*`) and authentication (`/api/v1/token`). Two levels of limits are enforced:
+1. **IP-based limit** — e.g., 100 requests per minute per IP.
+2. **User-based limit** — e.g., 20 requests per minute per authenticated user.
+
+Example from `users.py`:
+```python
+await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
+await rate_limiter_service.check(f"user:{user_id}", request.url.path, limit=20, window=60)
+```
+
+### Configuration
+Rate limits are configured per endpoint. The `check` method accepts:
+- `identifier` — unique key (e.g., `ip:192.168.1.1`, `user:123`).
+- `path` — endpoint path (e.g., `/api/v1/users`).
+- `limit` — maximum requests allowed in the window.
+- `window` — time window in seconds.
+
 ## Project Structure
 - `src/fastapi_example/presentation/v1` — routes (`/api/v1/users`, `/api/v1/token`), dependencies, exception handlers, CORS.
-- `application/services` — user and auth business logic, password hashing.
-- `infrastructure/database` — SQLAlchemy models, repositories, transactions, Alembic migrations.
-- `composition/di_container.py` — Dishka container wiring.
+- `src/fastapi_example/application/services` — user, auth business logic, password hashing, rate limiting.
+- `src/fastapi_example/application/interfaces` — protocol interfaces for services and repositories.
+- `src/fastapi_example/infrastructure/database` — SQLAlchemy models, repositories, transactions, Alembic migrations.
+- `src/fastapi_example/infrastructure/cache` — Redis connection, repositories (rate limiter).
+- `src/fastapi_example/core/di_container.py` — Dishka container wiring.
 - `monitoring/*` — Loki/Promtail/Grafana configs.
 
 ## Migrations
@@ -172,8 +218,13 @@ docker compose --profile migrations up --build
 
 ## DI Container
 Dishka container registers:
-- `DatabaseProvider` (engine, sessions, transactions), `HasherProvider`
+- `DatabaseProvider` (engine, sessions, transactions)
+- `CacheProvider` (Redis client)
+- `HasherProvider`
+- `MappersProvider`
+- `RepositoriesProvider`
 - `UsersServiceProvider`, `AuthServiceProvider` (JWT)
+- `RateLimiterServiceProvider` (custom rate limiting service)
 
 ## Logging
 `logging.basicConfig` sets DEBUG on startup (`__main__.py`). In Docker, container logs are scraped by Promtail and visible in Grafana (Loki).
