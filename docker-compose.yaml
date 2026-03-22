@@ -34,7 +34,7 @@ services:
     command: ["tcp-listen:5432,fork,reuseaddr", "tcp-connect:postgres:5432"]
 
   redis:
-    profiles: [ "api" ]
+    profiles: [ "api", "port-forwarder" ]
     image: redis:latest
     container_name: api.redis
     restart: unless-stopped
@@ -47,9 +47,22 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - api.network
+      - api.network.redis
     env_file:
       - .env
+
+  redis_port_forwarder:
+    profiles: [ "port-forwarder" ]
+    image: alpine/socat:latest
+    container_name: api.redis.port_forwarder
+    ports:
+      - "127.0.0.1:6379:6379"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - api.network.redis
+    command: ["tcp-listen:6379,fork,reuseaddr", "tcp-connect:api.redis:6379"]
 
   api:
     profiles: [ "api" ]
@@ -60,6 +73,7 @@ services:
     networks:
       - api.network
       - api.network.pg
+      - api.network.redis
     volumes:
       - ./src:/usr/api/src
       - ./.certs:/usr/api/.certs:ro
@@ -150,3 +164,5 @@ networks:
     name: api.network.pg
   api.network.monitoring:
     name: api.network.monitoring
+  api.network.redis:
+    name: api.network.redis
