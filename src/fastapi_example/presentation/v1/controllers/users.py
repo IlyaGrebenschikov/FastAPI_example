@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, Security, Request, status
+from fastapi import APIRouter, Request, Security, status
 
 from fastapi_example.application.dto import (
     CreateUserDTO,
@@ -10,17 +10,17 @@ from fastapi_example.application.dto import (
     UserResponseDTO,
 )
 from fastapi_example.application.interfaces.services import (
+    IRateLimiterService,
     ITokenJWTService,
     IUsersService,
-    IRateLimiterService
 )
 from fastapi_example.presentation.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.v1.docs import (
     ConflictError,
     ForbiddenError,
     NotFoundError,
+    TooManyRequestsError,
     UnAuthorizedError,
-    TooManyRequestsError
 )
 
 users_router = APIRouter(

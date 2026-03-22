@@ -7,12 +7,14 @@ from fastapi import FastAPI
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     UsersServiceProvider,
+    RateLimiterServiceProvider
 )
 from fastapi_example.infrastructure.di_providers import (
     DatabaseProvider,
     HasherProvider,
     MappersProvider,
     RepositoriesProvider,
+    CacheProvider
 )
 
 from .settings import Settings
@@ -32,6 +34,8 @@ def setup_dependencies(
         UsersServiceProvider(),
         HasherProvider(),
         AuthServiceProvider(settings.infrastructure.jwt),
+        CacheProvider(settings.infrastructure.redis),
+        RateLimiterServiceProvider()
     )
 
     setup_dishka(container=container, app=app)
