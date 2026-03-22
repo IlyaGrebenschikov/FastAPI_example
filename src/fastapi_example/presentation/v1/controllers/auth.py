@@ -1,16 +1,16 @@
 from typing import Annotated
 
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi_example.application.dto import Token
 from fastapi_example.application.interfaces.services import (
     IAuthService,
+    IRateLimiterService,
     LoginCredentials,
-    IRateLimiterService
 )
-from fastapi_example.presentation.v1.docs import UnAuthorizedError
+from fastapi_example.presentation.v1.docs import TooManyRequestsError, UnAuthorizedError
 
 auth_router = APIRouter(
     prefix="/token",
@@ -22,15 +22,17 @@ auth_router = APIRouter(
 @auth_router.post(
     "",
     response_model=Token,
-    status_code=status.HTTP_201_CREATED, responses={
+    status_code=status.HTTP_201_CREATED,
+    responses={
         status.HTTP_401_UNAUTHORIZED: {'model': UnAuthorizedError},
+        status.HTTP_429_TOO_MANY_REQUESTS: {'model': TooManyRequestsError},
     })
 async def token(
         request: Request,
         query: Annotated[OAuth2PasswordRequestForm, Depends()],
-        auth_service: FromDishka[IAuthService],
+        auth_service:  Annotated[IAuthService, FromDishka[IAuthService]],
         rate_limiter_service: Annotated[IRateLimiterService, FromDishka[IRateLimiterService]]
-) -> Token:
+)-> Token:
     credentials = LoginCredentials(
         username=query.username,
         password=query.password,
