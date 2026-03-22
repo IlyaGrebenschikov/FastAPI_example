@@ -1,3 +1,4 @@
+from .cache import CacheProvider
 from .database import DatabaseProvider
 from .hasher import HasherProvider
 from .mappers import MappersProvider
@@ -8,4 +9,5 @@ __all__ = (
     "MappersProvider",
     "RepositoriesProvider",
     "HasherProvider",
+    "CacheProvider"
 )

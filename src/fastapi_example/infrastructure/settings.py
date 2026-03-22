@@ -80,21 +80,41 @@ class JWTSettings(BaseSettings):
         return Path(__file__).parents[3] / ".certs"
 
 
+class RedisSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="REDIS_",
+        extra="ignore",
+    )
+    host: str
+    port: int
+    password: Optional[str] = None
+
+    @property
+    def url(self) -> str:
+        password = f":{self.password}@" if self.password else ""
+        return f"redis://{password}{self.host}:{self.port}"
+
+
 @dataclass
 class InfrastructureSettings:
     database: DatabaseSettings
     server: UvicornServerSettings
     jwt: JWTSettings
+    redis: RedisSettings
 
 
 def load_infrastructure_settings(
         database_settings: Optional[DatabaseSettings] = None,
         server_settings: Optional[UvicornServerSettings] = None,
         jwt_settings: Optional[JWTSettings] = None,
+        redis_settings: Optional[RedisSettings] = None,
 ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
         database=database_settings or DatabaseSettings(),  # type: ignore[call-arg]
         server=server_settings or UvicornServerSettings(),
         jwt=jwt_settings or JWTSettings(),
+        redis=redis_settings or RedisSettings(),  # type: ignore[call-arg]
     )
