@@ -42,8 +42,8 @@ users_router = APIRouter(
 async def create_user(
         request: Request,
         data: CreateUserDTO,
-        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
-        rate_limiter_service: Annotated[IRateLimiterService, FromDishka[IRateLimiterService]]
+        user_service: FromDishka[IUsersService],
+        rate_limiter_service: FromDishka[IRateLimiterService]
 ) -> UserResponseDTO:
     await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
     return await user_service.create_user(data)
@@ -62,9 +62,9 @@ async def create_user(
 async def get_user(
         request: Request,
         token: Annotated[str, Security(get_bearer_token)],
-        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
-        jwt_service: Annotated[ITokenJWTService, FromDishka[ITokenJWTService]],
-        rate_limiter_service: Annotated[IRateLimiterService, FromDishka[IRateLimiterService]]
+        user_service: FromDishka[IUsersService],
+        jwt_service: FromDishka[ITokenJWTService],
+        rate_limiter_service: FromDishka[IRateLimiterService]
 ) -> UserResponseDTO:
     await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
     user_id = jwt_service.get_user_id_from_token(token)
@@ -86,9 +86,9 @@ async def update_user(
         request: Request,
         token: Annotated[str, Security(get_bearer_token)],
         data: UpdateUserDTO,
-        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
-        jwt_service: Annotated[ITokenJWTService, FromDishka[ITokenJWTService]],
-        rate_limiter_service: Annotated[IRateLimiterService, FromDishka[IRateLimiterService]]
+        user_service: FromDishka[IUsersService],
+        jwt_service: FromDishka[ITokenJWTService],
+        rate_limiter_service: FromDishka[IRateLimiterService]
 ) -> UserResponseDTO:
     await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
     user_id = jwt_service.get_user_id_from_token(token)
@@ -110,9 +110,9 @@ async def delete_user(
         request: Request,
         token: Annotated[str, Security(get_bearer_token)],
         data: DeleteUserDTO,
-        user_service: Annotated[IUsersService, FromDishka[IUsersService]],
-        jwt_service: Annotated[ITokenJWTService, FromDishka[ITokenJWTService]],
-        rate_limiter_service: Annotated[IRateLimiterService, FromDishka[IRateLimiterService]]
+        user_service: FromDishka[IUsersService],
+        jwt_service: FromDishka[ITokenJWTService],
+        rate_limiter_service: FromDishka[IRateLimiterService]
 ) -> UserResponseDTO:
     await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
     user_id = jwt_service.get_user_id_from_token(token)

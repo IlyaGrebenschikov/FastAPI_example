@@ -30,8 +30,8 @@ auth_router = APIRouter(
 async def token(
         request: Request,
         query: Annotated[OAuth2PasswordRequestForm, Depends()],
-        auth_service:  Annotated[IAuthService, FromDishka[IAuthService]],
-        rate_limiter_service: Annotated[IRateLimiterService, FromDishka[IRateLimiterService]]
+        auth_service:  FromDishka[IAuthService],
+        rate_limiter_service: FromDishka[IRateLimiterService]
 )-> Token:
     credentials = LoginCredentials(
         username=query.username,
