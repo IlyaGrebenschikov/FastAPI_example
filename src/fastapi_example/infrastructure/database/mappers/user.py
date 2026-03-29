@@ -1,7 +1,7 @@
 from typing import cast
 from uuid import UUID
 
-from fastapi_example.application.interfaces.mappers import IUsersRepositoryMapper
+from fastapi_example.application.interfaces.database.mappers import IUsersRepositoryMapper
 from fastapi_example.domain.entities.user import User
 from fastapi_example.infrastructure.database.models import UserModel
 

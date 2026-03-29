@@ -18,7 +18,7 @@ from fastapi_example.application.dto import UpdateUserType, CreateUserType
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
+from fastapi_example.application.interfaces.services.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import IUsersService
 

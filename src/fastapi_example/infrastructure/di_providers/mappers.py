@@ -1,6 +1,6 @@
 from dishka import Provider, Scope, provide
 
-from fastapi_example.application.interfaces.mappers.users_repository import (
+from fastapi_example.application.interfaces.database.mappers import (
     IUsersRepositoryMapper,
 )
 from fastapi_example.infrastructure.database.mappers import UsersRepositoryMapper
