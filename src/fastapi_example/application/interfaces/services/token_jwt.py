@@ -1,19 +1,7 @@
 from typing import NotRequired, Protocol, TypedDict
 from uuid import UUID
 
-
-class TokenPayload(TypedDict):
-    sub: str
-    scopes: NotRequired[list[str]]
-    exp: NotRequired[int]
-    iat: NotRequired[int]
-
-
-class TokenDecoded(TypedDict):
-    sub: str
-    exp: int
-    iat: int
-    scopes: NotRequired[list[str]]
+from fastapi_example.application.dto import TokenPayload, TokenDecoded
 
 
 class ITokenJWTService(Protocol):

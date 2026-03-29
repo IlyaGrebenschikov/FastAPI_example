@@ -6,12 +6,12 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
+from fastapi_example.application.dto import TokenPayload
 from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     ITokenJWTService,
     LoginCredentials,
-    TokenPayload,
 )
 
 log = logging.getLogger(__name__)
