@@ -19,10 +19,7 @@ class AppSettings(BaseSettings):
 
 class CORSSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="CORS_",
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", env_prefix="CORS_", extra="ignore"
     )
     methods: list[str] = ["*"]
     headers: list[str] = ["*"]
@@ -36,8 +33,8 @@ class V1APISettings:
 
 
 def load_v1_api_settings(
-        app_settings: Optional[AppSettings] = None,
-        cors_settings: Optional[CORSSettings] = None,
+    app_settings: Optional[AppSettings] = None,
+    cors_settings: Optional[CORSSettings] = None,
 ) -> V1APISettings:
     return V1APISettings(
         app=app_settings or AppSettings(),

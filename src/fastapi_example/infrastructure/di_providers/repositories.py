@@ -20,12 +20,12 @@ from fastapi_example.infrastructure.database.repositories import (
 class RepositoriesProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def users_repository(
-            self,
-            session: AsyncSession,
-            mapper: IUsersRepositoryMapper
+        self, session: AsyncSession, mapper: IUsersRepositoryMapper
     ) -> IUsersRepository:
         return SQLAlchemyUsersRepository(session, mapper)
 
     @provide(scope=Scope.REQUEST)
-    def rate_limiter_cache_repository(self, redis_client: aioredis.Redis) -> IRateLimiterCacheRepository:
+    def rate_limiter_cache_repository(
+        self, redis_client: aioredis.Redis
+    ) -> IRateLimiterCacheRepository:
         return RateLimiterCacheRepository(redis_client)

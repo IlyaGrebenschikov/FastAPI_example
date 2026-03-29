@@ -1,5 +1,3 @@
 from .user import UsersRepositoryMapper
 
-__all__ = (
-    "UsersRepositoryMapper",
-)
+__all__ = ("UsersRepositoryMapper",)

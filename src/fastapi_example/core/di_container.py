@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 
 def setup_di_container(
-        settings: Settings,
+    settings: Settings,
 ) -> AsyncContainer:
     log.debug("Setting up DI container.")
     container = make_async_container(
@@ -32,7 +32,7 @@ def setup_di_container(
         HasherProvider(),
         AuthServiceProvider(settings.infrastructure.jwt),
         CacheProvider(settings.infrastructure.redis),
-        RateLimiterServiceProvider()
+        RateLimiterServiceProvider(),
     )
 
     return container

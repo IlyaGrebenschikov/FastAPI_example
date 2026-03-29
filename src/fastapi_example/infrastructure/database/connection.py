@@ -12,8 +12,8 @@ def create_sa_engine(url: str | URL) -> AsyncEngine:
 
 
 def create_sa_session_factory(
-        engine: AsyncEngine,
-        autoflush: bool = False,
-        expire_on_commit: bool = False
+    engine: AsyncEngine, autoflush: bool = False, expire_on_commit: bool = False
 ) -> async_sessionmaker[AsyncSession]:
-    return async_sessionmaker(engine, autoflush=autoflush, expire_on_commit=expire_on_commit)
+    return async_sessionmaker(
+        engine, autoflush=autoflush, expire_on_commit=expire_on_commit
+    )

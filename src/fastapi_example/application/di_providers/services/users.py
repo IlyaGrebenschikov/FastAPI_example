@@ -21,10 +21,10 @@ class UsersServiceProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     def users_service(
-            self,
-            repository: IUsersRepository,
-            mapper: IUsersServiceMapper,
-            hasher: IHasher,
-            transaction_manager: ITransactionManager,
+        self,
+        repository: IUsersRepository,
+        mapper: IUsersServiceMapper,
+        hasher: IHasher,
+        transaction_manager: ITransactionManager,
     ) -> IUsersService:
         return UsersService(repository, mapper, hasher, transaction_manager)

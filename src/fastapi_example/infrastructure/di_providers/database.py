@@ -13,12 +13,7 @@ from fastapi_example.infrastructure.database import (
 
 
 class DatabaseProvider(Provider):
-    def __init__(
-            self,
-            database_settings: DatabaseSettings,
-            scope=None,
-            component=None
-    ):
+    def __init__(self, database_settings: DatabaseSettings, scope=None, component=None):
         super().__init__(scope, component)
         self._database_settings = database_settings
 
@@ -27,13 +22,14 @@ class DatabaseProvider(Provider):
         return create_sa_engine(self._database_settings.url_obj)
 
     @provide(scope=Scope.APP)
-    def db_session_factory(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
+    def db_session_factory(
+        self, engine: AsyncEngine
+    ) -> async_sessionmaker[AsyncSession]:
         return create_sa_session_factory(engine)
 
     @provide(scope=Scope.REQUEST)
     async def db_session(
-            self,
-            session_factory: async_sessionmaker[AsyncSession]
+        self, session_factory: async_sessionmaker[AsyncSession]
     ) -> AsyncIterator[AsyncSession]:
         async with session_factory() as session:
             yield session

@@ -25,11 +25,7 @@ from fastapi_example.infrastructure.database.models import UserModel
 
 
 class SQLAlchemyUsersRepository(IUsersRepository):
-    def __init__(
-            self,
-            session: AsyncSession,
-            mapper: IUsersRepositoryMapper
-    ):
+    def __init__(self, session: AsyncSession, mapper: IUsersRepositoryMapper):
         self._session = session
         self._mapper = mapper
 
@@ -40,13 +36,15 @@ class SQLAlchemyUsersRepository(IUsersRepository):
     async def create_user(self, user: CreateUserType) -> User:
         stmt = insert(self._model).values(**user).returning(self._model)
 
-        return self._mapper.persistence_to_domain((await self._session.scalars(stmt)).first())
+        return self._mapper.persistence_to_domain(
+            (await self._session.scalars(stmt)).first()
+        )
 
     async def exists_user(
-            self,
-            user_id: Optional[UUID] = None,
-            username: Optional[str] = None,
-            email: Optional[str] = None
+        self,
+        user_id: Optional[UUID] = None,
+        username: Optional[str] = None,
+        email: Optional[str] = None,
     ) -> bool:
         if not any([user_id, username, email]):
             raise TypeError("At least one identifier must be provided")
@@ -65,9 +63,9 @@ class SQLAlchemyUsersRepository(IUsersRepository):
         return bool(await self._session.scalar(stmt))
 
     async def get_user(
-            self,
-            user_id: Optional[UUID] = None,
-            username: Optional[str] = None,
+        self,
+        user_id: Optional[UUID] = None,
+        username: Optional[str] = None,
     ) -> User:
         if not any([user_id, username]):
             raise TypeError("At least one identifier must be provided")
@@ -81,23 +79,29 @@ class SQLAlchemyUsersRepository(IUsersRepository):
         clause = or_(*conditions)
         stmt = select(self._model).where(clause)
 
-        return self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
+        return self._mapper.persistence_to_domain(
+            (await self._session.execute(stmt)).scalars().first()
+        )
 
     async def update_user(
-            self,
-            user_id: UUID,
-            data: UpdateUserType,
+        self,
+        user_id: UUID,
+        data: UpdateUserType,
     ) -> User:
         clause = self._model.id == user_id
         stmt = update(self._model).where(clause).values(**data).returning(self._model)
 
-        return self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
+        return self._mapper.persistence_to_domain(
+            (await self._session.execute(stmt)).scalars().first()
+        )
 
     async def delete_user(
-            self,
-            user_id: UUID,
+        self,
+        user_id: UUID,
     ) -> User:
         clause = self._model.id == user_id
         stmt = delete(self._model).where(clause).returning(self._model)
 
-        return self._mapper.persistence_to_domain((await self._session.execute(stmt)).scalars().first())
+        return self._mapper.persistence_to_domain(
+            (await self._session.execute(stmt)).scalars().first()
+        )

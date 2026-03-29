@@ -24,10 +24,10 @@ class AuthServiceProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     def auth_service(
-            self,
-            repository: IUsersRepository,
-            token_jwt: ITokenJWTService,
-            hasher: IHasher,
-            transaction_manager: ITransactionManager,
+        self,
+        repository: IUsersRepository,
+        token_jwt: ITokenJWTService,
+        hasher: IHasher,
+        transaction_manager: ITransactionManager,
     ) -> IAuthService:
         return AuthService(repository, token_jwt, hasher, transaction_manager)

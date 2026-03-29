@@ -1,5 +1,3 @@
 from .hasher import IHasher
 
-__all__ = (
-    "IHasher",
-)
+__all__ = ("IHasher",)

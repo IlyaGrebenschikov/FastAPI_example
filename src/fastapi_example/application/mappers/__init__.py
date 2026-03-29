@@ -1,5 +1,3 @@
 from .users import UserServiceMapper
 
-__all__ = (
-    "UserServiceMapper",
-)
+__all__ = ("UserServiceMapper",)

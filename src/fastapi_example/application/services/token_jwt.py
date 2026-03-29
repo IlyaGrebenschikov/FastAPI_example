@@ -23,46 +23,46 @@ class TokenJWTService(ITokenJWTService):
     def create_access_token(self, data: TokenPayload) -> str:
         to_encode: dict[str, Any] = {}
         to_encode.update(data)
-        expiration = datetime.now(timezone.utc) + timedelta(minutes=self._settings.expiration)
-        to_encode.update({
-            "exp": int(expiration.timestamp()),
-            "iat": int(datetime.now(timezone.utc).timestamp())
-        })
+        expiration = datetime.now(timezone.utc) + timedelta(
+            minutes=self._settings.expiration
+        )
+        to_encode.update(
+            {
+                "exp": int(expiration.timestamp()),
+                "iat": int(datetime.now(timezone.utc).timestamp()),
+            }
+        )
         token = jwt.encode(
-            to_encode,
-            self._settings.private_key,
-            algorithm=self._settings.algorithm
+            to_encode, self._settings.private_key, algorithm=self._settings.algorithm
         )
 
         log.info(
             "Access token created for subject '%s', expires at %s",
-            data.get('sub', 'unknown'),
-            expiration.isoformat()
+            data.get("sub", "unknown"),
+            expiration.isoformat(),
         )
         return token
 
     def _verify_token(self, token: str) -> TokenDecoded:
         try:
             decoded_data: TokenDecoded = jwt.decode(
-                token,
-                self._settings.public_key,
-                algorithms=[self._settings.algorithm]
+                token, self._settings.public_key, algorithms=[self._settings.algorithm]
             )
         except jwt.ExpiredSignatureError:
             log.warning("Token expired")
-            raise UnAuthorizedError('Token expired')
+            raise UnAuthorizedError("Token expired")
 
         except jwt.InvalidTokenError as e:
             log.warning("Invalid token: %s", str(e))
-            raise UnAuthorizedError('Invalid token')
+            raise UnAuthorizedError("Invalid token")
 
-        if not decoded_data.get('sub'):
+        if not decoded_data.get("sub"):
             log.warning("Token missing subject field")
-            raise UnAuthorizedError('Token missing subject')
+            raise UnAuthorizedError("Token missing subject")
 
         log.debug(
             "Token successfully decoded for subject '%s'",
-            decoded_data.get('sub', 'unknown')
+            decoded_data.get("sub", "unknown"),
         )
         return decoded_data
 
@@ -72,6 +72,6 @@ class TokenJWTService(ITokenJWTService):
 
         if not user_id:
             log.warning("Token missing subject field")
-            raise UnAuthorizedError('Token missing subject')
+            raise UnAuthorizedError("Token missing subject")
 
         return user_id

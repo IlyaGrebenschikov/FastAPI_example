@@ -44,7 +44,7 @@ class TransactionManager(ITransactionManager[AsyncSession]):
        RuntimeError: If session already has active transaction (autobegin protection)
        CommitError: If commit fails (wrapped SQLAlchemyError)
        RollbackError: If rollback fails (wrapped SQLAlchemyError)
-   """
+    """
 
     __slots__ = ("_session", "_transaction")
 
@@ -59,10 +59,10 @@ class TransactionManager(ITransactionManager[AsyncSession]):
         return self
 
     async def __aexit__(
-            self,
-            exc_type: Optional[Type[BaseException]],
-            exc_value: Optional[BaseException],
-            traceback: Optional[TracebackType],
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
     ) -> None:
         if not self._transaction:
             return

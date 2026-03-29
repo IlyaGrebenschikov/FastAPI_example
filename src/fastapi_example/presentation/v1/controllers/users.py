@@ -23,11 +23,7 @@ from fastapi_example.presentation.v1.docs import (
     UnAuthorizedError,
 )
 
-users_router = APIRouter(
-    prefix="/users",
-    tags=["users"],
-    route_class=DishkaRoute
-)
+users_router = APIRouter(prefix="/users", tags=["users"], route_class=DishkaRoute)
 
 
 @users_router.post(
@@ -35,17 +31,19 @@ users_router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     response_model=UserResponseDTO,
     responses={
-        status.HTTP_409_CONFLICT: {'model': ConflictError},
-        status.HTTP_429_TOO_MANY_REQUESTS: {'model': TooManyRequestsError},
+        status.HTTP_409_CONFLICT: {"model": ConflictError},
+        status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
     },
 )
 async def create_user(
-        request: Request,
-        data: CreateUserDTO,
-        user_service: FromDishka[IUsersService],
-        rate_limiter_service: FromDishka[IRateLimiterService]
+    request: Request,
+    data: CreateUserDTO,
+    user_service: FromDishka[IUsersService],
+    rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
-    await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
+    await rate_limiter_service.check(
+        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+    )
     return await user_service.create_user(data)
 
 
@@ -54,21 +52,25 @@ async def create_user(
     status_code=status.HTTP_200_OK,
     response_model=UserResponseDTO,
     responses={
-        status.HTTP_401_UNAUTHORIZED: {'model': UnAuthorizedError},
-        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
-        status.HTTP_429_TOO_MANY_REQUESTS: {'model': TooManyRequestsError},
-    }
+        status.HTTP_401_UNAUTHORIZED: {"model": UnAuthorizedError},
+        status.HTTP_404_NOT_FOUND: {"model": NotFoundError},
+        status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
+    },
 )
 async def get_user(
-        request: Request,
-        token: Annotated[str, Security(get_bearer_token)],
-        user_service: FromDishka[IUsersService],
-        jwt_service: FromDishka[ITokenJWTService],
-        rate_limiter_service: FromDishka[IRateLimiterService]
+    request: Request,
+    token: Annotated[str, Security(get_bearer_token)],
+    user_service: FromDishka[IUsersService],
+    jwt_service: FromDishka[ITokenJWTService],
+    rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
-    await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
+    await rate_limiter_service.check(
+        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+    )
     user_id = jwt_service.get_user_id_from_token(token)
-    await rate_limiter_service.check(f"user:{user_id}", request.url.path, limit=20, window=60)
+    await rate_limiter_service.check(
+        f"user:{user_id}", request.url.path, limit=20, window=60
+    )
     return await user_service.get_user(user_id)
 
 
@@ -77,22 +79,26 @@ async def get_user(
     status_code=status.HTTP_200_OK,
     response_model=UserResponseDTO,
     responses={
-        status.HTTP_409_CONFLICT: {'model': ConflictError},
-        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
-        status.HTTP_429_TOO_MANY_REQUESTS: {'model': TooManyRequestsError},
-    }
+        status.HTTP_409_CONFLICT: {"model": ConflictError},
+        status.HTTP_404_NOT_FOUND: {"model": NotFoundError},
+        status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
+    },
 )
 async def update_user(
-        request: Request,
-        token: Annotated[str, Security(get_bearer_token)],
-        data: UpdateUserDTO,
-        user_service: FromDishka[IUsersService],
-        jwt_service: FromDishka[ITokenJWTService],
-        rate_limiter_service: FromDishka[IRateLimiterService]
+    request: Request,
+    token: Annotated[str, Security(get_bearer_token)],
+    data: UpdateUserDTO,
+    user_service: FromDishka[IUsersService],
+    jwt_service: FromDishka[ITokenJWTService],
+    rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
-    await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
+    await rate_limiter_service.check(
+        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+    )
     user_id = jwt_service.get_user_id_from_token(token)
-    await rate_limiter_service.check(f"user:{user_id}", request.url.path, limit=20, window=60)
+    await rate_limiter_service.check(
+        f"user:{user_id}", request.url.path, limit=20, window=60
+    )
     return await user_service.update_user(user_id, data)
 
 
@@ -101,20 +107,24 @@ async def update_user(
     status_code=status.HTTP_200_OK,
     response_model=UserResponseDTO,
     responses={
-        status.HTTP_404_NOT_FOUND: {'model': NotFoundError},
-        status.HTTP_403_FORBIDDEN: {'model': ForbiddenError},
-        status.HTTP_429_TOO_MANY_REQUESTS: {'model': TooManyRequestsError},
-    }
+        status.HTTP_404_NOT_FOUND: {"model": NotFoundError},
+        status.HTTP_403_FORBIDDEN: {"model": ForbiddenError},
+        status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
+    },
 )
 async def delete_user(
-        request: Request,
-        token: Annotated[str, Security(get_bearer_token)],
-        data: DeleteUserDTO,
-        user_service: FromDishka[IUsersService],
-        jwt_service: FromDishka[ITokenJWTService],
-        rate_limiter_service: FromDishka[IRateLimiterService]
+    request: Request,
+    token: Annotated[str, Security(get_bearer_token)],
+    data: DeleteUserDTO,
+    user_service: FromDishka[IUsersService],
+    jwt_service: FromDishka[ITokenJWTService],
+    rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
-    await rate_limiter_service.check(f"ip:{request.client.host}", request.url.path, limit=100, window=60)
+    await rate_limiter_service.check(
+        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+    )
     user_id = jwt_service.get_user_id_from_token(token)
-    await rate_limiter_service.check(f"user:{user_id}", request.url.path, limit=20, window=60)
+    await rate_limiter_service.check(
+        f"user:{user_id}", request.url.path, limit=20, window=60
+    )
     return await user_service.delete_user(user_id, data)

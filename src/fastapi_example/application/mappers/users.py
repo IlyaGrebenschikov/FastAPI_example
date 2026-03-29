@@ -10,5 +10,5 @@ class UserServiceMapper(IUsersServiceMapper):
             username=user.username,
             email=user.email,
             created_at=user.created_at.isoformat(),
-            updated_at=user.updated_at.isoformat()
+            updated_at=user.updated_at.isoformat(),
         )

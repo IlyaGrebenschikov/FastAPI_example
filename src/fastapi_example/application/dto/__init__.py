@@ -6,5 +6,5 @@ __all__ = (
     "DeleteUserDTO",
     "UserResponseDTO",
     "UpdateUserDTO",
-    "Token"
+    "Token",
 )

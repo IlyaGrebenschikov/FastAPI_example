@@ -23,9 +23,9 @@ class Settings:
 
 
 def load_settings(
-        presentation_settings: Optional[PresentationSettings] = None,
-        infrastructure_settings: Optional[InfrastructureSettings] = None,
-        application_settings: Optional[ApplicationSettings] = None,
+    presentation_settings: Optional[PresentationSettings] = None,
+    infrastructure_settings: Optional[InfrastructureSettings] = None,
+    application_settings: Optional[ApplicationSettings] = None,
 ) -> Settings:
     log.debug("Loading core settings.")
     return Settings(

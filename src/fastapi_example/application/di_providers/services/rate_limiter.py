@@ -12,5 +12,7 @@ class RateLimiterServiceProvider(Provider):
         super().__init__(scope, component)
 
     @provide(scope=Scope.REQUEST)
-    def rate_limiter_service(self, repository: IRateLimiterCacheRepository) -> IRateLimiterService:
+    def rate_limiter_service(
+        self, repository: IRateLimiterCacheRepository
+    ) -> IRateLimiterService:
         return RateLimiterService(repository)

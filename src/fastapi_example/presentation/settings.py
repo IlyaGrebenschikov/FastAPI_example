@@ -12,6 +12,8 @@ class PresentationSettings:
     v1_api: V1APISettings
 
 
-def load_presentation_settings(v1_api_settings: Optional[V1APISettings] = None) -> PresentationSettings:
+def load_presentation_settings(
+    v1_api_settings: Optional[V1APISettings] = None,
+) -> PresentationSettings:
     log.debug("Loading presentation settings.")
     return PresentationSettings(v1_api=v1_api_settings or load_v1_api_settings())

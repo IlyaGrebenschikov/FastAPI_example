@@ -19,11 +19,11 @@ log = logging.getLogger(__name__)
 
 class AuthService(IAuthService):
     def __init__(
-            self,
-            user_repository: IUsersRepository,
-            token_jwt: ITokenJWTService,
-            hasher: IHasher,
-            transaction_manager: ITransactionManager
+        self,
+        user_repository: IUsersRepository,
+        token_jwt: ITokenJWTService,
+        hasher: IHasher,
+        transaction_manager: ITransactionManager,
     ) -> None:
         self._user_repository = user_repository
         self._token_jwt = token_jwt
@@ -32,7 +32,9 @@ class AuthService(IAuthService):
 
     async def login(self, credentials: LoginCredentials) -> Token:
         async with self._transaction_manager:
-            if not await self._user_repository.exists_user(username=credentials.username):
+            if not await self._user_repository.exists_user(
+                username=credentials.username
+            ):
                 log.warning("User not found with username '%s'", credentials.username)
                 raise UnAuthorizedError("Incorrect login or password")
 
@@ -48,8 +50,6 @@ class AuthService(IAuthService):
         access_token = self._token_jwt.create_access_token(token_payload)
 
         log.info(
-            "User '%s' (ID: %s) successfully logged in",
-            credentials.username,
-            user.id
+            "User '%s' (ID: %s) successfully logged in", credentials.username, user.id
         )
         return Token(access_token=access_token, token_type="Bearer")

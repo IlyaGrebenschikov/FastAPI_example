@@ -9,5 +9,5 @@ __all__ = (
     "MappersProvider",
     "RepositoriesProvider",
     "HasherProvider",
-    "CacheProvider"
+    "CacheProvider",
 )

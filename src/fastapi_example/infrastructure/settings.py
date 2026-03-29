@@ -11,10 +11,7 @@ log = logging.getLogger(__name__)
 
 class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="DB_",
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", env_prefix="DB_", extra="ignore"
     )
     drivername: str = "postgresql+asyncpg"
     host: str
@@ -44,7 +41,7 @@ class UvicornServerSettings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         env_prefix="UVICORN_SERVER_",
-        extra="ignore"
+        extra="ignore",
     )
 
     host: Optional[str] = "0.0.0.0"
@@ -53,10 +50,7 @@ class UvicornServerSettings(BaseSettings):
 
 class JWTSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="JWT_",
-        extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
     )
     algorithm: str = "RS256"
     expiration: int = 30
@@ -106,10 +100,10 @@ class InfrastructureSettings:
 
 
 def load_infrastructure_settings(
-        database_settings: Optional[DatabaseSettings] = None,
-        server_settings: Optional[UvicornServerSettings] = None,
-        jwt_settings: Optional[JWTSettings] = None,
-        redis_settings: Optional[RedisSettings] = None,
+    database_settings: Optional[DatabaseSettings] = None,
+    server_settings: Optional[UvicornServerSettings] = None,
+    jwt_settings: Optional[JWTSettings] = None,
+    redis_settings: Optional[RedisSettings] = None,
 ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(

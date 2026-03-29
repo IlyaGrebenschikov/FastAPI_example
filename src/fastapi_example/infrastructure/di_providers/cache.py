@@ -6,12 +6,7 @@ from fastapi_example.infrastructure.cache import create_client
 
 
 class CacheProvider(Provider):
-    def __init__(
-            self,
-            cache_settings: RedisSettings,
-            scope=None,
-            component=None
-    ):
+    def __init__(self, cache_settings: RedisSettings, scope=None, component=None):
         super().__init__(scope, component)
         self._cache_settings = cache_settings
 

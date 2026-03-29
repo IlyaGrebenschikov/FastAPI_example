@@ -14,6 +14,4 @@ def setup_middlewares(app: FastAPI, settings: V1APISettings) -> None:
     setup_cors_middleware(app, settings.cors)
 
 
-__all__ = (
-    "setup_middlewares",
-)
+__all__ = ("setup_middlewares",)
