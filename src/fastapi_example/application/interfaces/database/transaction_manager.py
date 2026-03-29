@@ -6,7 +6,7 @@ from typing import (
     TypeVar,
 )
 
-SessionT = TypeVar("SessionT")
+from fastapi_example.application.dto import SessionT
 
 
 class ITransactionManager(Protocol[SessionT]):
