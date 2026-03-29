@@ -1,5 +1,3 @@
 from .users import IUsersRepository
 
-__all__ = (
-    "IUsersRepository",
-)
+__all__ = ("IUsersRepository",)

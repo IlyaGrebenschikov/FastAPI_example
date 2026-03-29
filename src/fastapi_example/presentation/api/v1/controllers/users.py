@@ -23,7 +23,9 @@ from fastapi_example.presentation.api.common.docs import (
     UnAuthorizedError,
 )
 
-users_router = APIRouter(prefix="/api/v1/users", tags=["users"], route_class=DishkaRoute)
+users_router = APIRouter(
+    prefix="/api/v1/users", tags=["users"], route_class=DishkaRoute
+)
 
 
 @users_router.post(

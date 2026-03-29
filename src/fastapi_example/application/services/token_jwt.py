@@ -6,10 +6,9 @@ from uuid import UUID
 import jwt
 
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
+from fastapi_example.application.dto import TokenPayload, TokenDecoded
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
-    TokenDecoded,
-    TokenPayload,
 )
 from fastapi_example.infrastructure.settings import JWTSettings
 

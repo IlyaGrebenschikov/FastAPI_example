@@ -62,9 +62,13 @@ class UsersService(IUsersService):
         )
         return self._mapper.domain_to_response_dto(repository_result)
 
-    async def get_user(self, user_id: UUID, for_update: bool = False) -> UserResponseDTO:
+    async def get_user(
+        self, user_id: UUID, for_update: bool = False
+    ) -> UserResponseDTO:
         async with self._transaction_manager:
-            user = await self._repository.get_user(user_id=user_id, for_update=for_update)
+            user = await self._repository.get_user(
+                user_id=user_id, for_update=for_update
+            )
             if not user:
                 log.warning("User does not exist with ID: '%s'", user_id)
                 raise NotFoundError("User not found")
@@ -72,9 +76,13 @@ class UsersService(IUsersService):
         log.info("User received with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(user)
 
-    async def update_user(self, user_id: UUID, data: UpdateUserDTO, for_update: bool = True) -> UserResponseDTO:
+    async def update_user(
+        self, user_id: UUID, data: UpdateUserDTO, for_update: bool = True
+    ) -> UserResponseDTO:
         async with self._transaction_manager:
-            user = await self._repository.get_user(user_id=user_id, for_update=for_update)
+            user = await self._repository.get_user(
+                user_id=user_id, for_update=for_update
+            )
             if not user:
                 log.warning("User does not exist with ID: '%s'", user_id)
                 raise NotFoundError("User not found")
@@ -92,9 +100,9 @@ class UsersService(IUsersService):
                     )
 
             if data.email:
-                if (
-                    data.email != user.email
-                ) and await self._repository.exists_user(email=data.email):
+                if (data.email != user.email) and await self._repository.exists_user(
+                    email=data.email
+                ):
                     log.warning(
                         "User update failed - user already exists with email: '%s'",
                         data.email,
@@ -115,9 +123,13 @@ class UsersService(IUsersService):
         log.info("User updated with ID: %s", user.id)
         return self._mapper.domain_to_response_dto(result)
 
-    async def delete_user(self, user_id: UUID, data: DeleteUserDTO, for_update: bool = True) -> UserResponseDTO:
+    async def delete_user(
+        self, user_id: UUID, data: DeleteUserDTO, for_update: bool = True
+    ) -> UserResponseDTO:
         async with self._transaction_manager:
-            user = await self._repository.get_user(user_id=user_id, for_update=for_update)
+            user = await self._repository.get_user(
+                user_id=user_id, for_update=for_update
+            )
             if not user:
                 log.warning("User does not exist with ID: '%s'", user_id)
                 raise NotFoundError("User not found")

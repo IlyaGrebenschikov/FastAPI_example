@@ -9,7 +9,10 @@ from fastapi_example.application.interfaces.services import (
     IAuthService,
     IRateLimiterService,
 )
-from fastapi_example.presentation.api.common.docs import TooManyRequestsError, UnAuthorizedError
+from fastapi_example.presentation.api.common.docs import (
+    TooManyRequestsError,
+    UnAuthorizedError,
+)
 
 auth_router = APIRouter(prefix="/api/v1/token", tags=["token"], route_class=DishkaRoute)
 

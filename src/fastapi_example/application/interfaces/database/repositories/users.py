@@ -1,4 +1,4 @@
-from typing import NotRequired, Optional, Protocol, TypedDict
+from typing import Optional, Protocol
 from uuid import UUID
 
 from fastapi_example.domain.entities import User

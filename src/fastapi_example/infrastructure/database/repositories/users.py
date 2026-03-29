@@ -18,7 +18,9 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
 from fastapi_example.application.dto import UpdateUserType, CreateUserType
-from fastapi_example.application.interfaces.database.mappers import IUsersRepositoryMapper
+from fastapi_example.application.interfaces.database.mappers import (
+    IUsersRepositoryMapper,
+)
 from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel
 
@@ -56,7 +58,7 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
         clause = or_(*conditions)
         stmt = exists(select(self._model).where(clause)).select()
-        result = (await self._session.scalar(stmt))
+        result = await self._session.scalar(stmt)
         return bool(result)
 
     async def get_user(
