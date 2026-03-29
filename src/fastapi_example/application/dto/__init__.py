@@ -1,4 +1,4 @@
-from .auth import Token, TokenDecoded, TokenPayload
+from .auth import Token, TokenDecoded, TokenPayload, LoginCredentials
 from .transaction_manager import SessionT
 from .user import CreateUserDTO, DeleteUserDTO, UpdateUserDTO, UserResponseDTO, CreateUserType, UpdateUserType
 
@@ -13,4 +13,5 @@ __all__ = (
     "SessionT",
     "TokenPayload",
     "TokenDecoded",
+    "LoginCredentials",
 )

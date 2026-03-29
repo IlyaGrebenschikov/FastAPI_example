@@ -1,4 +1,5 @@
-from typing import TypedDict, NotRequired
+from dataclasses import dataclass
+from typing import TypedDict, NotRequired, Optional
 
 from .base import BaseSchema
 
@@ -20,3 +21,10 @@ class TokenDecoded(TypedDict):
     exp: int
     iat: int
     scopes: NotRequired[list[str]]
+
+
+@dataclass
+class LoginCredentials:
+    username: str
+    password: str
+    scopes: Optional[list[str]] = None

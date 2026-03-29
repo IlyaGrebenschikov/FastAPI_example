@@ -1,14 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
-from fastapi_example.application.dto import Token
-
-
-@dataclass
-class LoginCredentials:
-    username: str
-    password: str
-    scopes: Optional[list[str]] = None
+from fastapi_example.application.dto import Token, LoginCredentials
 
 
 class IAuthService(Protocol):

@@ -4,11 +4,10 @@ from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from fastapi_example.application.dto import Token
+from fastapi_example.application.dto import Token, LoginCredentials
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     IRateLimiterService,
-    LoginCredentials,
 )
 from fastapi_example.presentation.api.common.docs import TooManyRequestsError, UnAuthorizedError
 
