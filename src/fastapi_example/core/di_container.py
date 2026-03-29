@@ -1,20 +1,18 @@
 import logging
 
-from dishka import make_async_container
-from dishka.integrations.fastapi import setup_dishka
-from fastapi import FastAPI
+from dishka import AsyncContainer, make_async_container
 
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
+    RateLimiterServiceProvider,
     UsersServiceProvider,
-    RateLimiterServiceProvider
 )
 from fastapi_example.infrastructure.di_providers import (
+    CacheProvider,
     DatabaseProvider,
     HasherProvider,
     MappersProvider,
     RepositoriesProvider,
-    CacheProvider
 )
 
 from .settings import Settings
@@ -22,11 +20,10 @@ from .settings import Settings
 log = logging.getLogger(__name__)
 
 
-def setup_dependencies(
-        app: FastAPI,
+def setup_di_container(
         settings: Settings,
-) -> None:
-    log.debug("Setting up dependencies.")
+) -> AsyncContainer:
+    log.debug("Setting up DI container.")
     container = make_async_container(
         DatabaseProvider(settings.infrastructure.database),
         MappersProvider(),
@@ -38,4 +35,4 @@ def setup_dependencies(
         RateLimiterServiceProvider()
     )
 
-    setup_dishka(container=container, app=app)
+    return container
