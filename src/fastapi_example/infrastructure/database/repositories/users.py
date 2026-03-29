@@ -34,10 +34,8 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
     async def create_user(self, user: CreateUserType) -> User:
         stmt = insert(self._model).values(**user).returning(self._model)
-
-        return self._mapper.persistence_to_domain(
-            (await self._session.scalars(stmt)).first()
-        )
+        result = (await self._session.execute(stmt)).scalars().first()
+        return self._mapper.persistence_to_domain(result)
 
     async def exists_user(
         self,
@@ -58,15 +56,15 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
         clause = or_(*conditions)
         stmt = exists(select(self._model).where(clause)).select()
-
-        return bool(await self._session.scalar(stmt))
+        result = (await self._session.scalar(stmt))
+        return bool(result)
 
     async def get_user(
         self,
         user_id: Optional[UUID] = None,
         username: Optional[str] = None,
         for_update: bool = False,
-    ) -> User:
+    ) -> Optional[User]:
         if not any([user_id, username]):
             raise TypeError("At least one identifier must be provided")
 
@@ -78,13 +76,13 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
         clause = or_(*conditions)
         stmt = select(self._model).where(clause)
-
         if for_update:
             stmt = stmt.with_for_update()
 
-        return self._mapper.persistence_to_domain(
-            (await self._session.execute(stmt)).scalars().first()
-        )
+        result = (await self._session.execute(stmt)).scalar_one_or_none()
+        if not result:
+            return None
+        return self._mapper.persistence_to_domain(result)
 
     async def update_user(
         self,
@@ -93,10 +91,8 @@ class SQLAlchemyUsersRepository(IUsersRepository):
     ) -> User:
         clause = self._model.id == user_id
         stmt = update(self._model).where(clause).values(**data).returning(self._model)
-
-        return self._mapper.persistence_to_domain(
-            (await self._session.execute(stmt)).scalars().first()
-        )
+        result = (await self._session.execute(stmt)).scalars().first()
+        return self._mapper.persistence_to_domain(result)
 
     async def delete_user(
         self,
@@ -104,7 +100,5 @@ class SQLAlchemyUsersRepository(IUsersRepository):
     ) -> User:
         clause = self._model.id == user_id
         stmt = delete(self._model).where(clause).returning(self._model)
-
-        return self._mapper.persistence_to_domain(
-            (await self._session.execute(stmt)).scalars().first()
-        )
+        result = (await self._session.execute(stmt)).scalars().first()
+        return self._mapper.persistence_to_domain(result)
