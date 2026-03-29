@@ -15,7 +15,7 @@ from fastapi_example.application.interfaces.services import (
     IUsersService,
 )
 from fastapi_example.presentation.api.v1.dependencies import get_bearer_token
-from fastapi_example.presentation.api.v1.docs import (
+from fastapi_example.presentation.api.common.docs import (
     ConflictError,
     ForbiddenError,
     NotFoundError,
