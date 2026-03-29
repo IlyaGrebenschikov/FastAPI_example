@@ -1,5 +1,5 @@
 from .token import Token
-from .user import CreateUserDTO, DeleteUserDTO, UpdateUserDTO, UserResponseDTO
+from .user import CreateUserDTO, DeleteUserDTO, UpdateUserDTO, UserResponseDTO, CreateUserType, UpdateUserType
 
 __all__ = (
     "CreateUserDTO",
@@ -7,4 +7,6 @@ __all__ = (
     "UserResponseDTO",
     "UpdateUserDTO",
     "Token",
+    "CreateUserType",
+    "UpdateUserType",
 )

@@ -1,7 +1,5 @@
-from .users import CreateUserType, IUsersRepository, UpdateUserType
+from .users import IUsersRepository
 
 __all__ = (
-    "CreateUserType",
-    "UpdateUserType",
     "IUsersRepository",
 )

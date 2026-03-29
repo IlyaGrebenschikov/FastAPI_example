@@ -15,10 +15,9 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_example.application.interfaces.database.repositories import (
-    CreateUserType,
     IUsersRepository,
-    UpdateUserType,
 )
+from fastapi_example.application.dto import UpdateUserType, CreateUserType
 from fastapi_example.application.interfaces.mappers import IUsersRepositoryMapper
 from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel

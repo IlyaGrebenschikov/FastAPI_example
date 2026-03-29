@@ -2,18 +2,7 @@ from typing import NotRequired, Optional, Protocol, TypedDict
 from uuid import UUID
 
 from fastapi_example.domain.entities import User
-
-
-class UpdateUserType(TypedDict):
-    username: NotRequired[str]
-    email: NotRequired[str]
-    password: NotRequired[str]
-
-
-class CreateUserType(TypedDict):
-    username: str
-    email: str
-    password: str
+from fastapi_example.application.dto import UpdateUserType, CreateUserType
 
 
 class IUsersRepository(Protocol):

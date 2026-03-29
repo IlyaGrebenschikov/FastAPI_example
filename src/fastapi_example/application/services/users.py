@@ -14,10 +14,9 @@ from fastapi_example.application.exceptions.http_exceptions import (
     NotFoundError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
+from fastapi_example.application.dto import UpdateUserType, CreateUserType
 from fastapi_example.application.interfaces.database.repositories import (
-    CreateUserType,
     IUsersRepository,
-    UpdateUserType,
 )
 from fastapi_example.application.interfaces.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.security import IHasher
