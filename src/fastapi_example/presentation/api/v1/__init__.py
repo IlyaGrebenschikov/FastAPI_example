@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import FastAPI
 from dishka import AsyncContainer
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 def init_app_v1(
     v1_settings: V1APISettings, di_container: AsyncContainer, **kwargs: Any
-) -> tuple[str, FastAPI, Optional[str]]:
+) -> FastAPI:
     log.debug("Initialize V1 API")
     app = FastAPI(**v1_settings.app.model_dump(), **kwargs)
 
@@ -24,7 +24,7 @@ def init_app_v1(
     setup_middlewares(app, v1_settings)
     setup_dishka(di_container, app)
 
-    return ("/api/v1", app, None)
+    return app
 
 
 __all__ = (

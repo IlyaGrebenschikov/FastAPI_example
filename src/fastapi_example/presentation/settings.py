@@ -2,7 +2,7 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
-from .v1 import V1APISettings, load_v1_api_settings
+from .api.v1 import V1APISettings, load_v1_api_settings
 
 log = logging.getLogger(__name__)
 

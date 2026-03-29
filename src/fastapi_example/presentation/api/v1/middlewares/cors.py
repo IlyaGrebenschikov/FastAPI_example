@@ -3,7 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi_example.presentation.v1.settings import CORSSettings
+from fastapi_example.presentation.api.v1.settings import CORSSettings
 
 log = logging.getLogger(__name__)
 
