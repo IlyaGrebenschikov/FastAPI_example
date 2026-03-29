@@ -65,6 +65,7 @@ class SQLAlchemyUsersRepository(IUsersRepository):
         self,
         user_id: Optional[UUID] = None,
         username: Optional[str] = None,
+        for_update: bool = False,
     ) -> User:
         if not any([user_id, username]):
             raise TypeError("At least one identifier must be provided")
@@ -77,6 +78,9 @@ class SQLAlchemyUsersRepository(IUsersRepository):
 
         clause = or_(*conditions)
         stmt = select(self._model).where(clause)
+
+        if for_update:
+            stmt = stmt.with_for_update()
 
         return self._mapper.persistence_to_domain(
             (await self._session.execute(stmt)).scalars().first()

@@ -19,6 +19,7 @@ class IUsersRepository(Protocol):
         self,
         user_id: Optional[UUID] = None,
         username: Optional[str] = None,
+        for_update: bool = False,
     ) -> User: ...
 
     async def update_user(
