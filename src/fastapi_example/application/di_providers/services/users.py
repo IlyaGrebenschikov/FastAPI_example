@@ -7,7 +7,7 @@ from fastapi_example.application.interfaces.database.repositories import (
 from fastapi_example.application.interfaces.services.mappers import IUsersServiceMapper
 from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import IUsersService
-from fastapi_example.application.mappers import UserServiceMapper
+from fastapi_example.application.services.mappers import UserServiceMapper
 from fastapi_example.application.services import UsersService
 
 
