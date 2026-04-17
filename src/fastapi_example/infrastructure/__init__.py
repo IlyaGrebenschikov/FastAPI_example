@@ -3,6 +3,8 @@ from .settings import (
     InfrastructureSettings,
     JWTSettings,
     RedisSettings,
+    AppSettings,
+    CORSSettings,
     load_infrastructure_settings,
 )
 
@@ -11,5 +13,7 @@ __all__ = (
     "InfrastructureSettings",
     "JWTSettings",
     "RedisSettings",
+    "AppSettings",
+    "CORSSettings",
     "load_infrastructure_settings",
 )

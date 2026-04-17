@@ -8,7 +8,7 @@ from dishka.integrations.fastapi import setup_dishka
 from .controllers import auth_router, setup_controllers, users_router
 from .handlers import setup_handlers
 from .middlewares import setup_middlewares
-from .settings import V1APISettings
+from fastapi_example.application.settings import V1APISettings
 
 log = logging.getLogger(__name__)
 

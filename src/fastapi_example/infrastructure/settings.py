@@ -91,12 +91,36 @@ class RedisSettings(BaseSettings):
         return f"redis://{password}{self.host}:{self.port}"
 
 
+class AppSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="APP_",
+        extra="ignore",
+    )
+    title: Optional[str] = "FastAPI"
+    version: Optional[str] = "0.1.0"
+    docs_url: Optional[str] = "/docs"
+    redoc_url: Optional[str] = "/redoc"
+
+
+class CORSSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", env_prefix="CORS_", extra="ignore"
+    )
+    methods: list[str] = ["*"]
+    headers: list[str] = ["*"]
+    origins: list[str] = ["*"]
+
+
 @dataclass
 class InfrastructureSettings:
     database: DatabaseSettings
     server: UvicornServerSettings
     jwt: JWTSettings
     redis: RedisSettings
+    app: AppSettings
+    cors: CORSSettings
 
 
 def load_infrastructure_settings(
@@ -104,6 +128,8 @@ def load_infrastructure_settings(
     server_settings: Optional[UvicornServerSettings] = None,
     jwt_settings: Optional[JWTSettings] = None,
     redis_settings: Optional[RedisSettings] = None,
+    app_settings: Optional[AppSettings] = None,
+    cors_settings: Optional[CORSSettings] = None,
 ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
@@ -111,4 +137,6 @@ def load_infrastructure_settings(
         server=server_settings or UvicornServerSettings(),
         jwt=jwt_settings or JWTSettings(),
         redis=redis_settings or RedisSettings(),  # type: ignore[call-arg]
+        app=app_settings or AppSettings(),
+        cors=cors_settings or CORSSettings(),
     )

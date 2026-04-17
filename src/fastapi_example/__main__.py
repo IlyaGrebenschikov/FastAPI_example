@@ -11,7 +11,7 @@ def main() -> None:
     settings = load_settings()
     di_container = setup_di_container(settings)
     app = init_app_v1(
-        settings.presentation.v1_api,
+        settings.application.v1_api,
         di_container,
     )
 
