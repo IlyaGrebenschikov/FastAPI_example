@@ -2,7 +2,7 @@ services:
   postgres:
     profiles: [ "api", "migrations", "port-forwarder" ]
     image: postgres:latest
-    container_name: api.pg
+    container_name: fastapi_example.api.pg
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USERNAME}
@@ -16,27 +16,27 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - api.network.pg
+      - fastapi_example.api.network.pg
     env_file:
       - .env
   
   postgres_port_forwarder:
     profiles: [ "port-forwarder" ]
     image: alpine/socat:latest
-    container_name: api.pg.port_forwarder
+    container_name: fastapi_example.api.pg.port_forwarder
     ports:
       - "127.0.0.1:5432:5432"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - api.network.pg
+      - fastapi_example.api.network.pg
     command: ["tcp-listen:5432,fork,reuseaddr", "tcp-connect:postgres:5432"]
 
   redis:
     profiles: [ "api", "port-forwarder" ]
     image: redis:latest
-    container_name: api.redis
+    container_name: fastapi_example.api.redis
     restart: unless-stopped
     command: redis-server --requirepass ${REDIS_PASSWORD:-}
     volumes:
@@ -47,33 +47,33 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - api.network.redis
+      - fastapi_example.api.network.redis
     env_file:
       - .env
 
   redis_port_forwarder:
     profiles: [ "port-forwarder" ]
     image: alpine/socat:latest
-    container_name: api.redis.port_forwarder
+    container_name: fastapi_example.api.redis.port_forwarder
     ports:
       - "127.0.0.1:6379:6379"
     depends_on:
       redis:
         condition: service_healthy
     networks:
-      - api.network.redis
-    command: ["tcp-listen:6379,fork,reuseaddr", "tcp-connect:api.redis:6379"]
+      - fastapi_example.api.network.redis
+    command: ["tcp-listen:6379,fork,reuseaddr", "tcp-connect:redis:6379"]
 
   api:
     profiles: [ "api" ]
-    container_name: api
+    container_name: fastapi_example.api
     build:
       context: .
       dockerfile: Dockerfile
     networks:
-      - api.network
-      - api.network.pg
-      - api.network.redis
+      - fastapi_example.api.network
+      - fastapi_example.api.network.pg
+      - fastapi_example.api.network.redis
     volumes:
       - ./src:/usr/api/src
       - ./.certs:/usr/api/.certs:ro
@@ -91,7 +91,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: api.pg.migrations
+    container_name: fastapi_example.api.pg.migrations
     volumes:
       - ./src/fastapi_example/infrastructure/database/migrations/versions:/usr/api/src/fastapi_example/infrastructure/database/migrations/versions
       - ./alembic.ini:/usr/api/alembic.ini:ro
@@ -99,7 +99,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - api.network.pg
+      - fastapi_example.api.network.pg
     command: ["uv", "run", "alembic", "upgrade", "head"]
     env_file:
       - .env
@@ -107,7 +107,7 @@ services:
   grafana:
     profiles: [ "monitoring" ]
     image: grafana/grafana:latest
-    container_name: api.monitoring.grafana
+    container_name: fastapi_example.api.monitoring.grafana
     ports:
       - 3000:3000
     volumes:
@@ -119,13 +119,13 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall lokiLogsDataplane
     networks:
-      - api.network.monitoring
+      - fastapi_example.api.network.monitoring
 
   loki:
     profiles: [ "monitoring" ]
     image: grafana/loki:latest
     container_name: api.monitoring.loki
-    hostname: api.monitoring.loki
+    hostname: fastapi_example.api.monitoring.loki
     expose:
       - "3100"
     volumes:
@@ -134,12 +134,12 @@ services:
     command: -config.file=/etc/loki/config.yaml
     restart: unless-stopped
     networks:
-      - api.network.monitoring
+      - fastapi_example.api.network.monitoring
 
   promtail:
     profiles: [ "monitoring" ]
     image: grafana/promtail:3.0.0
-    container_name: api.monitoring.promtail
+    container_name: fastapi_example.api.monitoring.promtail
     volumes:
       - ./monitoring/promtail/promtail-config.yaml:/etc/promtail/docker-config.yaml
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -148,7 +148,7 @@ services:
     depends_on:
       - loki
     networks:
-      - api.network.monitoring
+      - fastapi_example.api.network.monitoring
 
 volumes:
   pg_root:
@@ -157,12 +157,12 @@ volumes:
   redis.data:
 
 networks:
-  api.network:
-    name: api.network
+  fastapi_example.api.network:
+    name: fastapi_example.api.network
     driver: bridge
-  api.network.pg:
-    name: api.network.pg
-  api.network.monitoring:
-    name: api.network.monitoring
-  api.network.redis:
-    name: api.network.redis
+  fastapi_example.api.network.pg:
+    name: fastapi_example.api.network.pg
+  fastapi_example.api.network.monitoring:
+    name: fastapi_example.api.network.monitoring
+  fastapi_example.api.network.redis:
+    name: fastapi_example.api.network.redis
