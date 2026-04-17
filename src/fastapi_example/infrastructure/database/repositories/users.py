@@ -18,7 +18,7 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
 from fastapi_example.application.dto import UpdateUserType, CreateUserType
-from fastapi_example.application.interfaces.database.mappers import (
+from fastapi_example.application.interfaces.database.repositories.mappers import (
     IUsersRepositoryMapper,
 )
 from fastapi_example.domain.entities import User

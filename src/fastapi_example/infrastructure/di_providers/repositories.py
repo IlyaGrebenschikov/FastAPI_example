@@ -8,7 +8,7 @@ from fastapi_example.application.interfaces.cache.repositories import (
 from fastapi_example.application.interfaces.database.repositories.users import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.database.mappers import (
+from fastapi_example.application.interfaces.database.repositories.mappers import (
     IUsersRepositoryMapper,
 )
 from fastapi_example.infrastructure.cache.repositories import RateLimiterCacheRepository
