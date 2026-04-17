@@ -11,8 +11,9 @@ from fastapi_example.infrastructure.di_providers import (
     CacheProvider,
     DatabaseProvider,
     HasherProvider,
-    MappersProvider,
-    RepositoriesProvider,
+    CacheRepositoriesProvider,
+    DBMappersProvider,
+    DBRepositoriesProvider,
 )
 
 from .settings import Settings
@@ -26,12 +27,13 @@ def setup_di_container(
     log.debug("Setting up DI container.")
     container = make_async_container(
         DatabaseProvider(settings.infrastructure.database),
-        MappersProvider(),
-        RepositoriesProvider(),
+        DBMappersProvider(),
+        DBRepositoriesProvider(),
         UsersServiceProvider(),
         HasherProvider(),
         AuthServiceProvider(settings.infrastructure.jwt),
         CacheProvider(settings.infrastructure.redis),
+        CacheRepositoriesProvider(),
         RateLimiterServiceProvider(),
     )
 

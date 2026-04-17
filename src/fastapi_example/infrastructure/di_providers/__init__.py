@@ -1,13 +1,12 @@
-from .cache import CacheProvider
-from .database import DatabaseProvider
+from .cache import CacheProvider, CacheRepositoriesProvider
+from .database import DatabaseProvider, DBMappersProvider, DBRepositoriesProvider
 from .hasher import HasherProvider
-from .mappers import MappersProvider
-from .repositories import RepositoriesProvider
 
 __all__ = (
     "DatabaseProvider",
-    "MappersProvider",
-    "RepositoriesProvider",
+    "DBMappersProvider",
+    "DBRepositoriesProvider",
     "HasherProvider",
     "CacheProvider",
+    "CacheRepositoriesProvider",
 )

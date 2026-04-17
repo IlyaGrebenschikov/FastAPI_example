@@ -10,6 +10,18 @@ from fastapi_example.infrastructure.database import (
     create_sa_engine,
     create_sa_session_factory,
 )
+from fastapi_example.infrastructure.database.repositories.mappers import (
+    UsersRepositoryMapper,
+)
+from fastapi_example.application.interfaces.database.repositories.users import (
+    IUsersRepository,
+)
+from fastapi_example.application.interfaces.database.repositories.mappers import (
+    IUsersRepositoryMapper,
+)
+from fastapi_example.infrastructure.database.repositories import (
+    SQLAlchemyUsersRepository,
+)
 
 
 class DatabaseProvider(Provider):
@@ -37,3 +49,17 @@ class DatabaseProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def transaction_manager(self, session: AsyncSession) -> ITransactionManager:
         return TransactionManager(session)
+
+
+class DBMappersProvider(Provider):
+    @provide(scope=Scope.APP)
+    def users_repository_mapper(self) -> IUsersRepositoryMapper:
+        return UsersRepositoryMapper()
+
+
+class DBRepositoriesProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    def users_repository(
+        self, session: AsyncSession, mapper: IUsersRepositoryMapper
+    ) -> IUsersRepository:
+        return SQLAlchemyUsersRepository(session, mapper)
