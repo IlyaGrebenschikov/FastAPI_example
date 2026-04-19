@@ -8,3 +8,10 @@ class User(UUIDMixin, TimestampMixin):
     username: str
     email: str
     password: str
+
+
+@dataclass
+class CreateUser:
+    username: str
+    email: str
+    password: str

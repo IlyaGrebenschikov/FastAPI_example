@@ -3,8 +3,8 @@ from typing import Annotated
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Request, Security, status
 
+from fastapi_example.presentation.api.v1.dto import CreateUserDTO
 from fastapi_example.application.dto import (
-    CreateUserDTO,
     DeleteUserDTO,
     UpdateUserDTO,
     UserResponseDTO,
@@ -14,6 +14,7 @@ from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
     IUsersService,
 )
+from fastapi_example.application.features.users.create_user import CreateUserCommand, CreateUserHandler
 from fastapi_example.presentation.api.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.api.common.docs import (
     ConflictError,
@@ -40,13 +41,21 @@ users_router = APIRouter(
 async def create_user(
     request: Request,
     data: CreateUserDTO,
-    user_service: FromDishka[IUsersService],
+    handler: FromDishka[CreateUserHandler],
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
         f"ip:{request.client.host}", request.url.path, limit=100, window=60
     )
-    return await user_service.create_user(data)
+    cmd = CreateUserCommand(username=data.username, email=data.email, password=data.password)
+    user = await handler.execute(cmd)
+    return UserResponseDTO(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        created_at=user.created_at.isoformat(),
+        updated_at=user.updated_at.isoformat(),
+    )
 
 
 @users_router.get(

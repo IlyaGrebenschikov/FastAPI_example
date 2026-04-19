@@ -1,12 +1,12 @@
 from typing import Optional, Protocol
 from uuid import UUID
 
-from fastapi_example.domain.entities import User
-from fastapi_example.application.dto import UpdateUserType, CreateUserType
+from fastapi_example.domain.entities import User, CreateUser
+from fastapi_example.application.dto import UpdateUserType
 
 
 class IUsersRepository(Protocol):
-    async def create_user(self, user: CreateUserType) -> User: ...
+    async def create_user(self, user: CreateUser) -> User: ...
 
     async def exists_user(
         self,

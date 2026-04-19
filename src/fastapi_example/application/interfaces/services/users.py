@@ -10,8 +10,6 @@ from fastapi_example.application.dto import (
 
 
 class IUsersService(Protocol):
-    async def create_user(self, user: CreateUserDTO) -> UserResponseDTO: ...
-
     async def get_user(self, user_id: UUID) -> UserResponseDTO: ...
 
     async def update_user(

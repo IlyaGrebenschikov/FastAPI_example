@@ -38,30 +38,6 @@ class UsersService(IUsersService):
         self._hasher = hasher
         self._transaction_manager = transaction_manager
 
-    async def create_user(self, user: CreateUserDTO) -> UserResponseDTO:
-        async with self._transaction_manager:
-            if await self._repository.exists_user(
-                username=user.username, email=user.email
-            ):
-                log.warning(
-                    "User creation failed - user already exists with username: '%s' or email: '%s'",
-                    user.username,
-                    user.email,
-                )
-                raise ConflictError(
-                    f"User already exists with username: {user.username} or email: {user.email}"
-                )
-
-            user.password = self._hasher.hash_password(user.password)
-            repository_result = await self._repository.create_user(
-                cast(CreateUserType, user.model_dump())
-            )
-
-        log.info(
-            "User created with username: '%s', email: '%s'", user.username, user.email
-        )
-        return self._mapper.domain_to_response_dto(repository_result)
-
     async def get_user(
         self, user_id: UUID, for_update: bool = False
     ) -> UserResponseDTO:
