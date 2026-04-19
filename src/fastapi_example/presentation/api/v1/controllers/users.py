@@ -49,7 +49,7 @@ async def create_user(
     )
     cmd = CreateUserCommand(username=data.username, email=data.email, password=data.password)
     user = await handler.execute(cmd)
-    return UserResponseDTO.model_validate(user)
+    return UserResponseDTO.model_validate(user, from_attributes=True)
 
 
 @users_router.get(

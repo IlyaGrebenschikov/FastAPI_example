@@ -1,12 +1,17 @@
-from typing import Optional, Protocol
+from typing import Optional, Protocol, TypedDict
 from uuid import UUID
 
-from fastapi_example.domain.entities import User, CreateUser
+from fastapi_example.domain.entities import User
 from fastapi_example.application.dto import UpdateUserType
+
+class TCreateUser(TypedDict):
+    username: str
+    email: str
+    password: str
 
 
 class IUsersRepository(Protocol):
-    async def create_user(self, user: CreateUser) -> User: ...
+    async def create_user(self, user: TCreateUser) -> User: ...
 
     async def exists_user(
         self,

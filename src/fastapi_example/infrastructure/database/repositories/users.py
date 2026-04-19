@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from typing import (
     Optional,
     Type,
@@ -17,12 +16,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
+    TCreateUser
 )
 from fastapi_example.application.dto import UpdateUserType
 from fastapi_example.application.interfaces.database.repositories.mappers import (
     IUsersRepositoryMapper,
 )
-from fastapi_example.domain.entities import User, CreateUser
+from fastapi_example.domain.entities import User
 from fastapi_example.infrastructure.database.models import UserModel
 
 
@@ -35,8 +35,8 @@ class SQLAlchemyUsersRepository(IUsersRepository):
     def _model(self) -> Type[UserModel]:
         return UserModel
 
-    async def create_user(self, user: CreateUser) -> User:
-        stmt = insert(self._model).values(**asdict(user)).returning(self._model)
+    async def create_user(self, user: TCreateUser) -> User:
+        stmt = insert(self._model).values(**user).returning(self._model)
         result = (await self._session.execute(stmt)).scalars().first()
         return self._mapper.persistence_to_domain(result)
 

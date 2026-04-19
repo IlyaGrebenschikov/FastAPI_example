@@ -3,7 +3,6 @@ from typing import cast
 from uuid import UUID
 
 from fastapi_example.application.dto import (
-    CreateUserDTO,
     DeleteUserDTO,
     UpdateUserDTO,
     UserResponseDTO,
@@ -14,7 +13,7 @@ from fastapi_example.application.exceptions.http_exceptions import (
     NotFoundError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.dto import UpdateUserType, CreateUserType
+from fastapi_example.application.dto import UpdateUserType
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )

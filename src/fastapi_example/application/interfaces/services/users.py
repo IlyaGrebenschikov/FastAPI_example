@@ -2,7 +2,6 @@ from typing import Protocol
 from uuid import UUID
 
 from fastapi_example.application.dto import (
-    CreateUserDTO,
     DeleteUserDTO,
     UpdateUserDTO,
     UserResponseDTO,

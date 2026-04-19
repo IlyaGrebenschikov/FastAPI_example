@@ -1,4 +1,3 @@
-from .user import User, CreateUser
+from .user import User
 
-__all__ = ("User", "CreateUser")
-
+__all__ = ("User",)

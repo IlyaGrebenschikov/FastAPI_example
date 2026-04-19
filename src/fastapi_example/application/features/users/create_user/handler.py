@@ -1,6 +1,6 @@
 import logging
+from dataclasses import asdict
 
-from fastapi_example.domain.entities import CreateUser
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import IUsersRepository
 from fastapi_example.application.interfaces.security import IHasher
@@ -31,5 +31,5 @@ class CreateUserHandler:
                     f"User already exists with username: {cmd.username} or email: {cmd.email}"
                 )
 
-            user = CreateUser(username=cmd.username, email=cmd.email, password=self._hasher.hash_password(cmd.password))
-            return await self._repository.create_user(user)
+            cmd.password = self._hasher.hash_password(cmd.password)
+            return await self._repository.create_user(asdict(cmd))

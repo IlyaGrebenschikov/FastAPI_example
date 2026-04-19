@@ -4,12 +4,6 @@ from uuid import UUID
 from .base import BaseSchema
 
 
-class CreateUserDTO(BaseSchema):
-    username: str
-    email: str
-    password: str
-
-
 class UpdateUserDTO(BaseSchema):
     username: Optional[str] = None
     email: Optional[str] = None
