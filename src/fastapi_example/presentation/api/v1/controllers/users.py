@@ -3,10 +3,9 @@ from typing import Annotated
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Request, Security, status
 
-from fastapi_example.presentation.api.v1.dto import CreateUserDTO, UserResponseDTO
+from fastapi_example.presentation.api.v1.dto import CreateUserDTO, UserResponseDTO, UpdateUserDTO
 from fastapi_example.application.dto import (
     DeleteUserDTO,
-    UpdateUserDTO,
 )
 from fastapi_example.application.interfaces.services import (
     IRateLimiterService,
@@ -15,6 +14,7 @@ from fastapi_example.application.interfaces.services import (
 )
 from fastapi_example.application.features.users.create_user import CreateUserCommand, CreateUserHandler
 from fastapi_example.application.features.users.get_user import GetUserQuery, GetUserHandler
+from fastapi_example.application.features.users.update_user import UpdateUserCommand, UpdateUserHandler
 from fastapi_example.presentation.api.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.api.common.docs import (
     ConflictError,
@@ -95,7 +95,7 @@ async def update_user(
     request: Request,
     token: Annotated[str, Security(get_bearer_token)],
     data: UpdateUserDTO,
-    user_service: FromDishka[IUsersService],
+    handler: FromDishka[UpdateUserHandler],
     jwt_service: FromDishka[ITokenJWTService],
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
@@ -106,7 +106,8 @@ async def update_user(
     await rate_limiter_service.check(
         f"user:{user_id}", request.url.path, limit=20, window=60
     )
-    return await user_service.update_user(user_id, data)
+    cmd = UpdateUserCommand(user_id, data.username, data.email)
+    return UserResponseDTO.model_validate(await handler.execute(cmd), from_attributes=True)
 
 
 @users_router.delete(

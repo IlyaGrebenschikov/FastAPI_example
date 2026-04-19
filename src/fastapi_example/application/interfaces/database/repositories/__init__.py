@@ -1,3 +1,3 @@
-from .users import IUsersRepository, TCreateUser
+from .users import IUsersRepository, TCreateUser, TUpdateUser
 
-__all__ = ("IUsersRepository", "TCreateUser")
+__all__ = ("IUsersRepository", "TCreateUser", "TUpdateUser")

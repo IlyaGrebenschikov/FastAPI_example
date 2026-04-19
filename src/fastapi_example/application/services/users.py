@@ -1,19 +1,15 @@
 import logging
-from typing import cast
 from uuid import UUID
 
 from fastapi_example.application.dto import (
     DeleteUserDTO,
-    UpdateUserDTO,
     UserResponseDTO,
 )
 from fastapi_example.application.exceptions.http_exceptions import (
-    ConflictError,
     ForbiddenError,
     NotFoundError,
 )
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.dto import UpdateUserType
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
@@ -37,52 +33,6 @@ class UsersService(IUsersService):
         self._hasher = hasher
         self._transaction_manager = transaction_manager
 
-    async def update_user(
-        self, user_id: UUID, data: UpdateUserDTO, for_update: bool = True
-    ) -> UserResponseDTO:
-        async with self._transaction_manager:
-            user = await self._repository.get_user(
-                user_id=user_id, for_update=for_update
-            )
-            if not user:
-                log.warning("User does not exist with ID: '%s'", user_id)
-                raise NotFoundError("User not found")
-
-            if data.username:
-                if (
-                    data.username != user.username
-                ) and await self._repository.exists_user(username=data.username):
-                    log.warning(
-                        "User update failed - user already exists with username: '%s'",
-                        data.username,
-                    )
-                    raise ConflictError(
-                        f"User already exists with username: {data.username}"
-                    )
-
-            if data.email:
-                if (data.email != user.email) and await self._repository.exists_user(
-                    email=data.email
-                ):
-                    log.warning(
-                        "User update failed - user already exists with email: '%s'",
-                        data.email,
-                    )
-                    raise ConflictError(f"User already exists with email: {data.email}")
-
-            if data.password:
-                data.password = self._hasher.hash_password(data.password)
-
-            result = await self._repository.update_user(
-                user_id,
-                cast(
-                    UpdateUserType,
-                    data.model_dump(exclude_unset=True, exclude_none=True),
-                ),
-            )
-
-        log.info("User updated with ID: %s", user.id)
-        return self._mapper.domain_to_response_dto(result)
 
     async def delete_user(
         self, user_id: UUID, data: DeleteUserDTO, for_update: bool = True

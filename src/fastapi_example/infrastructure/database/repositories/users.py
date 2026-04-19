@@ -16,9 +16,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
-    TCreateUser
+    TCreateUser,
+    TUpdateUser
 )
-from fastapi_example.application.dto import UpdateUserType
 from fastapi_example.application.interfaces.database.repositories.mappers import (
     IUsersRepositoryMapper,
 )
@@ -90,7 +90,7 @@ class SQLAlchemyUsersRepository(IUsersRepository):
     async def update_user(
         self,
         user_id: UUID,
-        data: UpdateUserType,
+        data: TUpdateUser,
     ) -> User:
         clause = self._model.id == user_id
         stmt = update(self._model).where(clause).values(**data).returning(self._model)

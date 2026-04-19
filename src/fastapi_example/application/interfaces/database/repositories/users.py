@@ -1,13 +1,18 @@
-from typing import Optional, Protocol, TypedDict
+from typing import Optional, Protocol, TypedDict, NotRequired
 from uuid import UUID
 
 from fastapi_example.domain.entities import User
-from fastapi_example.application.dto import UpdateUserType
 
 class TCreateUser(TypedDict):
     username: str
     email: str
     password: str
+
+
+class TUpdateUser(TypedDict):
+    username: NotRequired[str]
+    email: NotRequired[str]
+    password: NotRequired[str]
 
 
 class IUsersRepository(Protocol):
@@ -30,7 +35,7 @@ class IUsersRepository(Protocol):
     async def update_user(
         self,
         user_id: UUID,
-        data: UpdateUserType,
+        data: TUpdateUser,
     ) -> User: ...
 
     async def delete_user(

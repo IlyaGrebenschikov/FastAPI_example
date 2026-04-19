@@ -2,6 +2,7 @@ from dishka import Provider, Scope, provide
 
 from fastapi_example.application.features.users.create_user import CreateUserHandler
 from fastapi_example.application.features.users.get_user import GetUserHandler
+from fastapi_example.application.features.users.update_user import UpdateUserHandler
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
@@ -29,3 +30,11 @@ class UsersFeaturesProvider(Provider):
             transaction_manager: ITransactionManager,
     ) -> GetUserHandler:
         return GetUserHandler(repository, transaction_manager)
+
+    @provide(scope=Scope.REQUEST)
+    def update_user_handler(
+            self,
+            repository: IUsersRepository,
+            transaction_manager: ITransactionManager,
+    ) -> UpdateUserHandler:
+        return UpdateUserHandler(repository, transaction_manager)
