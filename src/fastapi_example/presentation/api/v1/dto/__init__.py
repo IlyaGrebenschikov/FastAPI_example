@@ -1,3 +1,3 @@
-from .user import CreateUserDTO, UserResponseDTO, UpdateUserDTO
+from .user import CreateUserDTO, UserResponseDTO, UpdateUserDTO, DeleteUserDTO
 
-__all__ = ("CreateUserDTO", "UserResponseDTO", "UpdateUserDTO")
+__all__ = ("CreateUserDTO", "UserResponseDTO", "UpdateUserDTO", "DeleteUserDTO")

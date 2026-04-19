@@ -22,3 +22,7 @@ class UserResponseDTO(BaseSchema):
 class UpdateUserDTO(BaseSchema):
     username: Optional[str] = None
     email: Optional[str] = None
+
+
+class DeleteUserDTO(BaseSchema):
+    password: str
