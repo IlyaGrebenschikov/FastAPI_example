@@ -38,20 +38,6 @@ class UsersService(IUsersService):
         self._hasher = hasher
         self._transaction_manager = transaction_manager
 
-    async def get_user(
-        self, user_id: UUID, for_update: bool = False
-    ) -> UserResponseDTO:
-        async with self._transaction_manager:
-            user = await self._repository.get_user(
-                user_id=user_id, for_update=for_update
-            )
-            if not user:
-                log.warning("User does not exist with ID: '%s'", user_id)
-                raise NotFoundError("User not found")
-
-        log.info("User received with ID: %s", user.id)
-        return self._mapper.domain_to_response_dto(user)
-
     async def update_user(
         self, user_id: UUID, data: UpdateUserDTO, for_update: bool = True
     ) -> UserResponseDTO:

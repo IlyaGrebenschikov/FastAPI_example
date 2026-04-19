@@ -3,11 +3,10 @@ from typing import Annotated
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Request, Security, status
 
-from fastapi_example.presentation.api.v1.dto import CreateUserDTO
+from fastapi_example.presentation.api.v1.dto import CreateUserDTO, UserResponseDTO
 from fastapi_example.application.dto import (
     DeleteUserDTO,
     UpdateUserDTO,
-    UserResponseDTO,
 )
 from fastapi_example.application.interfaces.services import (
     IRateLimiterService,
@@ -15,6 +14,7 @@ from fastapi_example.application.interfaces.services import (
     IUsersService,
 )
 from fastapi_example.application.features.users.create_user import CreateUserCommand, CreateUserHandler
+from fastapi_example.application.features.users.get_user import GetUserQuery, GetUserHandler
 from fastapi_example.presentation.api.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.api.common.docs import (
     ConflictError,
@@ -49,13 +49,7 @@ async def create_user(
     )
     cmd = CreateUserCommand(username=data.username, email=data.email, password=data.password)
     user = await handler.execute(cmd)
-    return UserResponseDTO(
-        id=user.id,
-        username=user.username,
-        email=user.email,
-        created_at=user.created_at.isoformat(),
-        updated_at=user.updated_at.isoformat(),
-    )
+    return UserResponseDTO.model_validate(user)
 
 
 @users_router.get(
@@ -71,7 +65,7 @@ async def create_user(
 async def get_user(
     request: Request,
     token: Annotated[str, Security(get_bearer_token)],
-    user_service: FromDishka[IUsersService],
+    handler: FromDishka[GetUserHandler],
     jwt_service: FromDishka[ITokenJWTService],
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
@@ -82,7 +76,9 @@ async def get_user(
     await rate_limiter_service.check(
         f"user:{user_id}", request.url.path, limit=20, window=60
     )
-    return await user_service.get_user(user_id)
+    query = GetUserQuery(user_id)
+    user = await handler.execute(query)
+    return UserResponseDTO.model_validate(user, from_attributes=True)
 
 
 @users_router.patch(
