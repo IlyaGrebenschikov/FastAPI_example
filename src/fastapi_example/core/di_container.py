@@ -5,7 +5,6 @@ from dishka import AsyncContainer, make_async_container
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     RateLimiterServiceProvider,
-    UsersServiceProvider,
 )
 from fastapi_example.application.di_providers.features import UsersFeaturesProvider
 from fastapi_example.infrastructure.di_providers import (
@@ -30,7 +29,6 @@ def setup_di_container(
         DatabaseProvider(settings.infrastructure.database),
         DBMappersProvider(),
         DBRepositoriesProvider(),
-        UsersServiceProvider(),
         HasherProvider(),
         AuthServiceProvider(settings.infrastructure.jwt),
         CacheProvider(settings.infrastructure.redis),
