@@ -3,7 +3,12 @@ from uuid import uuid4
 
 import pytest
 
-from fastapi_example.application.exceptions.http_exceptions import ConflictError
+from fastapi_example.application.exceptions.http_exceptions import (
+    ConflictError,
+    BadRequestError,
+    ServiceUnavailableError,
+)
+from fastapi_example.application.interfaces.http_clients import EmailVerificationResult
 from fastapi_example.application.features.users.create_user.command import (
     CreateUserCommand,
 )
@@ -20,11 +25,13 @@ class TestCreateUserHandler:
         mock_users_repository,
         mock_hasher,
         mock_transaction_manager,
+        mock_email_verifier,
     ) -> CreateUserHandler:
         return CreateUserHandler(
             repository=mock_users_repository,
             hasher=mock_hasher,
             transaction_manager=mock_transaction_manager,
+            email_verifier=mock_email_verifier,
         )
 
     @pytest.mark.asyncio
@@ -161,3 +168,171 @@ class TestCreateUserHandler:
 
         assert result.username == cmd.username
         assert result.email == cmd.email
+
+    @pytest.mark.asyncio
+    async def test_create_user_invalid_email_format(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="invalid-email",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=False,
+                is_deliverable=False,
+                is_disposable=False,
+            )
+        )
+
+        with pytest.raises(BadRequestError, match="Invalid email format"):
+            await create_user_handler.execute(cmd)
+
+    @pytest.mark.asyncio
+    async def test_create_user_undeliverable_email(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="nonexistent@example.com",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=True,
+                is_deliverable=False,
+                is_disposable=False,
+                details="mailbox_does_not_exist",
+            )
+        )
+
+        with pytest.raises(BadRequestError, match="Email appears undeliverable"):
+            await create_user_handler.execute(cmd)
+
+    @pytest.mark.asyncio
+    async def test_create_user_disposable_email(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="user@10minutemail.com",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=True,
+                is_deliverable=True,
+                is_disposable=True,
+            )
+        )
+
+        with pytest.raises(BadRequestError, match="Disposable email addresses are not allowed"):
+            await create_user_handler.execute(cmd)
+
+    @pytest.mark.asyncio
+    async def test_create_user_email_verifier_unauthorized(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="test@example.com",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=True,
+                is_deliverable=False,
+                is_disposable=False,
+                details="http_401",
+            )
+        )
+
+        with pytest.raises(ServiceUnavailableError, match="Email verification service unauthorized"):
+            await create_user_handler.execute(cmd)
+
+    @pytest.mark.asyncio
+    async def test_create_user_email_verifier_server_error(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="test@example.com",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=True,
+                is_deliverable=False,
+                is_disposable=False,
+                details="http_500",
+            )
+        )
+
+        with pytest.raises(ServiceUnavailableError, match="Email verification service unavailable"):
+            await create_user_handler.execute(cmd)
+
+    @pytest.mark.asyncio
+    async def test_create_user_email_verifier_timeout(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="test@example.com",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=True,
+                is_deliverable=False,
+                is_disposable=False,
+                details="transient_timeout",
+            )
+        )
+
+        with pytest.raises(ServiceUnavailableError, match="Email verification service unavailable"):
+            await create_user_handler.execute(cmd)
+
+    @pytest.mark.asyncio
+    async def test_create_user_checks_email_before_user_exists(
+        self,
+        create_user_handler: CreateUserHandler,
+        mock_email_verifier,
+        mock_users_repository,
+    ):
+        cmd = CreateUserCommand(
+            username="testuser",
+            email="invalid@example.com",
+            password="TestPassword123!",
+        )
+
+        mock_email_verifier.check = AsyncMock(
+            return_value=EmailVerificationResult(
+                is_valid_format=False,
+                is_deliverable=False,
+                is_disposable=False,
+            )
+        )
+
+        with pytest.raises(BadRequestError):
+            await create_user_handler.execute(cmd)
+
+        mock_users_repository.exists_user.assert_not_called()

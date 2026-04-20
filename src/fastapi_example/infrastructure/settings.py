@@ -113,6 +113,16 @@ class CORSSettings(BaseSettings):
     origins: list[str] = ["*"]
 
 
+class EmailVerifierSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="EMAIL_VERIFIER_",
+        extra="ignore",
+    )
+    api_key: str
+
+
 @dataclass
 class InfrastructureSettings:
     database: DatabaseSettings
@@ -121,6 +131,7 @@ class InfrastructureSettings:
     redis: RedisSettings
     app: AppSettings
     cors: CORSSettings
+    email_verifier: EmailVerifierSettings
 
 
 def load_infrastructure_settings(
@@ -130,6 +141,7 @@ def load_infrastructure_settings(
     redis_settings: Optional[RedisSettings] = None,
     app_settings: Optional[AppSettings] = None,
     cors_settings: Optional[CORSSettings] = None,
+    email_verifier_settings: Optional[EmailVerifierSettings] = None,
 ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
@@ -139,4 +151,5 @@ def load_infrastructure_settings(
         redis=redis_settings or RedisSettings(),  # type: ignore[call-arg]
         app=app_settings or AppSettings(),
         cors=cors_settings or CORSSettings(),
+        email_verifier=email_verifier_settings or EmailVerifierSettings(), # type: ignore[call-arg]
     )

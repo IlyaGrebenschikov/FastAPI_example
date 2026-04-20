@@ -17,6 +17,7 @@ Production-ready educational FastAPI service implementing **Vertical Slices** + 
 - [API Overview](#api-overview)
 - [Monitoring & Logging](#monitoring--logging)
 - [Rate Limiting](#rate-limiting)
+- [Email Verification](#email-verification)
 - [Database Migrations](#database-migrations)
 - [Dependency Injection](#dependency-injection)
 - [Useful Commands](#useful-commands)
@@ -181,7 +182,9 @@ fastapi_example/
 │   │   │   │   └── token_jwt.py
 │   │   │   ├── security/
 │   │   │   │   └── hasher.py       # IHasher protocol
-│   │   │   └── cache/
+│   │   │   ├── cache/
+│   │   │   └── http_clients/
+│   │   │       └── email_verifier.py # IEmailVerifier protocol
 │   │   ├── services/                # Domain services
 │   │   │   ├── rate_limiter.py
 │   │   │   └── token_jwt.py
@@ -217,12 +220,15 @@ fastapi_example/
 │   │   │       └── rate_limiter.py  # Redis rate limiter repository
 │   │   ├── security/
 │   │   │   └── argon_hasher.py      # Argon2 hasher implementation
+│   │   ├── http_clients/
+│   │   │   └── email_verifier.py    # AbstractAPI email verification client
 │   │   ├── servers/
 │   │   │   └── uvicorn_server.py    # Uvicorn server configuration
 │   │   ├── di_providers/            # DI providers for infrastructure
 │   │   │   ├── database.py
 │   │   │   ├── cache.py
 │   │   │   ├── hasher.py
+│   │   │   ├── http_clients.py
 │   │   │   └── mappers.py
 │   │   ├── settings.py              # Infrastructure settings
 │   │   └── __init__.py
@@ -314,6 +320,9 @@ CORS_HEADERS=["*"]
 # JWT (RSA-2048 keys in .certs/ directory)
 JWT_ALGORITHM=RS256
 JWT_EXPIRATION_HOURS=24
+
+# Email Verification (AbstractAPI)
+EMAIL_VERIFIER_API_KEY=your_abstractapi_key
 ```
 
 **Security Note:** In production, restrict `CORS_ORIGINS` to trusted domains and use secure, environment-specific values for `REDIS_PASSWORD`.
@@ -464,6 +473,53 @@ The project implements a **distributed rate limiter** using Redis with a sliding
 **Current limits:** All user & auth endpoints enforce 100 requests/minute per IP and 20 requests/minute per authenticated user.
 
 **Customization:** Modify limits in controller files under `presentation/api/v1/controllers/`.
+
+## Email Verification
+
+The application integrates **AbstractAPI Email Reputation** service to validate email addresses during user registration, preventing invalid or disposable email signups.
+
+### How It Works
+
+The `AbstractApiEmailVerifier` client connects to the AbstractAPI service to verify emails across three dimensions:
+- **Format validity** — Checks if email follows RFC standards
+- **Deliverability** — Verifies the domain accepts mail and the mailbox exists
+- **Disposability** — Detects temporary/disposable email services (e.g., 10minutemail.com)
+
+The verifier runs **before** user data is persisted, failing fast with appropriate error messages.
+
+### Setup
+
+1. **Get API key:** Create a free account at [AbstractAPI](https://app.abstractapi.com/) and copy your email reputation API key.
+
+2. **Configure environment:**
+   ```env
+   EMAIL_VERIFIER_API_KEY=sk_test_YOUR_KEY_HERE
+   ```
+
+### How It's Used
+
+During user registration (`POST /api/v1/users`), the `CreateUserHandler` validates the email against three criteria: format validity, deliverability, and disposability. The verifier integrates seamlessly into the registration flow, rejecting invalid emails before user data is persisted.
+
+### Error Handling
+
+The verifier gracefully handles transient failures:
+- **Timeout (>5s)** — Returns deliverability=False, user sees "Email verification service unavailable"
+- **HTTP 401** — API key invalid, logs error, returns HTTP 503 ServiceUnavailable
+- **HTTP 5xx** — Server errors, returns HTTP 503 ServiceUnavailable
+- **Network errors** — Returns deliverability=False, defers to backend validation
+- **Invalid JSON response** — Logs exception, returns deliverability=False
+
+**Best practice:** The service is non-blocking; temporary failures don't prevent signup attempts but encourage users to provide valid, deliverable addresses.
+
+### Architecture
+
+The email verifier follows **Interface Segregation** and **Dependency Inversion** principles:
+
+- **Interface** (`IEmailVerifier` in `application/interfaces/http_clients/`) — Defines the contract
+- **Implementation** (`AbstractApiEmailVerifier` in `infrastructure/http_clients/`) — Concrete adapter to AbstractAPI
+- **DI Registration** (`HTTPClientsProvider` in `infrastructure/di_providers/`) — Scoped as APP-lifetime singleton
+
+This design allows swapping AbstractAPI for another provider (Sendgrid, Mailbox Layer, etc.) without changing application logic.
 
 ## Database Migrations
 

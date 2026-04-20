@@ -5,6 +5,7 @@ from .settings import (
     RedisSettings,
     AppSettings,
     CORSSettings,
+    EmailVerifierSettings,
     load_infrastructure_settings,
 )
 
@@ -15,5 +16,6 @@ __all__ = (
     "RedisSettings",
     "AppSettings",
     "CORSSettings",
+    "EmailVerifierSettings",
     "load_infrastructure_settings",
 )
