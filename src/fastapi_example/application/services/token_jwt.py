@@ -6,9 +6,10 @@ from uuid import UUID
 import jwt
 
 from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedError
-from fastapi_example.application.dto import TokenPayload, TokenDecoded
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
+    TTokenDecoded,
+    TTokenPayload
 )
 from fastapi_example.infrastructure.settings import JWTSettings
 
@@ -19,7 +20,7 @@ class TokenJWTService(ITokenJWTService):
     def __init__(self, settings: JWTSettings) -> None:
         self._settings = settings
 
-    def create_access_token(self, data: TokenPayload) -> str:
+    def create_access_token(self, data: TTokenPayload) -> str:
         to_encode: dict[str, Any] = {}
         to_encode.update(data)
         expiration = datetime.now(timezone.utc) + timedelta(
@@ -42,9 +43,9 @@ class TokenJWTService(ITokenJWTService):
         )
         return token
 
-    def _verify_token(self, token: str) -> TokenDecoded:
+    def _verify_token(self, token: str) -> TTokenDecoded:
         try:
-            decoded_data: TokenDecoded = jwt.decode(
+            decoded_data: TTokenDecoded = jwt.decode(
                 token, self._settings.public_key, algorithms=[self._settings.algorithm]
             )
         except jwt.ExpiredSignatureError:

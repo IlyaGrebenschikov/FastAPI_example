@@ -1,9 +1,8 @@
-from .auth import Token, TokenDecoded, TokenPayload, LoginCredentials
+from .auth import Token, LoginCredentials
 
 
 __all__ = (
     "Token",
-    "TokenPayload",
     "TokenDecoded",
     "LoginCredentials",
 )

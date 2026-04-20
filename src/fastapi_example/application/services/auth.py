@@ -6,11 +6,12 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.dto import TokenPayload, LoginCredentials
+from fastapi_example.application.dto import LoginCredentials
 from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import (
     IAuthService,
     ITokenJWTService,
+    TTokenPayload,
 )
 
 log = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class AuthService(IAuthService):
             log.debug("Password verification failed")
             raise UnAuthorizedError("Incorrect login or password")
 
-        token_payload: TokenPayload = {"sub": str(user.id)}
+        token_payload: TTokenPayload = {"sub": str(user.id)}
         if credentials.scopes is not None:
             token_payload["scopes"] = credentials.scopes
         access_token = self._token_jwt.create_access_token(token_payload)
