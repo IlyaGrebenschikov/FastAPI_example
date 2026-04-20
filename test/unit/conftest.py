@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from fastapi_example.infrastructure.settings import JWTSettings
+from fastapi_example.application.interfaces.http_clients import EmailVerificationResult
 
 
 @pytest.fixture
@@ -36,4 +37,18 @@ def mock_hasher():
     mock = MagicMock()
     mock.hash_password = MagicMock(return_value="hashed_password")
     mock.verify_password = MagicMock(return_value=True)
+    return mock
+
+
+@pytest.fixture
+def mock_email_verifier():
+    mock = AsyncMock()
+    mock.check = AsyncMock(
+        return_value=EmailVerificationResult(
+            is_valid_format=True,
+            is_deliverable=True,
+            is_disposable=False,
+            details="ok",
+        )
+    )
     return mock
