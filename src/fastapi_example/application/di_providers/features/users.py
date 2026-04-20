@@ -9,6 +9,7 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
 from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 
 
 class UsersFeaturesProvider(Provider):
@@ -21,8 +22,9 @@ class UsersFeaturesProvider(Provider):
         repository: IUsersRepository,
         hasher: IHasher,
         transaction_manager: ITransactionManager,
+        email_verifier: IEmailVerifier,
     ) -> CreateUserHandler:
-        return CreateUserHandler(repository, hasher, transaction_manager)
+        return CreateUserHandler(repository, hasher, transaction_manager, email_verifier)
 
     @provide(scope=Scope.REQUEST)
     def get_user_handler(

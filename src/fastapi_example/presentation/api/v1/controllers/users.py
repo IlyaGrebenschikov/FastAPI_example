@@ -36,6 +36,7 @@ from fastapi_example.presentation.api.common.docs import (
     NotFoundError,
     TooManyRequestsError,
     UnAuthorizedError,
+    ServiceUnavailableError
 )
 
 users_router = APIRouter(
@@ -50,6 +51,7 @@ users_router = APIRouter(
     responses={
         status.HTTP_409_CONFLICT: {"model": ConflictError},
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
+        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ServiceUnavailableError}
     },
 )
 async def create_user(

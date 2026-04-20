@@ -17,7 +17,7 @@ class AbstractApiEmailVerifier(IEmailVerifier):
     async def check(self, email: str) -> EmailVerificationResult:
         try:
             r = await self._client.get(
-                "https://emailvalidation.abstractapi.com/v1/",
+                "https://emailreputation.abstractapi.com/v1/",
                 params={"api_key": self._key, "email": email},
             )
             r.raise_for_status()
