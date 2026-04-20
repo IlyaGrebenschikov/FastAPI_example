@@ -17,6 +17,7 @@ from fastapi_example.infrastructure.di_providers import (
     CacheRepositoriesProvider,
     DBMappersProvider,
     DBRepositoriesProvider,
+    HTTPClientsProvider
 )
 
 from .settings import Settings
@@ -39,6 +40,7 @@ def setup_di_container(
         RateLimiterServiceProvider(),
         UsersFeaturesProvider(),
         AuthFeaturesProvider(),
+        HTTPClientsProvider(settings.infrastructure.email_verifier),
     )
 
     return container
