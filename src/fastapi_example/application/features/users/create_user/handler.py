@@ -1,8 +1,12 @@
 import logging
 from dataclasses import asdict
+from typing import cast
 
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
+from fastapi_example.application.interfaces.database.repositories import (
+    IUsersRepository,
+    TCreateUser,
+)
 from fastapi_example.application.interfaces.security import IHasher
 from .command import CreateUserCommand
 from fastapi_example.domain.entities import User
@@ -12,7 +16,12 @@ log = logging.getLogger(__name__)
 
 
 class CreateUserHandler:
-    def __init__(self, repository: IUsersRepository, hasher: IHasher, transaction_manager: ITransactionManager) -> None:
+    def __init__(
+        self,
+        repository: IUsersRepository,
+        hasher: IHasher,
+        transaction_manager: ITransactionManager,
+    ) -> None:
         self._repository = repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
@@ -32,4 +41,5 @@ class CreateUserHandler:
                 )
 
             cmd.password = self._hasher.hash_password(cmd.password)
-            return await self._repository.create_user(asdict(cmd))
+            data = cast(TCreateUser, cast(object, asdict(cmd)))
+            return await self._repository.create_user(data)

@@ -3,15 +3,32 @@ from typing import Annotated
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Request, Security, status
 
-from fastapi_example.presentation.api.v1.dto import CreateUserDTO, UserResponseDTO, UpdateUserDTO, DeleteUserDTO
+from fastapi_example.presentation.api.v1.dto import (
+    CreateUserDTO,
+    UserResponseDTO,
+    UpdateUserDTO,
+    DeleteUserDTO,
+)
 from fastapi_example.application.interfaces.services import (
     IRateLimiterService,
     ITokenJWTService,
 )
-from fastapi_example.application.features.users.create_user import CreateUserCommand, CreateUserHandler
-from fastapi_example.application.features.users.get_user import GetUserQuery, GetUserHandler
-from fastapi_example.application.features.users.update_user import UpdateUserCommand, UpdateUserHandler
-from fastapi_example.application.features.users.delete_user import DeleteUserCommand, DeleteUserHandler
+from fastapi_example.application.features.users.create_user import (
+    CreateUserCommand,
+    CreateUserHandler,
+)
+from fastapi_example.application.features.users.get_user import (
+    GetUserQuery,
+    GetUserHandler,
+)
+from fastapi_example.application.features.users.update_user import (
+    UpdateUserCommand,
+    UpdateUserHandler,
+)
+from fastapi_example.application.features.users.delete_user import (
+    DeleteUserCommand,
+    DeleteUserHandler,
+)
 from fastapi_example.presentation.api.v1.dependencies import get_bearer_token
 from fastapi_example.presentation.api.common.docs import (
     ConflictError,
@@ -42,9 +59,14 @@ async def create_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+        f"ip:{request.client.host}", # type: ignore[union-attr]
+        request.url.path,
+        limit=100,
+        window=60,
     )
-    cmd = CreateUserCommand(username=data.username, email=data.email, password=data.password)
+    cmd = CreateUserCommand(
+        username=data.username, email=data.email, password=data.password
+    )
     user = await handler.execute(cmd)
     return UserResponseDTO.model_validate(user, from_attributes=True)
 
@@ -67,7 +89,10 @@ async def get_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+        f"ip:{request.client.host}", # type: ignore[union-attr]
+        request.url.path,
+        limit=100,
+        window=60,
     )
     user_id = jwt_service.get_user_id_from_token(token)
     await rate_limiter_service.check(
@@ -97,14 +122,19 @@ async def update_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+        f"ip:{request.client.host}", # type: ignore[union-attr]
+        request.url.path,
+        limit=100,
+        window=60,
     )
     user_id = jwt_service.get_user_id_from_token(token)
     await rate_limiter_service.check(
         f"user:{user_id}", request.url.path, limit=20, window=60
     )
     cmd = UpdateUserCommand(user_id, data.username, data.email)
-    return UserResponseDTO.model_validate(await handler.execute(cmd), from_attributes=True)
+    return UserResponseDTO.model_validate(
+        await handler.execute(cmd), from_attributes=True
+    )
 
 
 @users_router.delete(
@@ -126,11 +156,16 @@ async def delete_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+        f"ip:{request.client.host}", # type: ignore[union-attr]
+        request.url.path,
+        limit=100,
+        window=60,
     )
     user_id = jwt_service.get_user_id_from_token(token)
     await rate_limiter_service.check(
         f"user:{user_id}", request.url.path, limit=20, window=60
     )
     cmd = DeleteUserCommand(user_id, data.password)
-    return UserResponseDTO.model_validate(await handler.execute(cmd), from_attributes=True)
+    return UserResponseDTO.model_validate(
+        await handler.execute(cmd), from_attributes=True
+    )

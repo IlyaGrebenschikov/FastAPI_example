@@ -9,7 +9,7 @@ from fastapi_example.application.exceptions.http_exceptions import UnAuthorizedE
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
     TTokenDecoded,
-    TTokenPayload
+    TTokenPayload,
 )
 from fastapi_example.infrastructure.settings import JWTSettings
 

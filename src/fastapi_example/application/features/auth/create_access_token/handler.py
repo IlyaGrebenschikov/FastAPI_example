@@ -44,7 +44,5 @@ class CreateAccessTokenHandler:
             token_payload["scopes"] = cmd.scopes
         access_token = self._token_jwt.create_access_token(token_payload)
 
-        log.info(
-            "User '%s' (ID: %s) successfully logged in", cmd.username, user.id
-        )
+        log.info("User '%s' (ID: %s) successfully logged in", cmd.username, user.id)
         return access_token

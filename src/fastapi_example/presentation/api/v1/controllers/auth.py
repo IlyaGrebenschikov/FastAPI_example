@@ -10,7 +10,7 @@ from fastapi_example.application.interfaces.services import (
 )
 from fastapi_example.application.features.auth.create_access_token import (
     CreateAccessTokenHandler,
-    CreateAccessTokenCommand
+    CreateAccessTokenCommand,
 )
 from fastapi_example.presentation.api.common.docs import (
     TooManyRequestsError,
@@ -41,6 +41,9 @@ async def token(
         scopes=form.scopes,
     )
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", request.url.path, limit=100, window=60
+        f"ip:{request.client.host}", # type: ignore[union-attr]
+        request.url.path,
+        limit=100,
+        window=60,
     )
     return TokenDTO(access_token=await handler.execute(cmd), token_type="Bearer")

@@ -8,7 +8,9 @@ from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
 )
-from fastapi_example.application.features.auth.create_access_token import CreateAccessTokenHandler
+from fastapi_example.application.features.auth.create_access_token import (
+    CreateAccessTokenHandler,
+)
 
 
 class AuthFeaturesProvider(Provider):
@@ -23,4 +25,6 @@ class AuthFeaturesProvider(Provider):
         hasher: IHasher,
         transaction_manager: ITransactionManager,
     ) -> CreateAccessTokenHandler:
-        return CreateAccessTokenHandler(repository, token_jwt, hasher, transaction_manager)
+        return CreateAccessTokenHandler(
+            repository, token_jwt, hasher, transaction_manager
+        )

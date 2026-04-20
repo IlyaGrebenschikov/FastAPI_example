@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
     TCreateUser,
-    TUpdateUser
+    TUpdateUser,
 )
 from fastapi_example.application.interfaces.database.repositories.mappers import (
     IUsersRepositoryMapper,

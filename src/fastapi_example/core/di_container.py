@@ -6,7 +6,10 @@ from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     RateLimiterServiceProvider,
 )
-from fastapi_example.application.di_providers.features import UsersFeaturesProvider, AuthFeaturesProvider
+from fastapi_example.application.di_providers.features import (
+    UsersFeaturesProvider,
+    AuthFeaturesProvider,
+)
 from fastapi_example.infrastructure.di_providers import (
     CacheProvider,
     DatabaseProvider,
@@ -35,7 +38,7 @@ def setup_di_container(
         CacheRepositoriesProvider(),
         RateLimiterServiceProvider(),
         UsersFeaturesProvider(),
-        AuthFeaturesProvider()
+        AuthFeaturesProvider(),
     )
 
     return container

@@ -1,7 +1,9 @@
 import logging
 
 from fastapi_example.application.interfaces.database import ITransactionManager
-from fastapi_example.application.interfaces.database.repositories import IUsersRepository
+from fastapi_example.application.interfaces.database.repositories import (
+    IUsersRepository,
+)
 from .query import GetUserQuery
 from fastapi_example.domain.entities import User
 from fastapi_example.application.exceptions.http_exceptions import NotFoundError
@@ -10,13 +12,13 @@ log = logging.getLogger(__name__)
 
 
 class GetUserHandler:
-    def __init__(self, repository: IUsersRepository, transaction_manager: ITransactionManager) -> None:
+    def __init__(
+        self, repository: IUsersRepository, transaction_manager: ITransactionManager
+    ) -> None:
         self._repository = repository
         self._transaction_manager = transaction_manager
 
-    async def execute(
-        self, query: GetUserQuery
-    ) -> User:
+    async def execute(self, query: GetUserQuery) -> User:
         async with self._transaction_manager:
             user = await self._repository.get_user(
                 user_id=query.user_id, for_update=False

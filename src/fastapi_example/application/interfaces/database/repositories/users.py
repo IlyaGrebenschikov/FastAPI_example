@@ -3,6 +3,7 @@ from uuid import UUID
 
 from fastapi_example.domain.entities import User
 
+
 class TCreateUser(TypedDict):
     username: str
     email: str

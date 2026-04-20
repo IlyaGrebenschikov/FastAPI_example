@@ -26,25 +26,25 @@ class UsersFeaturesProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     def get_user_handler(
-            self,
-            repository: IUsersRepository,
-            transaction_manager: ITransactionManager,
+        self,
+        repository: IUsersRepository,
+        transaction_manager: ITransactionManager,
     ) -> GetUserHandler:
         return GetUserHandler(repository, transaction_manager)
 
     @provide(scope=Scope.REQUEST)
     def update_user_handler(
-            self,
-            repository: IUsersRepository,
-            transaction_manager: ITransactionManager,
+        self,
+        repository: IUsersRepository,
+        transaction_manager: ITransactionManager,
     ) -> UpdateUserHandler:
         return UpdateUserHandler(repository, transaction_manager)
 
     @provide(scope=Scope.REQUEST)
     def delete_user_handler(
-            self,
-            repository: IUsersRepository,
-            hasher: IHasher,
-            transaction_manager: ITransactionManager,
+        self,
+        repository: IUsersRepository,
+        hasher: IHasher,
+        transaction_manager: ITransactionManager,
     ) -> DeleteUserHandler:
         return DeleteUserHandler(repository, hasher, transaction_manager)
