@@ -8,10 +8,10 @@ from fastapi_example.application.interfaces.database.repositories import (
     TCreateUser,
 )
 from fastapi_example.application.interfaces.security import IHasher
-from fastapi_example.application.interfaces.http_clients import IEmailVerifier
+from fastapi_example.application.interfaces.services import IEmailValidatorService
 from .command import CreateUserCommand
 from fastapi_example.domain.entities import User
-from fastapi_example.application.exceptions.http_exceptions import ConflictError, BadRequestError, ServiceUnavailableError
+from fastapi_example.application.exceptions.http_exceptions import ConflictError
 
 log = logging.getLogger(__name__)
 
@@ -22,26 +22,15 @@ class CreateUserHandler:
         repository: IUsersRepository,
         hasher: IHasher,
         transaction_manager: ITransactionManager,
-        email_verifier: IEmailVerifier,
+        email_validator: IEmailValidatorService,
     ) -> None:
         self._repository = repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
-        self._email_verifier = email_verifier
+        self._email_validator = email_validator
 
     async def execute(self, cmd: CreateUserCommand) -> User:
-        ver = await self._email_verifier.check(cmd.email)
-        if ver.details and ver.details.startswith("http_401"):
-            log.error("Email verifier unauthorized (401) for email=%s", cmd.email)
-            raise ServiceUnavailableError("Email verification service unauthorized")
-        if ver.details and ver.details.startswith(("transient", "network", "http_5")):
-            raise ServiceUnavailableError("Email verification service unavailable")
-        if not ver.is_valid_format:
-            raise BadRequestError(f"Invalid email format: {cmd.email}")
-        if not ver.is_deliverable:
-            raise BadRequestError("Email appears undeliverable")
-        if ver.is_disposable:
-            raise BadRequestError("Disposable email addresses are not allowed")
+        await self._email_validator.validate(cmd.email)
 
         async with self._transaction_manager:
             if await self._repository.exists_user(

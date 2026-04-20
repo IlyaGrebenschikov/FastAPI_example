@@ -8,6 +8,7 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
     TUpdateUser,
 )
+from fastapi_example.application.interfaces.services import IEmailValidatorService
 from fastapi_example.application.exceptions.http_exceptions import (
     NotFoundError,
     ConflictError,
@@ -19,10 +20,11 @@ log = logging.getLogger(__name__)
 
 class UpdateUserHandler:
     def __init__(
-        self, repository: IUsersRepository, transaction_manager: ITransactionManager
+        self, repository: IUsersRepository, transaction_manager: ITransactionManager, email_validator: IEmailValidatorService
     ):
         self._repository = repository
         self._transaction_manager = transaction_manager
+        self._email_validator = email_validator
 
     async def execute(self, cmd: UpdateUserCommand) -> User:
         async with self._transaction_manager:
@@ -52,6 +54,8 @@ class UpdateUserHandler:
                         cmd.email,
                     )
                     raise ConflictError(f"User already exists with email: {cmd.email}")
+
+                await self._email_validator.validate(cast(str, cmd.email))
 
             raw_data = {
                 k: v for k, v in asdict(cmd).items() if v is not None and k != "user_id"

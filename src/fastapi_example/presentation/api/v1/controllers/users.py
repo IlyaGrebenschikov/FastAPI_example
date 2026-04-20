@@ -113,6 +113,7 @@ async def get_user(
         status.HTTP_409_CONFLICT: {"model": ConflictError},
         status.HTTP_404_NOT_FOUND: {"model": NotFoundError},
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
+        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ServiceUnavailableError}
     },
 )
 async def update_user(
