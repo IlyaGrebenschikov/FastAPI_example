@@ -36,7 +36,7 @@ from fastapi_example.presentation.api.common.docs import (
     NotFoundError,
     TooManyRequestsError,
     UnAuthorizedError,
-    ServiceUnavailableError
+    ServiceUnavailableError,
 )
 
 users_router = APIRouter(
@@ -51,7 +51,7 @@ users_router = APIRouter(
     responses={
         status.HTTP_409_CONFLICT: {"model": ConflictError},
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
-        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ServiceUnavailableError}
+        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ServiceUnavailableError},
     },
 )
 async def create_user(
@@ -61,7 +61,7 @@ async def create_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", # type: ignore[union-attr]
+        f"ip:{request.client.host}",  # type: ignore[union-attr]
         request.url.path,
         limit=100,
         window=60,
@@ -91,7 +91,7 @@ async def get_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", # type: ignore[union-attr]
+        f"ip:{request.client.host}",  # type: ignore[union-attr]
         request.url.path,
         limit=100,
         window=60,
@@ -113,7 +113,7 @@ async def get_user(
         status.HTTP_409_CONFLICT: {"model": ConflictError},
         status.HTTP_404_NOT_FOUND: {"model": NotFoundError},
         status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
-        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ServiceUnavailableError}
+        status.HTTP_503_SERVICE_UNAVAILABLE: {"model": ServiceUnavailableError},
     },
 )
 async def update_user(
@@ -125,7 +125,7 @@ async def update_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", # type: ignore[union-attr]
+        f"ip:{request.client.host}",  # type: ignore[union-attr]
         request.url.path,
         limit=100,
         window=60,
@@ -159,7 +159,7 @@ async def delete_user(
     rate_limiter_service: FromDishka[IRateLimiterService],
 ) -> UserResponseDTO:
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", # type: ignore[union-attr]
+        f"ip:{request.client.host}",  # type: ignore[union-attr]
         request.url.path,
         limit=100,
         window=60,

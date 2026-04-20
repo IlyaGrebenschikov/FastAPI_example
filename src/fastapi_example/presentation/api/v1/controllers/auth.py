@@ -41,7 +41,7 @@ async def token(
         scopes=form.scopes,
     )
     await rate_limiter_service.check(
-        f"ip:{request.client.host}", # type: ignore[union-attr]
+        f"ip:{request.client.host}",  # type: ignore[union-attr]
         request.url.path,
         limit=100,
         window=60,

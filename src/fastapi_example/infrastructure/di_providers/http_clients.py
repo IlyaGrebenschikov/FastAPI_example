@@ -6,7 +6,9 @@ from fastapi_example.infrastructure.settings import EmailVerifierSettings
 
 
 class HTTPClientsProvider(Provider):
-    def __init__(self, email_verifier_settings: EmailVerifierSettings, scope=None, component=None):
+    def __init__(
+        self, email_verifier_settings: EmailVerifierSettings, scope=None, component=None
+    ):
         self._email_verifier_settings = email_verifier_settings
         super().__init__(scope, component)
 

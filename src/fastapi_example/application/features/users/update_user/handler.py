@@ -20,7 +20,10 @@ log = logging.getLogger(__name__)
 
 class UpdateUserHandler:
     def __init__(
-        self, repository: IUsersRepository, transaction_manager: ITransactionManager, email_validator: IEmailValidatorService
+        self,
+        repository: IUsersRepository,
+        transaction_manager: ITransactionManager,
+        email_validator: IEmailValidatorService,
     ):
         self._repository = repository
         self._transaction_manager = transaction_manager

@@ -14,7 +14,9 @@ class TestAbstractApiEmailVerifier:
         return AbstractApiEmailVerifier(api_key="test_api_key")
 
     @pytest.mark.asyncio
-    async def test_check_valid_deliverable_email(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_valid_deliverable_email(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test successful verification of a valid, deliverable email."""
         email = "user@example.com"
         mock_response = {
@@ -42,7 +44,9 @@ class TestAbstractApiEmailVerifier:
             mock_get.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_check_invalid_format_email(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_invalid_format_email(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test verification of an email with invalid format."""
         email = "invalid-email"
         mock_response = {
@@ -68,7 +72,9 @@ class TestAbstractApiEmailVerifier:
             assert result.is_disposable is False
 
     @pytest.mark.asyncio
-    async def test_check_disposable_email(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_disposable_email(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test verification of a disposable email address."""
         email = "user@10minutemail.com"
         mock_response = {
@@ -94,7 +100,9 @@ class TestAbstractApiEmailVerifier:
             assert result.is_disposable is True
 
     @pytest.mark.asyncio
-    async def test_check_undeliverable_email(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_undeliverable_email(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test verification of an undeliverable email."""
         email = "nonexistent@example.com"
         mock_response = {
@@ -121,7 +129,9 @@ class TestAbstractApiEmailVerifier:
             assert result.details == "mailbox_does_not_exist"
 
     @pytest.mark.asyncio
-    async def test_check_timeout_exception(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_timeout_exception(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test handling of timeout exception."""
         email = "user@example.com"
 
@@ -214,14 +224,18 @@ class TestAbstractApiEmailVerifier:
             assert result.details == "network_error"
 
     @pytest.mark.asyncio
-    async def test_check_json_decode_error(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_json_decode_error(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test handling of JSON decode error."""
         email = "user@example.com"
 
         with patch.object(email_verifier._client, "get") as mock_get:
             mock_response_obj = MagicMock()
             mock_response_obj.raise_for_status = MagicMock()
-            mock_response_obj.json.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
+            mock_response_obj.json.side_effect = json.JSONDecodeError(
+                "Invalid JSON", "", 0
+            )
             mock_get.return_value = mock_response_obj
 
             result = await email_verifier.check(email)
@@ -283,7 +297,9 @@ class TestAbstractApiEmailVerifier:
             assert result.is_deliverable is True
 
     @pytest.mark.asyncio
-    async def test_check_calls_api_with_correct_params(self, email_verifier: AbstractApiEmailVerifier):
+    async def test_check_calls_api_with_correct_params(
+        self, email_verifier: AbstractApiEmailVerifier
+    ):
         """Test that API is called with correct email and API key parameters."""
         email = "user@example.com"
         mock_response = {

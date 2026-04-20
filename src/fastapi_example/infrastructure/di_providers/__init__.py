@@ -10,5 +10,5 @@ __all__ = (
     "HasherProvider",
     "CacheProvider",
     "CacheRepositoriesProvider",
-    "HTTPClientsProvider"
+    "HTTPClientsProvider",
 )

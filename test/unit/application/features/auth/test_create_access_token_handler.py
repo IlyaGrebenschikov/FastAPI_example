@@ -61,9 +61,7 @@ class TestCreateAccessTokenHandler:
         assert isinstance(token, str)
         assert len(token) > 0
         mock_users_repository.get_user.assert_called_once_with(username=cmd.username)
-        mock_hasher.verify_password.assert_called_once_with(
-            cmd.password, user.password
-        )
+        mock_hasher.verify_password.assert_called_once_with(cmd.password, user.password)
 
     @pytest.mark.asyncio
     async def test_create_access_token_user_not_found(
@@ -167,9 +165,7 @@ class TestCreateAccessTokenHandler:
 
         await create_access_token_handler.execute(cmd)
 
-        mock_hasher.verify_password.assert_called_once_with(
-            cmd.password, user.password
-        )
+        mock_hasher.verify_password.assert_called_once_with(cmd.password, user.password)
 
     @pytest.mark.asyncio
     async def test_create_access_token_empty_username(

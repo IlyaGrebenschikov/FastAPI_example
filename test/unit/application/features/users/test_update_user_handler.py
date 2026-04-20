@@ -105,9 +105,7 @@ class TestUpdateUserHandler:
         mock_users_repository.get_user = AsyncMock(return_value=existing_user)
         mock_users_repository.exists_user = AsyncMock(return_value=True)
 
-        with pytest.raises(
-            ConflictError, match="User already exists with username"
-        ):
+        with pytest.raises(ConflictError, match="User already exists with username"):
             await update_user_handler.execute(cmd)
 
     @pytest.mark.asyncio

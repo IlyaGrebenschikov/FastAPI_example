@@ -56,9 +56,7 @@ class TestDeleteUserHandler:
         mock_users_repository.get_user.assert_called_once_with(
             user_id=user_id, for_update=True
         )
-        mock_hasher.verify_password.assert_called_once_with(
-            cmd.password, user.password
-        )
+        mock_hasher.verify_password.assert_called_once_with(cmd.password, user.password)
         mock_users_repository.delete_user.assert_called_once_with(user_id=user_id)
 
     @pytest.mark.asyncio
@@ -126,9 +124,7 @@ class TestDeleteUserHandler:
 
         await delete_user_handler.execute(cmd)
 
-        mock_hasher.verify_password.assert_called_once_with(
-            cmd.password, user.password
-        )
+        mock_hasher.verify_password.assert_called_once_with(cmd.password, user.password)
 
     @pytest.mark.asyncio
     async def test_delete_user_empty_password(

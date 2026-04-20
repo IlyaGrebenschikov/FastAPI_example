@@ -30,9 +30,7 @@ class TestTokenJWTService:
         assert "exp" in decoded
         assert "iat" in decoded
 
-    def test_create_access_token_with_scopes(
-        self, token_service: TokenJWTService
-    ):
+    def test_create_access_token_with_scopes(self, token_service: TokenJWTService):
         user_id = str(uuid4())
         payload = {"sub": user_id, "scopes": ["read", "write"]}
         token = token_service.create_access_token(payload)
@@ -69,9 +67,7 @@ class TestTokenJWTService:
         with pytest.raises(UnAuthorizedError, match="Token expired"):
             service._verify_token(token)
 
-    def test_verify_token_missing_subject(
-        self, jwt_settings: JWTSettings
-    ):
+    def test_verify_token_missing_subject(self, jwt_settings: JWTSettings):
         service = TokenJWTService(jwt_settings)
         payload = {"data": "test"}
         token = jwt.encode(
@@ -83,9 +79,7 @@ class TestTokenJWTService:
         with pytest.raises(UnAuthorizedError, match="Token missing subject"):
             service._verify_token(token)
 
-    def test_get_user_id_from_token_success(
-        self, token_service: TokenJWTService
-    ):
+    def test_get_user_id_from_token_success(self, token_service: TokenJWTService):
         user_id = uuid4()
         payload = {"sub": str(user_id)}
         token = token_service.create_access_token(payload)
@@ -93,9 +87,7 @@ class TestTokenJWTService:
         result = token_service.get_user_id_from_token(token)
         assert result == user_id
 
-    def test_get_user_id_from_token_invalid(
-        self, token_service: TokenJWTService
-    ):
+    def test_get_user_id_from_token_invalid(self, token_service: TokenJWTService):
         with pytest.raises(UnAuthorizedError):
             token_service.get_user_id_from_token("invalid.token.here")
 

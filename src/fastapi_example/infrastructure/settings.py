@@ -151,5 +151,5 @@ def load_infrastructure_settings(
         redis=redis_settings or RedisSettings(),  # type: ignore[call-arg]
         app=app_settings or AppSettings(),
         cors=cors_settings or CORSSettings(),
-        email_verifier=email_verifier_settings or EmailVerifierSettings(), # type: ignore[call-arg]
+        email_verifier=email_verifier_settings or EmailVerifierSettings(),  # type: ignore[call-arg]
     )

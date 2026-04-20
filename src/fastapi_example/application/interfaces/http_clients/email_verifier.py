@@ -1,3 +1,5 @@
+from typing import Protocol
+
 from dataclasses import dataclass
 
 
@@ -9,5 +11,5 @@ class EmailVerificationResult:
     details: str | None = None
 
 
-class IEmailVerifier:
+class IEmailVerifier(Protocol):
     async def check(self, email: str) -> EmailVerificationResult: ...

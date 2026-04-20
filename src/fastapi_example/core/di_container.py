@@ -5,7 +5,7 @@ from dishka import AsyncContainer, make_async_container
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     RateLimiterServiceProvider,
-    EmailValidatorServiceProvider
+    EmailValidatorServiceProvider,
 )
 from fastapi_example.application.di_providers.features import (
     UsersFeaturesProvider,
@@ -18,7 +18,7 @@ from fastapi_example.infrastructure.di_providers import (
     CacheRepositoriesProvider,
     DBMappersProvider,
     DBRepositoriesProvider,
-    HTTPClientsProvider
+    HTTPClientsProvider,
 )
 
 from .settings import Settings

@@ -236,7 +236,9 @@ class TestCreateUserHandler:
             )
         )
 
-        with pytest.raises(BadRequestError, match="Disposable email addresses are not allowed"):
+        with pytest.raises(
+            BadRequestError, match="Disposable email addresses are not allowed"
+        ):
             await create_user_handler.execute(cmd)
 
     @pytest.mark.asyncio
@@ -260,7 +262,9 @@ class TestCreateUserHandler:
             )
         )
 
-        with pytest.raises(ServiceUnavailableError, match="Email verification service unauthorized"):
+        with pytest.raises(
+            ServiceUnavailableError, match="Email verification service unauthorized"
+        ):
             await create_user_handler.execute(cmd)
 
     @pytest.mark.asyncio
@@ -284,7 +288,9 @@ class TestCreateUserHandler:
             )
         )
 
-        with pytest.raises(ServiceUnavailableError, match="Email verification service unavailable"):
+        with pytest.raises(
+            ServiceUnavailableError, match="Email verification service unavailable"
+        ):
             await create_user_handler.execute(cmd)
 
     @pytest.mark.asyncio
@@ -308,7 +314,9 @@ class TestCreateUserHandler:
             )
         )
 
-        with pytest.raises(ServiceUnavailableError, match="Email verification service unavailable"):
+        with pytest.raises(
+            ServiceUnavailableError, match="Email verification service unavailable"
+        ):
             await create_user_handler.execute(cmd)
 
     @pytest.mark.asyncio
