@@ -4,10 +4,13 @@ from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from fastapi_example.application.dto import Token, LoginCredentials
+from fastapi_example.presentation.api.v1.dto import TokenDTO
 from fastapi_example.application.interfaces.services import (
-    IAuthService,
     IRateLimiterService,
+)
+from fastapi_example.application.features.auth.create_access_token import (
+    CreateAccessTokenHandler,
+    CreateAccessTokenCommand
 )
 from fastapi_example.presentation.api.common.docs import (
     TooManyRequestsError,
@@ -18,8 +21,8 @@ auth_router = APIRouter(prefix="/api/v1/token", tags=["token"], route_class=Dish
 
 
 @auth_router.post(
-    "",
-    response_model=Token,
+    "/access",
+    response_model=TokenDTO,
     status_code=status.HTTP_201_CREATED,
     responses={
         status.HTTP_401_UNAUTHORIZED: {"model": UnAuthorizedError},
@@ -28,16 +31,16 @@ auth_router = APIRouter(prefix="/api/v1/token", tags=["token"], route_class=Dish
 )
 async def token(
     request: Request,
-    query: Annotated[OAuth2PasswordRequestForm, Depends()],
-    auth_service: FromDishka[IAuthService],
+    form: Annotated[OAuth2PasswordRequestForm, Depends()],
+    handler: FromDishka[CreateAccessTokenHandler],
     rate_limiter_service: FromDishka[IRateLimiterService],
-) -> Token:
-    credentials = LoginCredentials(
-        username=query.username,
-        password=query.password,
-        scopes=query.scopes,
+) -> TokenDTO:
+    cmd = CreateAccessTokenCommand(
+        username=form.username,
+        password=form.password,
+        scopes=form.scopes,
     )
     await rate_limiter_service.check(
         f"ip:{request.client.host}", request.url.path, limit=100, window=60
     )
-    return await auth_service.login(credentials)
+    return TokenDTO(access_token=await handler.execute(cmd), token_type="Bearer")
