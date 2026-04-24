@@ -1,6 +1,5 @@
 import logging
 from dataclasses import asdict
-from typing import cast
 
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
@@ -46,5 +45,4 @@ class CreateUserHandler:
                 )
 
             cmd.password = self._hasher.hash_password(cmd.password)
-            data = cast(TCreateUser, cast(object, asdict(cmd)))
-            return await self._repository.create_user(data)
+            return await self._repository.create_user(TCreateUser(**asdict(cmd)))
