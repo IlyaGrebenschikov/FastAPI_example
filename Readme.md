@@ -323,6 +323,8 @@ JWT_EXPIRATION_HOURS=24
 
 # Email Verification (AbstractAPI)
 EMAIL_VERIFIER_API_KEY=your_abstractapi_key
+# Set True if you want to use an email AbstractAPI or False if you want to use null stub instead.
+EMAIL_VERIFIER_API_ENABLED=False
 ```
 
 **Security Note:** In production, restrict `CORS_ORIGINS` to trusted domains and use secure, environment-specific values for `REDIS_PASSWORD`.

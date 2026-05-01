@@ -120,7 +120,8 @@ class EmailVerifierSettings(BaseSettings):
         env_prefix="EMAIL_VERIFIER_",
         extra="ignore",
     )
-    api_key: str
+    api_key: str = ""
+    enabled: bool = True
 
 
 @dataclass

@@ -74,3 +74,14 @@ class AbstractApiEmailVerifier(IEmailVerifier):
             is_disposable=js.get("is_disposable", False),
             details=js.get("email_deliverability", {}).get("status_detail"),
         )
+
+
+class NullEmailVerifier(IEmailVerifier):
+    """Stub for environments where email verification is disabled."""
+
+    async def check(self, email: str) -> EmailVerificationResult:
+        return EmailVerificationResult(
+            is_valid_format=True,
+            is_deliverable=True,
+            is_disposable=False,
+        )
