@@ -2,6 +2,7 @@ from .cache import CacheProvider, CacheRepositoriesProvider
 from .database import DatabaseProvider, DBMappersProvider, DBRepositoriesProvider
 from .hasher import HasherProvider
 from .http_clients import HTTPClientsProvider
+from .message_broker import MessageBrokerProvider
 
 __all__ = (
     "DatabaseProvider",
@@ -11,4 +12,5 @@ __all__ = (
     "CacheProvider",
     "CacheRepositoriesProvider",
     "HTTPClientsProvider",
+    "MessageBrokerProvider",
 )

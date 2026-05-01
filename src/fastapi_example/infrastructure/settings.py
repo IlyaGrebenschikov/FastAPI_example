@@ -124,6 +124,21 @@ class EmailVerifierSettings(BaseSettings):
     enabled: bool = True
 
 
+class MessageBrokerSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="MESSAGE_BROKER_",
+        extra="ignore",
+    )
+    host: str = "localhost"
+    port: int = 9092
+
+    @property
+    def url(self) -> str:
+        return f"{self.host}:{self.port}"
+
+
 @dataclass
 class InfrastructureSettings:
     database: DatabaseSettings
@@ -133,6 +148,7 @@ class InfrastructureSettings:
     app: AppSettings
     cors: CORSSettings
     email_verifier: EmailVerifierSettings
+    message_broker: MessageBrokerSettings
 
 
 def load_infrastructure_settings(
@@ -143,6 +159,7 @@ def load_infrastructure_settings(
     app_settings: Optional[AppSettings] = None,
     cors_settings: Optional[CORSSettings] = None,
     email_verifier_settings: Optional[EmailVerifierSettings] = None,
+    message_broker_settings: Optional[MessageBrokerSettings] = None,
 ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
@@ -153,4 +170,5 @@ def load_infrastructure_settings(
         app=app_settings or AppSettings(),
         cors=cors_settings or CORSSettings(),
         email_verifier=email_verifier_settings or EmailVerifierSettings(),  # type: ignore[call-arg]
+        message_broker=message_broker_settings or MessageBrokerSettings(),
     )

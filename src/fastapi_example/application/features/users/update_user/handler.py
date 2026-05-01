@@ -63,4 +63,6 @@ class UpdateUserHandler:
             raw_data = {
                 k: v for k, v in asdict(cmd).items() if v is not None and k != "user_id"
             }
-            return await self._repository.update_user(cmd.user_id, TUpdateUser(**raw_data))
+            return await self._repository.update_user(
+                cmd.user_id, TUpdateUser(**raw_data)
+            )
