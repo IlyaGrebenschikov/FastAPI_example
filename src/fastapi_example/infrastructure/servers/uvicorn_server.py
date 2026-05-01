@@ -8,9 +8,11 @@ from fastapi_example.infrastructure.settings import UvicornServerSettings
 log = logging.getLogger(__name__)
 
 
-def run_uvicorn_server(
+async def run_uvicorn_server(
     app: FastAPI,
     settings: UvicornServerSettings,
 ) -> None:
     log.debug("Running Uvicorn server.")
-    uvicorn.run(app, **settings.model_dump())
+    config = uvicorn.Config(app, **settings.model_dump())
+    server = uvicorn.Server(config)
+    await server.serve()
