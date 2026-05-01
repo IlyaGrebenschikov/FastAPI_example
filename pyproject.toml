@@ -24,6 +24,7 @@ dependencies = [
     "aiohttp>=3.13.3",
     "redis>=7.3.0",
     "httpx>=0.28.1",
+    "faststream[cli,kafka]>=0.6.7",
 ]
 
 [project.optional-dependencies]
