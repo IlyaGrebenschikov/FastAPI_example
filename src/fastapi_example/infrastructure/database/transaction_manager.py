@@ -69,9 +69,9 @@ class TransactionManager(ITransactionManager[AsyncSession]):
 
         try:
             if exc_type:
-                await self._session.rollback()
+                await self._transaction.rollback()
             else:
-                await self._session.commit()
+                await self._transaction.commit()
         except SQLAlchemyError as err:
             raise (RollbackError if exc_type else CommitError)(err) from err
         finally:
