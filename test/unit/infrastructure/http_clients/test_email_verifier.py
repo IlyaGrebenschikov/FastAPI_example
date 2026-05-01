@@ -4,7 +4,6 @@ import json
 import pytest
 import httpx
 
-from fastapi_example.application.interfaces.http_clients import EmailVerificationResult
 from fastapi_example.infrastructure.http_clients import AbstractApiEmailVerifier
 
 

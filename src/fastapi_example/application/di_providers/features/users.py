@@ -10,11 +10,17 @@ from fastapi_example.application.interfaces.database.repositories import (
 )
 from fastapi_example.application.interfaces.security import IHasher
 from fastapi_example.application.interfaces.services import IEmailValidatorService
+from fastapi_example.application.features.users.services import EmailValidatorService
+from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 
 
 class UsersFeaturesProvider(Provider):
     def __init__(self, scope=None, component=None):
         super().__init__(scope, component)
+
+    @provide(scope=Scope.REQUEST)
+    def email_validator_service(self, email_verifier: IEmailVerifier) -> IEmailValidatorService:
+        return EmailValidatorService(email_verifier)
 
     @provide(scope=Scope.REQUEST)
     def create_user_handler(

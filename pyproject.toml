@@ -40,3 +40,7 @@ api = "fastapi_example.__main__:main"
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+files = ["fastapi_example"]
+python_version = "3.12"

@@ -5,7 +5,6 @@ from dishka import AsyncContainer, make_async_container
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     RateLimiterServiceProvider,
-    EmailValidatorServiceProvider,
 )
 from fastapi_example.application.di_providers.features import (
     UsersFeaturesProvider,
@@ -42,7 +41,6 @@ def setup_di_container(
         UsersFeaturesProvider(),
         AuthFeaturesProvider(),
         HTTPClientsProvider(settings.infrastructure.email_verifier),
-        EmailValidatorServiceProvider(),
     )
 
     return container
