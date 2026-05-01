@@ -22,8 +22,10 @@ async def async_main() -> None:
         tasks.create_task(faststream.run())
         tasks.create_task(run_uvicorn_server(api, settings.infrastructure.server))
 
+
 def main():
     asyncio.run(async_main())
+
 
 if __name__ == "__main__":
     main()

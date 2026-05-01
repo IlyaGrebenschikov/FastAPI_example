@@ -6,7 +6,9 @@ from fastapi_example.infrastructure.message_broker import create_broker
 
 
 class MessageBrokerProvider(Provider):
-    def __init__(self, broker_settings: MessageBrokerSettings, scope=None, component=None):
+    def __init__(
+        self, broker_settings: MessageBrokerSettings, scope=None, component=None
+    ):
         super().__init__(scope, component)
         self._broker_settings = broker_settings
 

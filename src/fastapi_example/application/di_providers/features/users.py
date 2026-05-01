@@ -19,7 +19,9 @@ class UsersFeaturesProvider(Provider):
         super().__init__(scope, component)
 
     @provide(scope=Scope.REQUEST)
-    def email_validator_service(self, email_verifier: IEmailVerifier) -> IEmailValidatorService:
+    def email_validator_service(
+        self, email_verifier: IEmailVerifier
+    ) -> IEmailValidatorService:
         return EmailValidatorService(email_verifier)
 
     @provide(scope=Scope.REQUEST)

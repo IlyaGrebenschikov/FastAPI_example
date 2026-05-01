@@ -1,7 +1,10 @@
 from dishka import Provider, Scope, provide
 
 from fastapi_example.application.interfaces.http_clients import IEmailVerifier
-from fastapi_example.infrastructure.http_clients import AbstractApiEmailVerifier, NullEmailVerifier
+from fastapi_example.infrastructure.http_clients import (
+    AbstractApiEmailVerifier,
+    NullEmailVerifier,
+)
 from fastapi_example.infrastructure.settings import EmailVerifierSettings
 
 
