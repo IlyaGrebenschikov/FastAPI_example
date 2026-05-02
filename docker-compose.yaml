@@ -65,18 +65,18 @@ services:
     command: ["tcp-listen:6379,fork,reuseaddr", "tcp-connect:redis:6379"]
 
   kafka:
+    profiles: [ "api", "port-forwarder" ]
     image: apache/kafka:4.2.0
     container_name: kafka
-    ports:
-      - "9092:9092"
-      - "9093:9093"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # INTERNAL: Docker network (api → kafka:29092). EXTERNAL: host via port-forwarder (→ kafka:9092).
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
@@ -93,6 +93,19 @@ services:
       start_period: 30s
     networks:
       - fastapi_example.api.network.kafka
+
+  kafka_port_forwarder:
+    profiles: [ "port-forwarder" ]
+    image: alpine/socat:latest
+    container_name: fastapi_example.api.kafka.port_forwarder
+    ports:
+      - "127.0.0.1:9092:9092"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - fastapi_example.api.network.kafka
+    command: [ "tcp-listen:9092,fork,reuseaddr", "tcp-connect:kafka:9092" ]
 
   api:
     profiles: [ "api" ]
@@ -113,6 +126,8 @@ services:
       - .env
     depends_on:
       postgres:
+        condition: service_healthy
+      kafka:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -183,17 +198,40 @@ services:
       - fastapi_example.api.network.monitoring
 
   maildev:
+    profiles: [ "api", "port-forwarder" ]
     image: maildev/maildev
-    restart: always
+    container_name: fastapi_example.api.maildev
+    restart: unless-stopped
     environment:
       - TZ=UTC
       - MAILDEV_WEB_PORT=1080
       - MAILDEV_SMTP_PORT=1025
-    ports:
-      - "1080:1080"
-      - "1025:1025"
     networks:
       - fastapi_example.api.network.smtp
+
+  maildev_smtp_port_forwarder:
+    profiles: [ "port-forwarder" ]
+    image: alpine/socat:latest
+    container_name: fastapi_example.api.maildev.smtp.port_forwarder
+    ports:
+      - "127.0.0.1:1025:1025"
+    depends_on:
+      - maildev
+    networks:
+      - fastapi_example.api.network.smtp
+    command: [ "tcp-listen:1025,fork,reuseaddr", "tcp-connect:maildev:1025" ]
+
+  maildev_web_port_forwarder:
+    profiles: [ "port-forwarder" ]
+    image: alpine/socat:latest
+    container_name: fastapi_example.api.maildev.web.port_forwarder
+    ports:
+      - "127.0.0.1:1080:1080"
+    depends_on:
+      - maildev
+    networks:
+      - fastapi_example.api.network.smtp
+    command: [ "tcp-listen:1080,fork,reuseaddr", "tcp-connect:maildev:1080" ]
 
 volumes:
   pg_root:
