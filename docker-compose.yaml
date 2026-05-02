@@ -105,6 +105,7 @@ services:
       - fastapi_example.api.network.pg
       - fastapi_example.api.network.redis
       - fastapi_example.api.network.kafka
+      - fastapi_example.api.network.smtp
     volumes:
       - ./src:/usr/api/src
       - ./.certs:/usr/api/.certs:ro
@@ -181,6 +182,19 @@ services:
     networks:
       - fastapi_example.api.network.monitoring
 
+  maildev:
+    image: maildev/maildev
+    restart: always
+    environment:
+      - TZ=UTC
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - fastapi_example.api.network.smtp
+
 volumes:
   pg_root:
   loki.data:
@@ -200,3 +214,5 @@ networks:
     name: fastapi_example.api.network.redis
   fastapi_example.api.network.kafka:
     name: fastapi_example.api.network.kafka
+  fastapi_example.api.network.smtp:
+    name: fastapi_example.api.network.smtp
