@@ -5,6 +5,10 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
 from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.services import (
+    IEmailNotificationsService,
+    TEmailMessage,
+)
 from .command import DeleteUserCommand
 from fastapi_example.domain.entities import User
 from fastapi_example.application.exceptions.http_exceptions import (
@@ -21,10 +25,12 @@ class DeleteUserHandler:
         repository: IUsersRepository,
         hasher: IHasher,
         transaction_manager: ITransactionManager,
+        email_notifications: IEmailNotificationsService,
     ):
         self._repository = repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
+        self._email_notifications = email_notifications
 
     async def execute(self, cmd: DeleteUserCommand) -> User:
         async with self._transaction_manager:
@@ -42,5 +48,15 @@ class DeleteUserHandler:
 
             result = await self._repository.delete_user(user_id=cmd.user_id)
 
+        await self._email_notifications.enqueue(
+            TEmailMessage(
+                recipient=result.email,
+                subject="Account deleted",
+                content=(
+                    f"Hello, {result.username}!\n\n"
+                    "Your account has been deleted."
+                ),
+            )
+        )
         log.info("User deleted with ID: %s", result.id)
         return result

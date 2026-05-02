@@ -8,7 +8,7 @@ from fastapi_example.application.interfaces.services import IEmailNotificationsS
 email_notifications_router = KafkaRouter()
 
 
-@email_notifications_router.subscriber("email-notifications")
+@email_notifications_router.subscriber("email_notifications")
 async def email_notifications(
         message: FromDishka[EmailNotificationDTO],
         service: FromDishka[IEmailNotificationsService]

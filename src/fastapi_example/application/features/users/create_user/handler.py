@@ -7,7 +7,11 @@ from fastapi_example.application.interfaces.database.repositories import (
     TCreateUser,
 )
 from fastapi_example.application.interfaces.security import IHasher
-from fastapi_example.application.interfaces.services import IEmailValidatorService
+from fastapi_example.application.interfaces.services import (
+    IEmailNotificationsService,
+    IEmailValidatorService,
+    TEmailMessage,
+)
 from .command import CreateUserCommand
 from fastapi_example.domain.entities import User
 from fastapi_example.application.exceptions.http_exceptions import ConflictError
@@ -22,11 +26,13 @@ class CreateUserHandler:
         hasher: IHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
+        email_notifications: IEmailNotificationsService,
     ) -> None:
         self._repository = repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
         self._email_validator = email_validator
+        self._email_notifications = email_notifications
 
     async def execute(self, cmd: CreateUserCommand) -> User:
         await self._email_validator.validate(cmd.email)
@@ -45,4 +51,16 @@ class CreateUserHandler:
                 )
 
             cmd.password = self._hasher.hash_password(cmd.password)
-            return await self._repository.create_user(TCreateUser(**asdict(cmd)))
+            user = await self._repository.create_user(TCreateUser(**asdict(cmd)))
+
+        await self._email_notifications.enqueue(
+            TEmailMessage(
+                recipient=user.email,
+                subject="Account created",
+                content=(
+                    f"Hello, {user.username}!\n\n"
+                    "Your account has been created successfully."
+                ),
+            )
+        )
+        return user

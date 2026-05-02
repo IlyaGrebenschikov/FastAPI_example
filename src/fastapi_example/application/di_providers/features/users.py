@@ -9,7 +9,10 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
 from fastapi_example.application.interfaces.security import IHasher
-from fastapi_example.application.interfaces.services import IEmailValidatorService
+from fastapi_example.application.interfaces.services import (
+    IEmailNotificationsService,
+    IEmailValidatorService,
+)
 from fastapi_example.application.features.users.services import EmailValidatorService
 from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 
@@ -31,9 +34,14 @@ class UsersFeaturesProvider(Provider):
         hasher: IHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
+        email_notifications: IEmailNotificationsService,
     ) -> CreateUserHandler:
         return CreateUserHandler(
-            repository, hasher, transaction_manager, email_validator
+            repository,
+            hasher,
+            transaction_manager,
+            email_validator,
+            email_notifications,
         )
 
     @provide(scope=Scope.REQUEST)
@@ -50,8 +58,11 @@ class UsersFeaturesProvider(Provider):
         repository: IUsersRepository,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
+        email_notifications: IEmailNotificationsService,
     ) -> UpdateUserHandler:
-        return UpdateUserHandler(repository, transaction_manager, email_validator)
+        return UpdateUserHandler(
+            repository, transaction_manager, email_validator, email_notifications
+        )
 
     @provide(scope=Scope.REQUEST)
     def delete_user_handler(
@@ -59,5 +70,8 @@ class UsersFeaturesProvider(Provider):
         repository: IUsersRepository,
         hasher: IHasher,
         transaction_manager: ITransactionManager,
+        email_notifications: IEmailNotificationsService,
     ) -> DeleteUserHandler:
-        return DeleteUserHandler(repository, hasher, transaction_manager)
+        return DeleteUserHandler(
+            repository, hasher, transaction_manager, email_notifications
+        )

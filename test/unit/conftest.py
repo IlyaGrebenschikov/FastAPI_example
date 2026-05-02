@@ -52,3 +52,10 @@ def mock_email_verifier():
         )
     )
     return mock
+
+
+@pytest.fixture
+def mock_email_notifications():
+    mock = AsyncMock()
+    mock.enqueue = AsyncMock(return_value=None)
+    return mock

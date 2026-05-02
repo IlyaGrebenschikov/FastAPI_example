@@ -9,6 +9,8 @@ from fastapi_example.application.exceptions.http_exceptions import (
     ServiceUnavailableError,
 )
 from fastapi_example.application.interfaces.http_clients import EmailVerificationResult
+from fastapi_example.application.interfaces.services import TEmailMessage
+from fastapi_example.application.features.users.services import EmailValidatorService
 from fastapi_example.application.features.users.create_user.command import (
     CreateUserCommand,
 )
@@ -26,12 +28,14 @@ class TestCreateUserHandler:
         mock_hasher,
         mock_transaction_manager,
         mock_email_verifier,
+        mock_email_notifications,
     ) -> CreateUserHandler:
         return CreateUserHandler(
             repository=mock_users_repository,
             hasher=mock_hasher,
             transaction_manager=mock_transaction_manager,
-            email_verifier=mock_email_verifier,
+            email_validator=EmailValidatorService(mock_email_verifier),
+            email_notifications=mock_email_notifications,
         )
 
     @pytest.mark.asyncio
@@ -40,6 +44,7 @@ class TestCreateUserHandler:
         create_user_handler: CreateUserHandler,
         mock_users_repository,
         mock_hasher,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = CreateUserCommand(
@@ -66,12 +71,17 @@ class TestCreateUserHandler:
         assert result.email == cmd.email
         mock_users_repository.create_user.assert_called_once()
         mock_hasher.hash_password.assert_called_once()
+        mock_email_notifications.enqueue.assert_called_once()
+        enqueued: TEmailMessage = mock_email_notifications.enqueue.call_args.args[0]
+        assert enqueued.recipient == cmd.email
+        assert enqueued.subject == "Account created"
 
     @pytest.mark.asyncio
     async def test_create_user_already_exists(
         self,
         create_user_handler: CreateUserHandler,
         mock_users_repository,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -85,6 +95,7 @@ class TestCreateUserHandler:
             await create_user_handler.execute(cmd)
 
         mock_users_repository.create_user.assert_not_called()
+        mock_email_notifications.enqueue.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_create_user_hashes_password(
@@ -92,6 +103,7 @@ class TestCreateUserHandler:
         create_user_handler: CreateUserHandler,
         mock_users_repository,
         mock_hasher,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = CreateUserCommand(
@@ -115,12 +127,14 @@ class TestCreateUserHandler:
         await create_user_handler.execute(cmd)
 
         mock_hasher.hash_password.assert_called_once_with("TestPassword123!")
+        mock_email_notifications.enqueue.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_create_user_checks_username_and_email(
         self,
         create_user_handler: CreateUserHandler,
         mock_users_repository,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -137,6 +151,7 @@ class TestCreateUserHandler:
             username=cmd.username,
             email=cmd.email,
         )
+        mock_email_notifications.enqueue.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_create_user_with_special_characters(
@@ -144,6 +159,7 @@ class TestCreateUserHandler:
         create_user_handler: CreateUserHandler,
         mock_users_repository,
         mock_hasher,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = CreateUserCommand(
@@ -168,12 +184,14 @@ class TestCreateUserHandler:
 
         assert result.username == cmd.username
         assert result.email == cmd.email
+        mock_email_notifications.enqueue.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_create_user_invalid_email_format(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -192,11 +210,14 @@ class TestCreateUserHandler:
         with pytest.raises(BadRequestError, match="Invalid email format"):
             await create_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_create_user_undeliverable_email(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -216,11 +237,14 @@ class TestCreateUserHandler:
         with pytest.raises(BadRequestError, match="Email appears undeliverable"):
             await create_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_create_user_disposable_email(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -241,11 +265,14 @@ class TestCreateUserHandler:
         ):
             await create_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_create_user_email_verifier_unauthorized(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -267,11 +294,14 @@ class TestCreateUserHandler:
         ):
             await create_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_create_user_email_verifier_server_error(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -293,11 +323,14 @@ class TestCreateUserHandler:
         ):
             await create_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_create_user_email_verifier_timeout(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -319,12 +352,15 @@ class TestCreateUserHandler:
         ):
             await create_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_create_user_checks_email_before_user_exists(
         self,
         create_user_handler: CreateUserHandler,
         mock_email_verifier,
         mock_users_repository,
+        mock_email_notifications,
     ):
         cmd = CreateUserCommand(
             username="testuser",
@@ -344,3 +380,4 @@ class TestCreateUserHandler:
             await create_user_handler.execute(cmd)
 
         mock_users_repository.exists_user.assert_not_called()
+        mock_email_notifications.enqueue.assert_not_called()
