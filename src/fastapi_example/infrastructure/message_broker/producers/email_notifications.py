@@ -1,9 +1,6 @@
-from dataclasses import asdict
-
 from faststream.kafka import KafkaBroker
 
-from fastapi_example.application.interfaces.communication import TEmailMessage
-from fastapi_example.application.interfaces.message_broker.producers import IEmailNotificationsProducer
+from fastapi_example.application.interfaces.message_broker.producers import IEmailNotificationsProducer, TEmailMessage
 
 
 class EmailNotificationsProducer(IEmailNotificationsProducer):
@@ -12,4 +9,4 @@ class EmailNotificationsProducer(IEmailNotificationsProducer):
         self._topic = "email_notifications"
 
     async def publish(self, message: TEmailMessage) -> None:
-        await self._broker.publish(asdict(message), topic=self._topic)
+        await self._broker.publish(**message, topic=self._topic)

@@ -1,4 +1,9 @@
-from fastapi_example.application.interfaces.communication import TEmailMessage
+from typing import TypedDict
+
+class TEmailMessage(TypedDict):
+    recipient: str
+    subject: str
+    content: str
 
 
 class IEmailNotificationsProducer:
