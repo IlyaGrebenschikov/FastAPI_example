@@ -53,8 +53,7 @@ class DeleteUserHandler:
                 recipient=result.email,
                 subject="Account deleted",
                 content=(
-                    f"Hello, {result.username}!\n\n"
-                    "Your account has been deleted."
+                    f"Hello, {result.username}!\n\nYour account has been deleted."
                 ),
             )
         )

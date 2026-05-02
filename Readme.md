@@ -1,6 +1,6 @@
 # FastAPI Example
 
-Production-ready educational FastAPI service implementing **Vertical Slices** + **CQRS** + **Onion Architecture** patterns. Features async SQLAlchemy 2.0, JWT authentication, dependency injection (Dishka), Redis caching/rate limiting, and comprehensive observability stack (Loki + Promtail + Grafana). Dockerized and fully automated.
+Production-ready educational FastAPI service implementing **Vertical Slices** + **CQRS** + **Onion Architecture** patterns. Features async SQLAlchemy 2.0, JWT authentication, dependency injection (Dishka), Redis caching/rate limiting, asynchronous mail notifications via **FastStream + Kafka**, and comprehensive observability stack (Loki + Promtail + Grafana). Dockerized and fully automated.
 
 ## Table of Contents
 - [Tech Stack](#tech-stack)
@@ -18,6 +18,7 @@ Production-ready educational FastAPI service implementing **Vertical Slices** + 
 - [Monitoring & Logging](#monitoring--logging)
 - [Rate Limiting](#rate-limiting)
 - [Email Verification](#email-verification)
+- [Email Notifications (FastStream + Kafka)](#email-notifications-faststream--kafka)
 - [Database Migrations](#database-migrations)
 - [Dependency Injection](#dependency-injection)
 - [Useful Commands](#useful-commands)
@@ -44,6 +45,11 @@ Production-ready educational FastAPI service implementing **Vertical Slices** + 
 
 ### Caching & Rate Limiting
 - **Redis** 7.3+ — Distributed cache & rate limiting state
+
+### Messaging & Background Processing
+- **FastStream** 0.6+ — Async message processing framework
+- **Kafka** 4.2+ — Event broker for background workflows
+- **MailDev** — Local SMTP server + web UI for email testing
 
 ### Observability
 - **Loki** — Log aggregation
@@ -401,7 +407,7 @@ openssl rsa -in .certs/jwt-public.pem -pubin -text -noout
 
 ### Docker Setup
 
-**Build and run the full stack (API + PostgreSQL + Redis):**
+**Build and run the full stack (API + PostgreSQL + Redis + Kafka + MailDev):**
 ```bash
 # Start with API profile
 docker compose --profile api up --build
@@ -419,14 +425,17 @@ docker compose --profile api down
 - API: http://localhost:8080/docs
 - PostgreSQL: `localhost:5432` (forward port with `--profile port-forwarder`)
 - Redis: `localhost:6379` (forward port with `--profile port-forwarder`)
+- Kafka: `localhost:9092` (forward port with `--profile port-forwarder`)
+- MailDev UI: http://localhost:1080 (forward port with `--profile port-forwarder`)
+- MailDev SMTP: `localhost:1025` (forward port with `--profile port-forwarder`)
 
 ### Docker Compose Profiles
 
 | Profile | Purpose | Services |
 |---------|---------|----------|
-| `api` | Run API + database | api, postgres, redis |
+| `api` | Run application stack | api, postgres, redis, kafka, maildev |
 | `migrations` | Database migrations | migrations, postgres |
-| `port-forwarder` | Access database/cache locally | postgres_port_forwarder, redis_port_forwarder |
+| `port-forwarder` | Access infra services locally | postgres_port_forwarder, redis_port_forwarder, kafka_port_forwarder, maildev_smtp_port_forwarder, maildev_web_port_forwarder |
 | `monitoring` | Observability stack | loki, promtail, grafana |
 
 **Example: Start API with port forwarding for debugging:**
@@ -522,6 +531,41 @@ The email verifier follows **Interface Segregation** and **Dependency Inversion*
 - **DI Registration** (`HTTPClientsProvider` in `infrastructure/di_providers/`) — Scoped as APP-lifetime singleton
 
 This design allows swapping AbstractAPI for another provider (Sendgrid, Mailbox Layer, etc.) without changing application logic.
+
+## Email Notifications (FastStream + Kafka)
+
+The project includes asynchronous email notifications for user lifecycle events:
+- user created
+- user updated
+- user deleted
+
+### How It Works
+
+1. User handlers enqueue email messages through `IEmailNotificationsService.enqueue(...)`.
+2. `EmailNotificationsProducer` publishes events to Kafka topic `email_notifications`.
+3. FastStream consumer (`presentation/faststream/consumers/email_notifications.py`) receives the message and calls `IEmailNotificationsService.send(...)`.
+4. `EmailSender` sends the email via SMTP (MailDev in local development).
+
+This flow decouples HTTP request latency from SMTP delivery and makes notification processing resilient and extensible.
+
+### Local Setup
+
+Use environment variables for messaging and SMTP:
+
+```env
+MESSAGE_BROKER_HOST=localhost
+MESSAGE_BROKER_PORT=9092
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_USE_TLS=False
+SMTP_SENDER=root@localhost
+```
+
+If API runs inside Docker Compose network, use service names instead:
+- `MESSAGE_BROKER_HOST=kafka`
+- `MESSAGE_BROKER_PORT=29092`
+- `SMTP_HOST=maildev`
+- `SMTP_PORT=1025`
 
 ## Database Migrations
 

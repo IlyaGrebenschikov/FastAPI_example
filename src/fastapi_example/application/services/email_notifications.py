@@ -7,16 +7,24 @@ import aiosmtplib
 from fastapi_example.application.interfaces.communication import IEmailSender
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
-    TEmailMessage as TPubEmailMessage
+    TEmailMessage as TPubEmailMessage,
 )
-from fastapi_example.application.interfaces.services import IEmailNotificationsService, TEmailMessage
+from fastapi_example.application.interfaces.services import (
+    IEmailNotificationsService,
+    TEmailMessage,
+)
 from fastapi_example.application.settings import EmailNotificationSettings
 
 log = logging.getLogger(__name__)
 
 
 class EmailNotificationsService(IEmailNotificationsService):
-    def __init__(self, producer: IEmailNotificationsProducer, sender: IEmailSender, settings: EmailNotificationSettings):
+    def __init__(
+        self,
+        producer: IEmailNotificationsProducer,
+        sender: IEmailSender,
+        settings: EmailNotificationSettings,
+    ):
         self._producer = producer
         self._sender = sender
         self._settings = settings
@@ -25,7 +33,9 @@ class EmailNotificationsService(IEmailNotificationsService):
         log.info(f"enqueue: {message}")
         await self._producer.publish(message=TPubEmailMessage(**asdict(message)))
 
-    async def send(self, message: TEmailMessage) -> tuple[dict[str, aiosmtplib.SMTPResponse], str]:
+    async def send(
+        self, message: TEmailMessage
+    ) -> tuple[dict[str, aiosmtplib.SMTPResponse], str]:
         log.info(f"send: {message}")
         return await self._sender.send_email(message=self._build_message(message))
 

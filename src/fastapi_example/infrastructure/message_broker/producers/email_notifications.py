@@ -1,6 +1,9 @@
 from faststream.kafka import KafkaBroker
 
-from fastapi_example.application.interfaces.message_broker.producers import IEmailNotificationsProducer, TEmailMessage
+from fastapi_example.application.interfaces.message_broker.producers import (
+    IEmailNotificationsProducer,
+    TEmailMessage,
+)
 
 
 class EmailNotificationsProducer(IEmailNotificationsProducer):

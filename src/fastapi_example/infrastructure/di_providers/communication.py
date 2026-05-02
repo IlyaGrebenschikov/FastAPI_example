@@ -5,7 +5,10 @@ from dishka import Provider, Scope, provide
 
 from fastapi_example.application.interfaces.communication import IEmailSender
 from fastapi_example.infrastructure import SMTPSettings
-from fastapi_example.infrastructure.communication.email_communication import EmailSender, create_smtp_client
+from fastapi_example.infrastructure.communication.email_communication import (
+    EmailSender,
+    create_smtp_client,
+)
 
 
 class CommunicationProvider(Provider):
@@ -18,7 +21,9 @@ class CommunicationProvider(Provider):
         client = create_smtp_client(self._smtp_settings)
         async with client:
             if self._smtp_settings.username and self._smtp_settings.password:
-                await client.login(self._smtp_settings.username, self._smtp_settings.password)
+                await client.login(
+                    self._smtp_settings.username, self._smtp_settings.password
+                )
             yield client
 
     @provide(scope=Scope.APP)
