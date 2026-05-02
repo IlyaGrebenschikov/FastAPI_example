@@ -4,7 +4,7 @@ import aiosmtplib
 from dishka import Provider, Scope, provide
 
 from fastapi_example.infrastructure import SMTPSettings
-from fastapi_example.infrastructure.communication.email import create_smtp_client
+from fastapi_example.infrastructure.communication.email import EmailSender, create_smtp_client
 
 
 class EmailCommunicationProvider(Provider):
@@ -19,4 +19,7 @@ class EmailCommunicationProvider(Provider):
             if self._settings.username and self._settings.password:
                 await client.login(self._settings.username, self._settings.password)
             yield client
-            
+
+    @provide(scope=Scope.APP)
+    def email_sender(self, client: aiosmtplib.SMTP) -> EmailSender:
+        return EmailSender(client, self._settings.sender)
