@@ -3,6 +3,7 @@ from typing import Any, AsyncGenerator
 import aiosmtplib
 from dishka import Provider, Scope, provide
 
+from fastapi_example.application.interfaces.communication import IEmailSender
 from fastapi_example.infrastructure import SMTPSettings
 from fastapi_example.infrastructure.communication.email_communication import EmailSender, create_smtp_client
 
@@ -21,5 +22,5 @@ class CommunicationProvider(Provider):
             yield client
 
     @provide(scope=Scope.APP)
-    def email_sender(self, client: aiosmtplib.SMTP) -> EmailSender:
+    def email_sender(self, client: aiosmtplib.SMTP) -> IEmailSender:
         return EmailSender(client)
