@@ -19,7 +19,7 @@ from fastapi_example.infrastructure.di_providers import (
     DBRepositoriesProvider,
     HTTPClientsProvider,
     MessageBrokerProvider,
-    EmailCommunicationProvider,
+    CommunicationProvider,
 )
 
 from .settings import Settings
@@ -44,7 +44,7 @@ def setup_di_container(
         AuthFeaturesProvider(),
         HTTPClientsProvider(settings.infrastructure.email_verifier),
         MessageBrokerProvider(settings.infrastructure.message_broker),
-        EmailCommunicationProvider(settings.infrastructure.smtp),
+        CommunicationProvider(settings.infrastructure.smtp),
     )
 
     return container
