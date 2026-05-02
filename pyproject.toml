@@ -25,6 +25,7 @@ dependencies = [
     "redis>=7.3.0",
     "httpx>=0.28.1",
     "faststream[cli,kafka]>=0.6.7",
+    "aiosmtplib>=5.1.0",
 ]
 
 [project.optional-dependencies]

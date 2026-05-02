@@ -5,6 +5,7 @@ from dishka import AsyncContainer, make_async_container
 from fastapi_example.application.di_providers.services import (
     AuthServiceProvider,
     RateLimiterServiceProvider,
+    EmailNotificationsServiceProvider,
 )
 from fastapi_example.application.di_providers.features import (
     UsersFeaturesProvider,
@@ -19,6 +20,8 @@ from fastapi_example.infrastructure.di_providers import (
     DBRepositoriesProvider,
     HTTPClientsProvider,
     MessageBrokerProvider,
+    CommunicationProvider,
+    MessageBrokerProducersProvider,
 )
 
 from .settings import Settings
@@ -43,6 +46,9 @@ def setup_di_container(
         AuthFeaturesProvider(),
         HTTPClientsProvider(settings.infrastructure.email_verifier),
         MessageBrokerProvider(settings.infrastructure.message_broker),
+        CommunicationProvider(settings.infrastructure.smtp),
+        MessageBrokerProducersProvider(),
+        EmailNotificationsServiceProvider(settings.application.email_notifications),
     )
 
     return container

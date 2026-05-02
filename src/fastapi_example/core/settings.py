@@ -23,7 +23,9 @@ def load_settings(
 ) -> Settings:
     log.debug("Loading core settings.")
     infra = infrastructure_settings or load_infrastructure_settings()
-    app = application_settings or load_application_settings(infra.app, infra.cors)
+    app = application_settings or load_application_settings(
+        infra.app, infra.cors, infra.smtp
+    )
     return Settings(
         infrastructure=infra,
         application=app,

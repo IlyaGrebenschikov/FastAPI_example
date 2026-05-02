@@ -8,7 +8,11 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
     TUpdateUser,
 )
-from fastapi_example.application.interfaces.services import IEmailValidatorService
+from fastapi_example.application.interfaces.services import (
+    IEmailNotificationsService,
+    IEmailValidatorService,
+    TEmailMessage,
+)
 from fastapi_example.application.exceptions.http_exceptions import (
     NotFoundError,
     ConflictError,
@@ -24,10 +28,12 @@ class UpdateUserHandler:
         repository: IUsersRepository,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
+        email_notifications: IEmailNotificationsService,
     ):
         self._repository = repository
         self._transaction_manager = transaction_manager
         self._email_validator = email_validator
+        self._email_notifications = email_notifications
 
     async def execute(self, cmd: UpdateUserCommand) -> User:
         async with self._transaction_manager:
@@ -63,6 +69,18 @@ class UpdateUserHandler:
             raw_data = {
                 k: v for k, v in asdict(cmd).items() if v is not None and k != "user_id"
             }
-            return await self._repository.update_user(
+            updated = await self._repository.update_user(
                 cmd.user_id, TUpdateUser(**raw_data)
             )
+
+        await self._email_notifications.enqueue(
+            TEmailMessage(
+                recipient=updated.email,
+                subject="Account updated",
+                content=(
+                    f"Hello, {updated.username}!\n\n"
+                    "Your account details have been updated."
+                ),
+            )
+        )
+        return updated

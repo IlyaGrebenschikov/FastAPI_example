@@ -7,6 +7,8 @@ from fastapi_example.application.exceptions.http_exceptions import (
     NotFoundError,
     ConflictError,
 )
+from fastapi_example.application.interfaces.services import TEmailMessage
+from fastapi_example.application.features.users.services import EmailValidatorService
 from fastapi_example.application.features.users.update_user.handler import (
     UpdateUserHandler,
 )
@@ -19,16 +21,25 @@ from fastapi_example.domain.entities import User
 class TestUpdateUserHandler:
     @pytest.fixture
     def update_user_handler(
-        self, mock_users_repository, mock_transaction_manager
+        self,
+        mock_users_repository,
+        mock_transaction_manager,
+        mock_email_verifier,
+        mock_email_notifications,
     ) -> UpdateUserHandler:
         return UpdateUserHandler(
             repository=mock_users_repository,
             transaction_manager=mock_transaction_manager,
+            email_validator=EmailValidatorService(mock_email_verifier),
+            email_notifications=mock_email_notifications,
         )
 
     @pytest.mark.asyncio
     async def test_update_user_success(
-        self, update_user_handler: UpdateUserHandler, mock_users_repository
+        self,
+        update_user_handler: UpdateUserHandler,
+        mock_users_repository,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = UpdateUserCommand(
@@ -67,10 +78,17 @@ class TestUpdateUserHandler:
             user_id=user_id, for_update=True
         )
         mock_users_repository.update_user.assert_called_once()
+        mock_email_notifications.enqueue.assert_called_once()
+        enqueued: TEmailMessage = mock_email_notifications.enqueue.call_args.args[0]
+        assert enqueued.recipient == "newemail@example.com"
+        assert enqueued.subject == "Account updated"
 
     @pytest.mark.asyncio
     async def test_update_user_not_found(
-        self, update_user_handler: UpdateUserHandler, mock_users_repository
+        self,
+        update_user_handler: UpdateUserHandler,
+        mock_users_repository,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = UpdateUserCommand(
@@ -83,9 +101,14 @@ class TestUpdateUserHandler:
         with pytest.raises(NotFoundError, match="User not found"):
             await update_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_update_user_username_already_exists(
-        self, update_user_handler: UpdateUserHandler, mock_users_repository
+        self,
+        update_user_handler: UpdateUserHandler,
+        mock_users_repository,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = UpdateUserCommand(
@@ -108,9 +131,14 @@ class TestUpdateUserHandler:
         with pytest.raises(ConflictError, match="User already exists with username"):
             await update_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_update_user_email_already_exists(
-        self, update_user_handler: UpdateUserHandler, mock_users_repository
+        self,
+        update_user_handler: UpdateUserHandler,
+        mock_users_repository,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = UpdateUserCommand(
@@ -133,9 +161,14 @@ class TestUpdateUserHandler:
         with pytest.raises(ConflictError, match="User already exists with email"):
             await update_user_handler.execute(cmd)
 
+        mock_email_notifications.enqueue.assert_not_called()
+
     @pytest.mark.asyncio
     async def test_update_user_partial(
-        self, update_user_handler: UpdateUserHandler, mock_users_repository
+        self,
+        update_user_handler: UpdateUserHandler,
+        mock_users_repository,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = UpdateUserCommand(
@@ -170,10 +203,16 @@ class TestUpdateUserHandler:
 
         assert result.username == "newusername"
         assert result.email == "test@example.com"
+        mock_email_notifications.enqueue.assert_called_once()
+        enqueued: TEmailMessage = mock_email_notifications.enqueue.call_args.args[0]
+        assert enqueued.recipient == "test@example.com"
 
     @pytest.mark.asyncio
     async def test_update_user_same_username(
-        self, update_user_handler: UpdateUserHandler, mock_users_repository
+        self,
+        update_user_handler: UpdateUserHandler,
+        mock_users_repository,
+        mock_email_notifications,
     ):
         user_id = uuid4()
         cmd = UpdateUserCommand(
@@ -206,3 +245,4 @@ class TestUpdateUserHandler:
 
         assert result.username == "sameusername"
         mock_users_repository.exists_user.assert_not_called()
+        mock_email_notifications.enqueue.assert_called_once()

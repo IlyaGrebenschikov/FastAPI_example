@@ -1,6 +1,7 @@
 from .rate_limiter import IRateLimiterService
 from .token_jwt import ITokenJWTService, TTokenDecoded, TTokenPayload
 from .email_validator import IEmailValidatorService
+from .email_notifications import IEmailNotificationsService, TEmailMessage
 
 
 __all__ = (
@@ -9,4 +10,6 @@ __all__ = (
     "TTokenPayload",
     "TTokenDecoded",
     "IEmailValidatorService",
+    "IEmailNotificationsService",
+    "TEmailMessage",
 )
