@@ -7,6 +7,7 @@ from .settings import (
     CORSSettings,
     EmailVerifierSettings,
     MessageBrokerSettings,
+    SMTPSettings,
     load_infrastructure_settings,
 )
 
@@ -19,5 +20,6 @@ __all__ = (
     "CORSSettings",
     "EmailVerifierSettings",
     "MessageBrokerSettings",
+    "SMTPSettings",
     "load_infrastructure_settings",
 )

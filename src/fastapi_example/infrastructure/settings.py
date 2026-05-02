@@ -139,6 +139,21 @@ class MessageBrokerSettings(BaseSettings):
         return f"{self.host}:{self.port}"
 
 
+class SMTPSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="SMTP_",
+        extra="ignore",
+    )
+    host: str = "localhost"
+    port: int = 25
+    use_tls: bool = False
+    sender: str = "root@localhost"
+    username: Optional[str] = None
+    password: Optional[str] = None
+
+
 @dataclass
 class InfrastructureSettings:
     database: DatabaseSettings
@@ -149,6 +164,7 @@ class InfrastructureSettings:
     cors: CORSSettings
     email_verifier: EmailVerifierSettings
     message_broker: MessageBrokerSettings
+    smtp: SMTPSettings
 
 
 def load_infrastructure_settings(
@@ -160,6 +176,7 @@ def load_infrastructure_settings(
     cors_settings: Optional[CORSSettings] = None,
     email_verifier_settings: Optional[EmailVerifierSettings] = None,
     message_broker_settings: Optional[MessageBrokerSettings] = None,
+    smtp_settings: Optional[SMTPSettings] = None,
 ) -> InfrastructureSettings:
     log.debug("Loading infrastructure settings.")
     return InfrastructureSettings(
@@ -171,4 +188,5 @@ def load_infrastructure_settings(
         cors=cors_settings or CORSSettings(),
         email_verifier=email_verifier_settings or EmailVerifierSettings(),  # type: ignore[call-arg]
         message_broker=message_broker_settings or MessageBrokerSettings(),
+        smtp=smtp_settings or SMTPSettings(),
     )
