@@ -8,5 +8,7 @@ class EmailSender(IEmailSender):
     def __init__(self, client: aiosmtplib.SMTP):
         self._client = client
 
-    async def send(self, message: EmailMessage) -> tuple[dict[str, aiosmtplib.SMTPResponse], str]:
+    async def send_email(
+        self, message: EmailMessage
+    ) -> tuple[dict[str, aiosmtplib.SMTPResponse], str]:
         return await self._client.send_message(message)

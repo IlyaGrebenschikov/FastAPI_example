@@ -9,4 +9,4 @@ class EmailNotificationsProducer(IEmailNotificationsProducer):
         self._topic = "email_notifications"
 
     async def publish(self, message: TEmailMessage) -> None:
-        await self._broker.publish(**message, topic=self._topic)
+        await self._broker.publish(message, topic=self._topic)

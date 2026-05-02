@@ -10,8 +10,8 @@ email_notifications_router = KafkaRouter()
 
 @email_notifications_router.subscriber("email_notifications")
 async def email_notifications(
-        message: FromDishka[EmailNotificationDTO],
-        service: FromDishka[IEmailNotificationsService]
+    message: EmailNotificationDTO,
+    service: FromDishka[IEmailNotificationsService],
 ) -> None:
-    data = TEmailMessage(subject=message.subject, recipient=message.recipient, content=message.content)
+    data = TEmailMessage(**message.model_dump())
     await service.send(data)
