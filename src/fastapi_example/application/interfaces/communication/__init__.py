@@ -1,3 +1,3 @@
-from .email_sender import IEmailSender, TEmailMessage
+from .email_sender import IEmailSender
 
-__all__ = ("IEmailSender", "TEmailMessage")
+__all__ = ("IEmailSender",)
