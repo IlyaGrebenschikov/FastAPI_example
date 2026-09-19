@@ -1,10 +1,10 @@
 from dishka import Provider, Scope, provide
 
+from fastapi_example.application.features.auth.services.token_jwt import TokenJWTService
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
 )
-from fastapi_example.application.services import TokenJWTService
-from fastapi_example.infrastructure.settings import JWTSettings
+from fastapi_example.core.settings import JWTSettings
 
 
 class AuthServiceProvider(Provider):
