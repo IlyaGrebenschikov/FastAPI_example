@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from dishka import AsyncContainer, make_async_container
 
@@ -11,17 +12,16 @@ from fastapi_example.application.di_providers.features import (
     UsersFeaturesProvider,
     AuthFeaturesProvider,
 )
-from fastapi_example.infrastructure.di_providers import (
+from fastapi_example.infrastructure.dependencies import (
     CacheProvider,
-    DatabaseProvider,
-    HasherProvider,
     CacheRepositoriesProvider,
-    DBMappersProvider,
-    DBRepositoriesProvider,
+    CommunicationProvider,
+    DatabaseProvider,
     HTTPClientsProvider,
     MessageBrokerProvider,
-    CommunicationProvider,
     MessageBrokerProducersProvider,
+    PwdHasherProvider,
+    RepositoriesProvider,
 )
 
 from .settings import Settings
@@ -34,21 +34,20 @@ def setup_di_container(
 ) -> AsyncContainer:
     log.debug("Setting up DI container.")
     container = make_async_container(
-        DatabaseProvider(settings.infrastructure.database),
-        DBMappersProvider(),
-        DBRepositoriesProvider(),
-        HasherProvider(),
-        AuthServiceProvider(settings.infrastructure.jwt),
-        CacheProvider(settings.infrastructure.redis),
+        DatabaseProvider(settings.database),
+        RepositoriesProvider(),
+        PwdHasherProvider(),
+        AuthServiceProvider(settings.jwt),
+        CacheProvider(settings.cache),
         CacheRepositoriesProvider(),
         RateLimiterServiceProvider(),
         UsersFeaturesProvider(),
         AuthFeaturesProvider(),
-        HTTPClientsProvider(settings.infrastructure.email_verifier),
-        MessageBrokerProvider(settings.infrastructure.message_broker),
-        CommunicationProvider(settings.infrastructure.smtp),
+        HTTPClientsProvider(settings.email_verifier),
+        MessageBrokerProvider(settings.message_broker),
+        CommunicationProvider(settings.smtp),
         MessageBrokerProducersProvider(),
-        EmailNotificationsServiceProvider(settings.application.email_notifications),
+        EmailNotificationsServiceProvider(),
     )
 
     return container
