@@ -1,3 +1,3 @@
-from .hasher import IHasher
+from .hasher import IPwdHasher
 
-__all__ = ("IHasher",)
+__all__ = ("IPwdHasher",)

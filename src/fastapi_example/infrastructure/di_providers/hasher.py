@@ -1,8 +1,8 @@
 from dishka import Provider, Scope, provide
 from pwdlib import PasswordHash
 
-from fastapi_example.application.interfaces.security import IHasher
-from fastapi_example.infrastructure.security import Argon2Hasher
+from fastapi_example.application.interfaces.security import IPwdHasher
+from fastapi_example.infrastructure.pwd_hasher import Argon2Hasher
 
 
 class HasherProvider(Provider):
@@ -14,5 +14,5 @@ class HasherProvider(Provider):
         return PasswordHash.recommended()
 
     @provide(scope=Scope.APP)
-    def argon2_hasher(self, hasher: PasswordHash) -> IHasher:
+    def argon2_hasher(self, hasher: PasswordHash) -> IPwdHasher:
         return Argon2Hasher(hasher)

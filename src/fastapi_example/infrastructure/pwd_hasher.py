@@ -1,10 +1,10 @@
 from pwdlib import PasswordHash
 
-from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.security import IPwdHasher
 
 
-class Argon2Hasher(IHasher):
-    def __init__(self, hasher: PasswordHash):
+class Argon2Hasher(IPwdHasher):
+    def __init__(self, hasher: PasswordHash) -> None:
         self._hasher = hasher
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:
