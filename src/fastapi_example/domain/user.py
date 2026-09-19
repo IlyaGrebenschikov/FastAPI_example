@@ -3,5 +3,7 @@ from uuid import UUID
 
 
 @dataclass
-class UUIDMixin:
+class User:
     id: UUID
+    email: str
+    password: str
