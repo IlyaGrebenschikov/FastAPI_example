@@ -5,10 +5,7 @@ from dishka import Provider, Scope, provide
 
 from fastapi_example.application.interfaces.communication import IEmailSender
 from fastapi_example.infrastructure import SMTPSettings
-from fastapi_example.infrastructure.communication.email_communication import (
-    EmailSender,
-    create_smtp_client,
-)
+from fastapi_example.infrastructure.email import EmailSender, create_smtp_client
 
 
 class CommunicationProvider(Provider):

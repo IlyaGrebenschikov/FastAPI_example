@@ -1,11 +1,19 @@
-import aiosmtplib
 from email.message import EmailMessage
 
+import aiosmtplib
+
 from fastapi_example.application.interfaces.communication import IEmailSender
+from fastapi_example.core.settings import SMTPSettings
+
+
+def create_smtp_client(settings: SMTPSettings) -> aiosmtplib.SMTP:
+    return aiosmtplib.SMTP(
+        hostname=settings.host, port=settings.port, use_tls=settings.use_tls
+    )
 
 
 class EmailSender(IEmailSender):
-    def __init__(self, client: aiosmtplib.SMTP):
+    def __init__(self, client: aiosmtplib.SMTP) -> None:
         self._client = client
 
     async def send_email(
