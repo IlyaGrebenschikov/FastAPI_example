@@ -10,7 +10,7 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.security import IPwdHasher
+from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     TEmailMessage,

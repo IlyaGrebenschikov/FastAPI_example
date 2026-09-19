@@ -1,6 +1,6 @@
 from pwdlib import PasswordHash
 
-from fastapi_example.application.interfaces.security import IPwdHasher
+from fastapi_example.application.interfaces import IPwdHasher
 
 
 class Argon2Hasher(IPwdHasher):

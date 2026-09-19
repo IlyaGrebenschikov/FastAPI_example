@@ -14,7 +14,7 @@ from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
 from fastapi_example.application.interfaces.http_clients import IEmailVerifier
-from fastapi_example.application.interfaces.security import IPwdHasher
+from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     IEmailValidatorService,

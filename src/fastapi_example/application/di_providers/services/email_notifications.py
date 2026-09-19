@@ -6,7 +6,7 @@ from fastapi_example.application.interfaces.services import (
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
 )
-from fastapi_example.application.interfaces.communication import IEmailSender
+from fastapi_example.application.interfaces import IEmailSender
 from fastapi_example.application.services import EmailNotificationsService
 from fastapi_example.application.settings import EmailNotificationSettings
 

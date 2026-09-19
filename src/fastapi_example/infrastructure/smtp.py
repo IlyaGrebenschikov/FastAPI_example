@@ -2,7 +2,7 @@ from email.message import EmailMessage
 
 import aiosmtplib
 
-from fastapi_example.application.interfaces.communication import IEmailSender
+from fastapi_example.application.interfaces import IEmailSender
 from fastapi_example.core.settings import SMTPSettings
 
 
