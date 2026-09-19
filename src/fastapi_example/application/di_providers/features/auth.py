@@ -1,15 +1,20 @@
 from dishka import Provider, Scope, provide
 
+from fastapi_example.application.interfaces.cache.repositories import (
+    IRefreshTokenRepository,
+)
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.security import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
 )
-from fastapi_example.application.features.auth.create_access_token import (
-    CreateAccessTokenHandler,
+from fastapi_example.application.features.auth.commands import (
+    LoginEmailHandler,
+    LogoutHandler,
+    RefreshHandler,
 )
 
 
@@ -18,13 +23,33 @@ class AuthFeaturesProvider(Provider):
         super().__init__(scope, component)
 
     @provide(scope=Scope.REQUEST)
-    def create_access_token_handler(
+    def login_email_handler(
         self,
-        repository: IUsersRepository,
-        token_jwt: ITokenJWTService,
-        hasher: IHasher,
+        users_repository: IUsersRepository,
+        hasher: IPwdHasher,
+        token_service: ITokenJWTService,
+        refresh_token_repository: IRefreshTokenRepository,
         transaction_manager: ITransactionManager,
-    ) -> CreateAccessTokenHandler:
-        return CreateAccessTokenHandler(
-            repository, token_jwt, hasher, transaction_manager
+    ) -> LoginEmailHandler:
+        return LoginEmailHandler(
+            users_repository, hasher, token_service, refresh_token_repository, transaction_manager
+        )
+
+    @provide(scope=Scope.REQUEST)
+    def logout_handler(
+        self,
+        refresh_token_repository: IRefreshTokenRepository,
+    ) -> LogoutHandler:
+        return LogoutHandler(refresh_token_repository)
+
+    @provide(scope=Scope.REQUEST)
+    def refresh_handler(
+        self,
+        users_repository: IUsersRepository,
+        refresh_token_repository: IRefreshTokenRepository,
+        token_service: ITokenJWTService,
+        transaction_manager: ITransactionManager,
+    ) -> RefreshHandler:
+        return RefreshHandler(
+            users_repository, refresh_token_repository, token_service, transaction_manager
         )
