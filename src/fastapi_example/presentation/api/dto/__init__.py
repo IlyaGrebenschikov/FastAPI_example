@@ -1,8 +1,7 @@
-from .auth import TokenDTO
+from .auth import LoginEmailDTO, LogoutResponseDTO, TokenResponseDTO
 from .user import (
     CreateUserDTO,
     DeleteUserDTO,
-    LoginEmailDTO,
     UpdateUserDTO,
     UserResponseDTO,
 )
@@ -11,7 +10,8 @@ __all__ = (
     "CreateUserDTO",
     "DeleteUserDTO",
     "LoginEmailDTO",
-    "TokenDTO",
+    "LogoutResponseDTO",
+    "TokenResponseDTO",
     "UpdateUserDTO",
     "UserResponseDTO",
 )
