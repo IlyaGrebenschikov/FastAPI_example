@@ -1,13 +1,13 @@
 import logging
+from collections.abc import Awaitable, Callable
 from functools import partial
-from typing import Awaitable, Callable, cast
 
 from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
-from fastapi_example.application.exceptions.http_exceptions import (
+from fastapi_example.application.http_exceptions import (
     AppException,
     BadRequestError,
     ConflictError,
@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
+    log.info("Setting up exceptions handlers.")
     app.add_exception_handler(
         UnAuthorizedError, error_handler(status.HTTP_401_UNAUTHORIZED)
     )
@@ -46,18 +47,16 @@ def setup_exception_handlers(app: FastAPI) -> None:
     )
     app.add_exception_handler(
         RequestValidationError,
-        cast(
-            Callable[[Request, Exception], JSONResponse], validation_exception_handler
-        ),
+        validation_exception_handler,  # type: ignore[arg-type]
     )
     app.add_exception_handler(Exception, unknown_exception_handler)
 
 
 async def unknown_exception_handler(request: Request, err: Exception) -> JSONResponse:
     log.error("Handle error")
-    log.exception(f"Unknown error occurred -> {err.args}")
+    log.exception("Unknown error occurred: %s", err)
     return JSONResponse(
-        {"status": 500, "message": "Unknown Error"},
+        content={"message": "Unknown Error"},
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
 
@@ -65,12 +64,12 @@ async def unknown_exception_handler(request: Request, err: Exception) -> JSONRes
 async def validation_exception_handler(
     request: Request, err: RequestValidationError
 ) -> JSONResponse:
-    log.error(f"Handle error: {type(err).__name__}")
+    log.warning("Handle error: %s", type(err).__name__)
+    errors = err.errors()
     return JSONResponse(
-        {
-            "status": 400,
-            "detail": [error["msg"] for error in err._errors],
-            "additional": [error["ctx"] for error in err._errors],
+        content={
+            "message": "Validation error",
+            "detail": [error["msg"] for error in errors],
         },
         status_code=status.HTTP_400_BAD_REQUEST,
     )
@@ -97,7 +96,8 @@ async def handle_error(
     err: AppException,
     status_code: int,
 ) -> JSONResponse:
-    log.error(f"Handle error: {type(err).__name__}")
+    log_level = log.error if status_code >= 500 else log.warning
+    log_level("Handle error: %s", type(err).__name__)
     error_data = err.as_dict()
 
     return JSONResponse(**error_data, status_code=status_code)

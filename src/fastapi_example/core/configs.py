@@ -1,4 +1,5 @@
 import tomllib
+from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic import BaseModel, model_validator
@@ -31,5 +32,11 @@ class CorsConfig(TomlConfig):
     origins: list[str] = ["*"]
 
 
-def load_configs() -> tuple[AppConfig, CorsConfig]:
-    return AppConfig(), CorsConfig()  # type: ignore[call-arg]
+@dataclass
+class Configs:
+    app: AppConfig
+    cors: CorsConfig
+
+
+def load_configs() -> Configs:
+    return Configs(app=AppConfig(), cors=CorsConfig())
