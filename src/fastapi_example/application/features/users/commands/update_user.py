@@ -1,36 +1,46 @@
 import logging
-from dataclasses import asdict
-from typing import cast
+from dataclasses import asdict, dataclass
+from typing import Optional
+from uuid import UUID
 
-from fastapi_example.domain.entities import User
+from fastapi_example.application.http_exceptions import (
+    ConflictError,
+    NotFoundError,
+)
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
     TUpdateUser,
 )
+from fastapi_example.application.interfaces.security import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     IEmailValidatorService,
     TEmailMessage,
 )
-from fastapi_example.application.exceptions.http_exceptions import (
-    NotFoundError,
-    ConflictError,
-)
-from .command import UpdateUserCommand
+from fastapi_example.domain import User
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class UpdateUserCommand:
+    user_id: UUID
+    email: Optional[str] = None
+    password: Optional[str] = None
 
 
 class UpdateUserHandler:
     def __init__(
         self,
         repository: IUsersRepository,
+        hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
-    ):
+    ) -> None:
         self._repository = repository
+        self._hasher = hasher
         self._transaction_manager = transaction_manager
         self._email_validator = email_validator
         self._email_notifications = email_notifications
@@ -42,33 +52,22 @@ class UpdateUserHandler:
                 log.warning("User does not exist with ID: '%s'", cmd.user_id)
                 raise NotFoundError("User not found")
 
-            if cmd.username:
-                if (
-                    cmd.username != user.username
-                ) and await self._repository.exists_user(username=cmd.username):
-                    log.warning(
-                        "User update failed - user already exists with username: '%s'",
-                        cmd.username,
-                    )
-                    raise ConflictError(
-                        f"User already exists with username: {cmd.username}"
-                    )
-
-            if cmd.email:
-                if (cmd.email != user.email) and await self._repository.exists_user(
-                    email=cmd.email
-                ):
+            if cmd.email and cmd.email != user.email:
+                if await self._repository.exists_user(email=cmd.email):
                     log.warning(
                         "User update failed - user already exists with email: '%s'",
                         cmd.email,
                     )
                     raise ConflictError(f"User already exists with email: {cmd.email}")
 
-                await self._email_validator.validate(cast(str, cmd.email))
+                await self._email_validator.validate(cmd.email)
 
             raw_data = {
                 k: v for k, v in asdict(cmd).items() if v is not None and k != "user_id"
             }
+            if "password" in raw_data:
+                raw_data["password"] = self._hasher.hash_password(raw_data["password"])
+
             updated = await self._repository.update_user(
                 cmd.user_id, TUpdateUser(**raw_data)
             )
@@ -77,10 +76,7 @@ class UpdateUserHandler:
             TEmailMessage(
                 recipient=updated.email,
                 subject="Account updated",
-                content=(
-                    f"Hello, {updated.username}!\n\n"
-                    "Your account details have been updated."
-                ),
+                content="Hello!\n\nYour account details have been updated.",
             )
         )
         return updated

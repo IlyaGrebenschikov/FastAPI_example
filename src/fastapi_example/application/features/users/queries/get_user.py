@@ -1,14 +1,20 @@
 import logging
+from dataclasses import dataclass
+from uuid import UUID
 
+from fastapi_example.application.http_exceptions import NotFoundError
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from .query import GetUserQuery
-from fastapi_example.domain.entities import User
-from fastapi_example.application.exceptions.http_exceptions import NotFoundError
+from fastapi_example.domain import User
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class GetUserQuery:
+    user_id: UUID
 
 
 class GetUserHandler:

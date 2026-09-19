@@ -1,20 +1,24 @@
 from dishka import Provider, Scope, provide
 
-from fastapi_example.application.features.users.create_user import CreateUserHandler
-from fastapi_example.application.features.users.get_user import GetUserHandler
-from fastapi_example.application.features.users.update_user import UpdateUserHandler
-from fastapi_example.application.features.users.delete_user import DeleteUserHandler
+from fastapi_example.application.features.users.commands import (
+    CreateUserHandler,
+    DeleteUserHandler,
+    UpdateUserHandler,
+)
+from fastapi_example.application.features.users.queries import (
+    GetUserHandler,
+)
+from fastapi_example.application.features.users.services import EmailValidatorService
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.http_clients import IEmailVerifier
+from fastapi_example.application.interfaces.security import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     IEmailValidatorService,
 )
-from fastapi_example.application.features.users.services import EmailValidatorService
-from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 
 
 class UsersFeaturesProvider(Provider):
@@ -31,17 +35,13 @@ class UsersFeaturesProvider(Provider):
     def create_user_handler(
         self,
         repository: IUsersRepository,
-        hasher: IHasher,
+        hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
     ) -> CreateUserHandler:
         return CreateUserHandler(
-            repository,
-            hasher,
-            transaction_manager,
-            email_validator,
-            email_notifications,
+            repository, hasher, transaction_manager, email_validator, email_notifications
         )
 
     @provide(scope=Scope.REQUEST)
@@ -56,19 +56,20 @@ class UsersFeaturesProvider(Provider):
     def update_user_handler(
         self,
         repository: IUsersRepository,
+        hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
     ) -> UpdateUserHandler:
         return UpdateUserHandler(
-            repository, transaction_manager, email_validator, email_notifications
+            repository, hasher, transaction_manager, email_validator, email_notifications
         )
 
     @provide(scope=Scope.REQUEST)
     def delete_user_handler(
         self,
         repository: IUsersRepository,
-        hasher: IHasher,
+        hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_notifications: IEmailNotificationsService,
     ) -> DeleteUserHandler:

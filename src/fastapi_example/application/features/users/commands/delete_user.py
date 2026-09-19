@@ -1,32 +1,39 @@
 import logging
+from dataclasses import dataclass
+from uuid import UUID
 
+from fastapi_example.application.http_exceptions import (
+    ForbiddenError,
+    NotFoundError,
+)
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.security import IHasher
+from fastapi_example.application.interfaces.security import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     TEmailMessage,
 )
-from .command import DeleteUserCommand
-from fastapi_example.domain.entities import User
-from fastapi_example.application.exceptions.http_exceptions import (
-    NotFoundError,
-    ForbiddenError,
-)
+from fastapi_example.domain import User
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class DeleteUserCommand:
+    user_id: UUID
+    password: str
 
 
 class DeleteUserHandler:
     def __init__(
         self,
         repository: IUsersRepository,
-        hasher: IHasher,
+        hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_notifications: IEmailNotificationsService,
-    ):
+    ) -> None:
         self._repository = repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
@@ -41,10 +48,10 @@ class DeleteUserHandler:
 
             if not self._hasher.verify_password(cmd.password, user.password):
                 log.warning(
-                    "User deletion failed - incorrect password confirmation for user ID: '%s'",
+                    "User deletion failed - incorrect password for user ID: '%s'",
                     cmd.user_id,
                 )
-                raise ForbiddenError("Incorrect password confirmation")
+                raise ForbiddenError("Incorrect password")
 
             result = await self._repository.delete_user(user_id=cmd.user_id)
 
@@ -52,9 +59,7 @@ class DeleteUserHandler:
             TEmailMessage(
                 recipient=result.email,
                 subject="Account deleted",
-                content=(
-                    f"Hello, {result.username}!\n\nYour account has been deleted."
-                ),
+                content="Hello!\n\nYour account has been deleted.",
             )
         )
         log.info("User deleted with ID: %s", result.id)
