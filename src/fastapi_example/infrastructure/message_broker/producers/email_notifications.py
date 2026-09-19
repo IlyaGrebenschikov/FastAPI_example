@@ -7,7 +7,7 @@ from fastapi_example.application.interfaces.message_broker.producers import (
 
 
 class EmailNotificationsProducer(IEmailNotificationsProducer):
-    def __init__(self, broker: KafkaBroker):
+    def __init__(self, broker: KafkaBroker) -> None:
         self._broker = broker
         self._topic = "email_notifications"
 

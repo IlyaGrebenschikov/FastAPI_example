@@ -4,7 +4,7 @@ from faststream.kafka import KafkaBroker
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
 )
-from fastapi_example.infrastructure import MessageBrokerSettings
+from fastapi_example.core.settings import MessageBrokerSettings
 from fastapi_example.infrastructure.message_broker import create_broker
 from fastapi_example.infrastructure.message_broker.producers import (
     EmailNotificationsProducer,
