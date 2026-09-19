@@ -39,7 +39,7 @@ def setup_di_container(
         PwdHasherProvider(),
         AuthServiceProvider(settings.jwt),
         CacheProvider(settings.cache),
-        CacheRepositoriesProvider(),
+        CacheRepositoriesProvider(settings.jwt),
         RateLimiterServiceProvider(),
         UsersFeaturesProvider(),
         AuthFeaturesProvider(),

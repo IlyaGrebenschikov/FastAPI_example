@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from fastapi_example.application.interfaces.cache.repositories import (
     IRateLimiterCacheRepository,
+    IRefreshTokenRepository,
 )
 from fastapi_example.application.interfaces.communication import IEmailSender
 from fastapi_example.application.interfaces.database import ITransactionManager
@@ -22,12 +23,14 @@ from fastapi_example.core.settings import (
     CacheSettings,
     DatabaseSettings,
     EmailVerifierSettings,
+    JWTSettings,
     MessageBrokerSettings,
     SMTPSettings,
 )
 from fastapi_example.infrastructure.cache import create_client
 from fastapi_example.infrastructure.cache.repositories import (
     RateLimiterCacheRepository,
+    RefreshTokenRepository,
 )
 from fastapi_example.infrastructure.database import (
     TransactionManager,
@@ -101,11 +104,21 @@ class CacheProvider(Provider):
 
 
 class CacheRepositoriesProvider(Provider):
+    def __init__(self, jwt_settings: JWTSettings, scope=None, component=None):
+        super().__init__(scope, component)
+        self._refresh_expiration = jwt_settings.refresh_expiration
+
     @provide(scope=Scope.REQUEST)
     def rate_limiter_cache_repository(
         self, redis_client: aioredis.Redis
     ) -> IRateLimiterCacheRepository:
         return RateLimiterCacheRepository(redis_client)
+
+    @provide(scope=Scope.REQUEST)
+    def refresh_token_repository(
+        self, redis_client: aioredis.Redis
+    ) -> IRefreshTokenRepository:
+        return RefreshTokenRepository(redis_client, self._refresh_expiration)
 
 
 class CommunicationProvider(Provider):
