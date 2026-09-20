@@ -610,7 +610,7 @@ dependencies = [
     { name = "uvicorn" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
 dev = [
     { name = "mypy" },
     { name = "pre-commit" },
@@ -628,8 +628,6 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.141.1" },
     { name = "faststream", extras = ["cli", "kafka"], specifier = ">=0.6.7" },
     { name = "httpx", specifier = ">=0.28.1" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=2.3.1" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.2.0" },
     { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.13.4" },
     { name = "pydantic-settings", specifier = ">=2.14.2" },
@@ -638,10 +636,15 @@ requires-dist = [
     { name = "redis", specifier = ">=8.1.0" },
     { name = "ruff", specifier = ">=0.16.1" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
-    { name = "types-redis", marker = "extra == 'dev'", specifier = ">=4.6.0.20241004" },
     { name = "uvicorn", specifier = ">=0.52.0" },
 ]
-provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mypy", specifier = ">=2.3.1" },
+    { name = "pre-commit", specifier = ">=4.2.0" },
+    { name = "types-redis", specifier = ">=4.6.0.20241004" },
+]
 
 [[package]]
 name = "faststream"

@@ -28,15 +28,15 @@ dependencies = [
     "uvicorn>=0.52.0",
 ]
 
-[project.optional-dependencies]
+[project.scripts]
+api = "fastapi_example.__main__:main"
+
+[dependency-groups]
 dev = [
     "mypy>=2.3.1",
     "pre-commit>=4.2.0",
     "types-redis>=4.6.0.20241004",
 ]
-
-[project.scripts]
-api = "fastapi_example.__main__:main"
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]
