@@ -170,7 +170,5 @@ class MessageBrokerProvider(Provider):
 
 class MessageBrokerProducersProvider(Provider):
     @provide(scope=Scope.APP)
-    def email_notifications_producer(
-        self, broker
-    ) -> IEmailNotificationsProducer:
+    def email_notifications_producer(self, broker) -> IEmailNotificationsProducer:
         return EmailNotificationsProducer(broker)

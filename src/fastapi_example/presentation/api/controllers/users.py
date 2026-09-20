@@ -91,9 +91,7 @@ async def update_user(
     handler: FromDishka[UpdateUserHandler],
     user_id: UUID = Depends(get_current_user_id_from_access_token),  # noqa: B008
 ) -> UserResponseDTO:
-    cmd = UpdateUserCommand(
-        user_id=user_id, email=data.email, password=data.password
-    )
+    cmd = UpdateUserCommand(user_id=user_id, email=data.email, password=data.password)
     user = await handler.execute(cmd)
     return UserResponseDTO.model_validate(user)
 

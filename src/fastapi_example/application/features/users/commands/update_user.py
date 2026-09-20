@@ -69,9 +69,7 @@ class UpdateUserHandler:
             if cmd.password is not None:
                 update_data["password"] = self._hasher.hash_password(cmd.password)
 
-            updated = await self._users_repository.update_user(
-                cmd.user_id, update_data
-            )
+            updated = await self._users_repository.update_user(cmd.user_id, update_data)
 
         if updated is None:
             raise NotFoundError("User not found")
