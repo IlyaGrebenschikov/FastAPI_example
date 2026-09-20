@@ -1,8 +1,5 @@
 import logging
-from dataclasses import asdict
 from email.message import EmailMessage
-
-import aiosmtplib
 
 from fastapi_example.application.interfaces import IEmailSender
 from fastapi_example.application.interfaces.message_broker.producers import (
@@ -15,7 +12,6 @@ from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     TEmailMessage,
 )
-from fastapi_example.application.settings import EmailNotificationSettings
 
 log = logging.getLogger(__name__)
 
@@ -25,25 +21,31 @@ class EmailNotificationsService(IEmailNotificationsService):
         self,
         producer: IEmailNotificationsProducer,
         sender: IEmailSender,
-        settings: EmailNotificationSettings,
-    ):
+        email_sender: str,
+    ) -> None:
         self._producer = producer
         self._sender = sender
-        self._settings = settings
+        self._email_sender = email_sender
 
     async def enqueue(self, message: TEmailMessage) -> None:
-        log.info(f"enqueue: {message}")
-        await self._producer.publish(message=TPubEmailMessage(**asdict(message)))
+        log.info("enqueue: %s", message)
+        await self._producer.publish(
+            message=TPubEmailMessage(
+                recipient=message.recipient,
+                subject=message.subject,
+                content=message.content,
+            )
+        )
 
     async def send(
         self, message: TEmailMessage
-    ) -> tuple[dict[str, aiosmtplib.SMTPResponse], str]:
-        log.info(f"send: {message}")
-        return await self._sender.send_email(message=self._build_message(message))
+    ) -> None:
+        log.info("send: %s", message)
+        await self._sender.send_email(message=self._build_message(message))
 
     def _build_message(self, message: TEmailMessage) -> EmailMessage:
         email_message = EmailMessage()
-        email_message["From"] = self._settings.sender
+        email_message["From"] = self._email_sender
         email_message["To"] = message.recipient
         email_message["Subject"] = message.subject
         email_message.set_content(message.content)

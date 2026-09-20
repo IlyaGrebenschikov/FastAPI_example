@@ -1,6 +1,6 @@
 import logging
 
-from fastapi_example.application.exceptions.http_exceptions import (
+from fastapi_example.application.http_exceptions import (
     BadRequestError,
     ServiceUnavailableError,
 )

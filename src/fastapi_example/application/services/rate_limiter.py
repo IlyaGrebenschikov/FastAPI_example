@@ -1,6 +1,6 @@
 import time
 
-from fastapi_example.application.exceptions.http_exceptions import TooManyRequestsError
+from fastapi_example.application.http_exceptions import TooManyRequestsError
 from fastapi_example.application.interfaces.cache.repositories import (
     IRateLimiterCacheRepository,
 )

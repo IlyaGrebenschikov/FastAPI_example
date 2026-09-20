@@ -55,6 +55,9 @@ class DeleteUserHandler:
 
             result = await self._repository.delete_user(user_id=cmd.user_id)
 
+        if result is None:
+            raise NotFoundError("User not found")
+
         await self._email_notifications.enqueue(
             TEmailMessage(
                 recipient=result.email,

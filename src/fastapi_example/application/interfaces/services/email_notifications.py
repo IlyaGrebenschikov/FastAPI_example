@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-import aiosmtplib
-
 
 @dataclass
 class TEmailMessage:
@@ -13,6 +11,4 @@ class TEmailMessage:
 class IEmailNotificationsService:
     async def enqueue(self, message: TEmailMessage) -> None: ...
 
-    async def send(
-        self, message: TEmailMessage
-    ) -> tuple[dict[str, aiosmtplib.SMTPResponse], str]: ...
+    async def send(self, message: TEmailMessage) -> None: ...

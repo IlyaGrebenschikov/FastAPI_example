@@ -61,15 +61,24 @@ class UpdateUserHandler:
 
                 await self._email_validator.validate(cmd.email)
 
-            raw_data = {
+            raw_data: dict[str, str] = {
                 k: v for k, v in asdict(cmd).items() if v is not None and k != "user_id"
             }
             if "password" in raw_data:
                 raw_data["password"] = self._hasher.hash_password(raw_data["password"])
 
+            update_data: TUpdateUser = {}
+            if "email" in raw_data:
+                update_data["email"] = raw_data["email"]
+            if "password" in raw_data:
+                update_data["password"] = raw_data["password"]
+
             updated = await self._repository.update_user(
-                cmd.user_id, TUpdateUser(**raw_data)
+                cmd.user_id, update_data
             )
+
+        if updated is None:
+            raise NotFoundError("User not found")
 
         await self._email_notifications.enqueue(
             TEmailMessage(

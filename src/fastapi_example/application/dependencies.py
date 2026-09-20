@@ -38,7 +38,7 @@ from fastapi_example.application.services import (
     EmailNotificationsService,
     RateLimiterService,
 )
-from fastapi_example.core.settings import JWTSettings
+from fastapi_example.core.settings import JWTSettings, SMTPSettings
 
 
 class UsersFeaturesProvider(Provider):
@@ -161,6 +161,9 @@ class ServicesProvider(Provider):
 
     @provide(scope=Scope.REQUEST)
     def email_notifications_service(
-        self, producer: IEmailNotificationsProducer, sender: IEmailSender
+        self,
+        producer: IEmailNotificationsProducer,
+        sender: IEmailSender,
+        smtp_settings: SMTPSettings,
     ) -> IEmailNotificationsService:
-        return EmailNotificationsService(producer, sender)
+        return EmailNotificationsService(producer, sender, smtp_settings.sender)
