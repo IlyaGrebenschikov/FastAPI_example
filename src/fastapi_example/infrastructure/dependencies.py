@@ -5,11 +5,11 @@ from dishka import Provider, Scope, provide
 from pwdlib import PasswordHash
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
+from fastapi_example.application.interfaces import IEmailSender, IPwdHasher
 from fastapi_example.application.interfaces.cache.repositories import (
     IRateLimiterCacheRepository,
     IRefreshTokenRepository,
 )
-from fastapi_example.application.interfaces import IEmailSender
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
@@ -18,7 +18,6 @@ from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
 )
-from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.core.settings import (
     CacheSettings,
     DatabaseSettings,

@@ -1,5 +1,6 @@
 import json
 import logging
+
 import httpx
 
 from fastapi_example.application.interfaces.http_clients import (

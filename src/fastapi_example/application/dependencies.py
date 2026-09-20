@@ -58,7 +58,11 @@ class UsersFeaturesProvider(Provider):
         email_notifications: IEmailNotificationsService,
     ) -> CreateUserHandler:
         return CreateUserHandler(
-            repository, hasher, transaction_manager, email_validator, email_notifications
+            repository,
+            hasher,
+            transaction_manager,
+            email_validator,
+            email_notifications,
         )
 
     @provide(scope=Scope.REQUEST)
@@ -79,7 +83,11 @@ class UsersFeaturesProvider(Provider):
         email_notifications: IEmailNotificationsService,
     ) -> UpdateUserHandler:
         return UpdateUserHandler(
-            repository, hasher, transaction_manager, email_validator, email_notifications
+            repository,
+            hasher,
+            transaction_manager,
+            email_validator,
+            email_notifications,
         )
 
     @provide(scope=Scope.REQUEST)
@@ -114,7 +122,11 @@ class AuthFeaturesProvider(Provider):
         transaction_manager: ITransactionManager,
     ) -> LoginEmailHandler:
         return LoginEmailHandler(
-            users_repository, hasher, token_service, refresh_token_repository, transaction_manager
+            users_repository,
+            hasher,
+            token_service,
+            refresh_token_repository,
+            transaction_manager,
         )
 
     @provide(scope=Scope.REQUEST)
@@ -133,7 +145,10 @@ class AuthFeaturesProvider(Provider):
         transaction_manager: ITransactionManager,
     ) -> RefreshHandler:
         return RefreshHandler(
-            users_repository, refresh_token_repository, token_service, transaction_manager
+            users_repository,
+            refresh_token_repository,
+            token_service,
+            transaction_manager,
         )
 
 

@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import (
-    Optional,
-    Type,
-)
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
@@ -75,7 +71,7 @@ class TransactionManager(ITransactionManager[AsyncSession]):
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
-        self._transaction: Optional[AsyncSessionTransaction] = None
+        self._transaction: AsyncSessionTransaction | None = None
 
     async def __aenter__(self) -> TransactionManager:
         if self._session.in_transaction():
@@ -85,9 +81,9 @@ class TransactionManager(ITransactionManager[AsyncSession]):
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         if not self._transaction:
             return

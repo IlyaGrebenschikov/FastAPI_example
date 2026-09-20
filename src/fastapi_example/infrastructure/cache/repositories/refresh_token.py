@@ -2,7 +2,9 @@ from uuid import UUID
 
 import redis.asyncio as aioredis
 
-from fastapi_example.application.interfaces.cache.repositories import IRefreshTokenRepository
+from fastapi_example.application.interfaces.cache.repositories import (
+    IRefreshTokenRepository,
+)
 
 
 class RefreshTokenRepository(IRefreshTokenRepository):

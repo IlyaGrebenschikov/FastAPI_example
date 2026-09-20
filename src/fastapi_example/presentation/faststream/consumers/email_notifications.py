@@ -1,12 +1,11 @@
-from faststream.kafka import KafkaRouter
 from dishka.integrations.faststream import FromDishka
+from faststream.kafka import KafkaRouter
 
-from fastapi_example.presentation.faststream.dto import EmailNotificationDTO
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     TEmailMessage,
 )
-
+from fastapi_example.presentation.faststream.dto import EmailNotificationDTO
 
 email_notifications_router = KafkaRouter()
 

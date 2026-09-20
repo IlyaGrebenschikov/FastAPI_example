@@ -12,8 +12,8 @@ from fastapi_example.application.features.users.commands import (
     UpdateUserHandler,
 )
 from fastapi_example.application.features.users.queries import (
-    GetUserQuery,
     GetUserHandler,
+    GetUserQuery,
 )
 from fastapi_example.presentation.api.dependencies import (
     get_current_user_id_from_access_token,

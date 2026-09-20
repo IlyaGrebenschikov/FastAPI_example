@@ -1,16 +1,16 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class AppException(Exception):
     def __init__(
         self,
         message: str = "App exception",
-        headers: Optional[Dict[str, Any]] = None,
+        headers: dict[str, Any] | None = None,
     ) -> None:
         self.content = {"message": message}
         self.headers = headers
 
-    def as_dict(self) -> Dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         return {"content": self.content, "headers": self.headers}
 
 
@@ -18,7 +18,7 @@ class DetailedError(AppException):
     def __init__(
         self,
         message: str,
-        headers: Optional[Dict[str, Any]] = None,
+        headers: dict[str, Any] | None = None,
         **additional: Any,
     ) -> None:
         super().__init__(message=message, headers=headers)

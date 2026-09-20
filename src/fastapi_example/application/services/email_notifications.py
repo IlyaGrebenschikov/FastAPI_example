@@ -7,6 +7,8 @@ import aiosmtplib
 from fastapi_example.application.interfaces import IEmailSender
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
+)
+from fastapi_example.application.interfaces.message_broker.producers import (
     TEmailMessage as TPubEmailMessage,
 )
 from fastapi_example.application.interfaces.services import (

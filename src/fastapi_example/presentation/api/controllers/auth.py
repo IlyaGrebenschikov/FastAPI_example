@@ -14,8 +14,6 @@ from fastapi_example.application.features.auth.commands import (
 from fastapi_example.application.interfaces.services import TokenData
 from fastapi_example.presentation.api.dependencies import get_refresh_token_data
 from fastapi_example.presentation.api.docs import (
-    ConflictError,
-    NotFoundError,
     TooManyRequestsError,
     UnAuthorizedError,
 )

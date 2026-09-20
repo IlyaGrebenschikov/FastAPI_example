@@ -2,6 +2,7 @@ import logging
 from dataclasses import dataclass
 
 from fastapi_example.application.http_exceptions import UnAuthorizedError
+from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.application.interfaces.cache.repositories import (
     IRefreshTokenRepository,
 )
@@ -9,7 +10,6 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     ITokenJWTService,
     TokenPair,

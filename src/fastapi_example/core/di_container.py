@@ -13,8 +13,8 @@ from fastapi_example.infrastructure.dependencies import (
     CommunicationProvider,
     DatabaseProvider,
     HTTPClientsProvider,
-    MessageBrokerProvider,
     MessageBrokerProducersProvider,
+    MessageBrokerProvider,
     PwdHasherProvider,
     RepositoriesProvider,
 )

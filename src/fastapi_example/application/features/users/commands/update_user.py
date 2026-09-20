@@ -1,18 +1,17 @@
 import logging
 from dataclasses import asdict, dataclass
-from typing import Optional
 from uuid import UUID
 
 from fastapi_example.application.http_exceptions import (
     ConflictError,
     NotFoundError,
 )
+from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
     TUpdateUser,
 )
-from fastapi_example.application.interfaces import IPwdHasher
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     IEmailValidatorService,
@@ -26,8 +25,8 @@ log = logging.getLogger(__name__)
 @dataclass
 class UpdateUserCommand:
     user_id: UUID
-    email: Optional[str] = None
-    password: Optional[str] = None
+    email: str | None = None
+    password: str | None = None
 
 
 class UpdateUserHandler:

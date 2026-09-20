@@ -1,4 +1,3 @@
-from typing import Optional
 from uuid import UUID
 
 from sqlalchemy import delete, exists, insert, or_, select, update
@@ -28,8 +27,8 @@ class UsersRepository(IUsersRepository):
 
     async def exists_user(
         self,
-        user_id: Optional[UUID] = None,
-        email: Optional[str] = None,
+        user_id: UUID | None = None,
+        email: str | None = None,
     ) -> bool:
         if not any([user_id, email]):
             raise TypeError("At least one identifier must be provided")
@@ -47,10 +46,10 @@ class UsersRepository(IUsersRepository):
 
     async def get_user(
         self,
-        user_id: Optional[UUID] = None,
-        email: Optional[str] = None,
+        user_id: UUID | None = None,
+        email: str | None = None,
         for_update: bool = False,
-    ) -> Optional[User]:
+    ) -> User | None:
         if not any([user_id, email]):
             raise TypeError("At least one identifier must be provided")
 
@@ -74,7 +73,7 @@ class UsersRepository(IUsersRepository):
         self,
         user_id: UUID,
         data: TUpdateUser,
-    ) -> Optional[User]:
+    ) -> User | None:
         clause = UserModel.id == user_id
         stmt = update(UserModel).where(clause).values(**data).returning(UserModel)
         result = (await self._session.execute(stmt)).scalar_one_or_none()
@@ -85,7 +84,7 @@ class UsersRepository(IUsersRepository):
     async def delete_user(
         self,
         user_id: UUID,
-    ) -> Optional[User]:
+    ) -> User | None:
         clause = UserModel.id == user_id
         stmt = delete(UserModel).where(clause).returning(UserModel)
         result = (await self._session.execute(stmt)).scalar_one_or_none()

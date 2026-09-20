@@ -1,4 +1,4 @@
-from .get_user import GetUserQuery, GetUserHandler
+from .get_user import GetUserHandler, GetUserQuery
 
 __all__ = (
     "GetUserHandler",

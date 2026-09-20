@@ -1,3 +1,5 @@
+from .email_notifications import IEmailNotificationsService, TEmailMessage
+from .email_validator import IEmailValidatorService
 from .rate_limiter import IRateLimiterService
 from .token_jwt import (
     AccessTokenClaims,
@@ -7,9 +9,6 @@ from .token_jwt import (
     TokenData,
     TokenPair,
 )
-from .email_validator import IEmailValidatorService
-from .email_notifications import IEmailNotificationsService, TEmailMessage
-
 
 __all__ = (
     "AccessTokenClaims",

@@ -1,8 +1,6 @@
 from types import TracebackType
 from typing import (
-    Optional,
     Protocol,
-    Type,
     TypeVar,
 )
 
@@ -14,7 +12,7 @@ class ITransactionManager(Protocol[SessionT]):
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None: ...

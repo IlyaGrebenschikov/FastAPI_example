@@ -1,10 +1,10 @@
 import logging
 
-from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 from fastapi_example.application.exceptions.http_exceptions import (
     BadRequestError,
     ServiceUnavailableError,
 )
+from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 
 log = logging.getLogger(__name__)
 
