@@ -1,7 +1,7 @@
 from typing import Annotated
 
-from dishka.integrations.fastapi import FromDishka
-from fastapi import Request
+from dishka.integrations.fastapi import FromDishka, inject
+from fastapi import Depends, Request
 
 from fastapi_example.application.interfaces.services import IRateLimiterService
 
@@ -9,7 +9,8 @@ DEFAULT_RATE_LIMIT = 100
 DEFAULT_WINDOW = 60
 
 
-async def rate_limit(
+@inject
+async def _rate_limit(
     request: Request,
     rate_limiter: FromDishka[IRateLimiterService],
 ) -> None:
@@ -22,4 +23,4 @@ async def rate_limit(
     )
 
 
-RateLimitDep = Annotated[None, rate_limit]
+RateLimitDep = Annotated[None, Depends(_rate_limit)]

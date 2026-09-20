@@ -34,7 +34,7 @@ def setup_di_container(
         PwdHasherProvider(),
         CacheProvider(settings.cache),
         CacheRepositoriesProvider(settings.jwt),
-        ServicesProvider(),
+        ServicesProvider(settings.smtp),
         UsersFeaturesProvider(),
         AuthFeaturesProvider(settings.jwt),
         HTTPClientsProvider(settings.email_verifier),

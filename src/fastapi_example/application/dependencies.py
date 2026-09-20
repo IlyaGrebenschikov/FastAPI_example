@@ -153,6 +153,10 @@ class AuthFeaturesProvider(Provider):
 
 
 class ServicesProvider(Provider):
+    def __init__(self, smtp_settings: SMTPSettings, scope=None, component=None):
+        super().__init__(scope, component)
+        self._smtp_sender = smtp_settings.sender
+
     @provide(scope=Scope.REQUEST)
     def rate_limiter_service(
         self, repository: IRateLimiterCacheRepository
@@ -164,6 +168,5 @@ class ServicesProvider(Provider):
         self,
         producer: IEmailNotificationsProducer,
         sender: IEmailSender,
-        smtp_settings: SMTPSettings,
     ) -> IEmailNotificationsService:
-        return EmailNotificationsService(producer, sender, smtp_settings.sender)
+        return EmailNotificationsService(producer, sender, self._smtp_sender)

@@ -163,7 +163,7 @@ services:
       - maildev
     networks:
       - fastapi_example.network.smtp
-    command: ["tcp-listen:1025,fork,reuseaddr", "tcp-connect:maildev:1025"]
+    command: ["tcp-listen:1025,fork,reuseaddr", "tcp-connect:maildev:25"]
 
   maildev_web_port_forwarder:
     profiles: ["port-forwarder"]
@@ -175,7 +175,7 @@ services:
       - maildev
     networks:
       - fastapi_example.network.smtp
-    command: ["tcp-listen:1080,fork,reuseaddr", "tcp-connect:maildev:1080"]
+    command: ["tcp-listen:1080,fork,reuseaddr", "tcp-connect:maildev:80"]
 
 
 volumes:

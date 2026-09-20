@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 
+import aiosmtplib
 import redis.asyncio as aioredis
 from dishka import Provider, Scope, provide
 from pwdlib import PasswordHash
@@ -14,6 +15,7 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
+from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
 )
@@ -25,6 +27,8 @@ from fastapi_example.core.settings import (
     MessageBrokerSettings,
     SMTPSettings,
 )
+from faststream.kafka import KafkaBroker
+
 from fastapi_example.infrastructure.cache import create_client
 from fastapi_example.infrastructure.cache.repositories import (
     RateLimiterCacheRepository,
@@ -125,7 +129,7 @@ class CommunicationProvider(Provider):
         self._smtp_settings = smtp_settings
 
     @provide(scope=Scope.REQUEST)
-    async def smtp_client(self):
+    async def smtp_client(self) -> AsyncIterator[aiosmtplib.SMTP]:
         client = create_smtp_client(self._smtp_settings)
         async with client:
             if self._smtp_settings.username and self._smtp_settings.password:
@@ -134,8 +138,8 @@ class CommunicationProvider(Provider):
                 )
             yield client
 
-    @provide(scope=Scope.APP)
-    def email_sender(self, client) -> IEmailSender:
+    @provide(scope=Scope.REQUEST)
+    def email_sender(self, client: aiosmtplib.SMTP) -> IEmailSender:
         return EmailSender(client)
 
 
@@ -147,7 +151,7 @@ class HTTPClientsProvider(Provider):
         self._email_verifier_settings = email_verifier_settings
 
     @provide(scope=Scope.APP)
-    async def email_verifier(self):
+    async def email_verifier(self) -> AsyncIterator[IEmailVerifier]:
         if not self._email_verifier_settings.enabled:
             yield NullEmailVerifier()
         else:
@@ -164,11 +168,13 @@ class MessageBrokerProvider(Provider):
         self._broker_settings = broker_settings
 
     @provide(scope=Scope.APP)
-    def client(self):
+    def client(self) -> KafkaBroker:
         return create_broker(self._broker_settings)
 
 
 class MessageBrokerProducersProvider(Provider):
     @provide(scope=Scope.APP)
-    def email_notifications_producer(self, broker) -> IEmailNotificationsProducer:
+    def email_notifications_producer(
+        self, broker: KafkaBroker
+    ) -> IEmailNotificationsProducer:
         return EmailNotificationsProducer(broker)

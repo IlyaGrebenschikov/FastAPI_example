@@ -66,10 +66,15 @@ async def validation_exception_handler(
 ) -> JSONResponse:
     log.warning("Handle error: %s", type(err).__name__)
     errors = err.errors()
+    for e in errors:
+        log.warning("Validation error detail: loc=%s msg=%s type=%s", e.get("loc"), e.get("msg"), e.get("type"))
     return JSONResponse(
         content={
             "message": "Validation error",
-            "detail": [error["msg"] for error in errors],
+            "detail": [
+                {"loc": list(error["loc"]), "msg": error["msg"], "type": error["type"]}
+                for error in errors
+            ],
         },
         status_code=status.HTTP_400_BAD_REQUEST,
     )
