@@ -1,77 +1,69 @@
 services:
   postgres:
-    profiles: [ "api", "migrations", "port-forwarder" ]
-    image: postgres:latest
-    container_name: fastapi_example.api.pg
+    image: postgres:16-alpine
+    container_name: fastapi_example.pg
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
-      - pg_root:/var/lib/postgresql
+      - fastapi_example_pg:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
       interval: 5s
       timeout: 3s
       retries: 5
     networks:
-      - fastapi_example.api.network.pg
-    env_file:
-      - .env
-  
+      - fastapi_example.network.pg
+
   postgres_port_forwarder:
-    profiles: [ "port-forwarder" ]
+    profiles: ["port-forwarder"]
     image: alpine/socat:latest
-    container_name: fastapi_example.api.pg.port_forwarder
+    container_name: fastapi_example.pg.port_forwarder
     ports:
       - "127.0.0.1:5432:5432"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - fastapi_example.api.network.pg
+      - fastapi_example.network.pg
     command: ["tcp-listen:5432,fork,reuseaddr", "tcp-connect:postgres:5432"]
 
   redis:
-    profiles: [ "api", "port-forwarder" ]
-    image: redis:latest
-    container_name: fastapi_example.api.redis
+    image: redis:7-alpine
+    container_name: fastapi_example.redis
     restart: unless-stopped
     command: redis-server --requirepass ${REDIS_PASSWORD:-}
     volumes:
-      - redis.data:/data
+      - fastapi_example_redis:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "--pass", "${REDIS_PASSWORD:-}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-}", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
     networks:
-      - fastapi_example.api.network.redis
-    env_file:
-      - .env
+      - fastapi_example.network.redis
 
   redis_port_forwarder:
-    profiles: [ "port-forwarder" ]
+    profiles: ["port-forwarder"]
     image: alpine/socat:latest
-    container_name: fastapi_example.api.redis.port_forwarder
+    container_name: fastapi_example.redis.port_forwarder
     ports:
       - "127.0.0.1:6379:6379"
     depends_on:
       redis:
         condition: service_healthy
     networks:
-      - fastapi_example.api.network.redis
+      - fastapi_example.network.redis
     command: ["tcp-listen:6379,fork,reuseaddr", "tcp-connect:redis:6379"]
 
   kafka:
-    profiles: [ "api", "port-forwarder" ]
     image: apache/kafka:4.2.0
-    container_name: kafka
+    container_name: fastapi_example.kafka
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      # INTERNAL: Docker network (api → kafka:29092). EXTERNAL: host via port-forwarder (→ kafka:9092).
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
@@ -84,48 +76,50 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
-      - kafka.data:/var/lib/kafka/data
+      - fastapi_example_kafka:/var/lib/kafka/data
     healthcheck:
-      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1" ]
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
     networks:
-      - fastapi_example.api.network.kafka
+      - fastapi_example.network.kafka
 
   kafka_port_forwarder:
-    profiles: [ "port-forwarder" ]
+    profiles: ["port-forwarder"]
     image: alpine/socat:latest
-    container_name: fastapi_example.api.kafka.port_forwarder
+    container_name: fastapi_example.kafka.port_forwarder
     ports:
       - "127.0.0.1:9092:9092"
     depends_on:
       kafka:
         condition: service_healthy
     networks:
-      - fastapi_example.api.network.kafka
-    command: [ "tcp-listen:9092,fork,reuseaddr", "tcp-connect:kafka:9092" ]
+      - fastapi_example.network.kafka
+    command: ["tcp-listen:9092,fork,reuseaddr", "tcp-connect:kafka:9092"]
 
   api:
-    profiles: [ "api" ]
+    profiles: ["api"]
     container_name: fastapi_example.api
     build:
       context: .
       dockerfile: Dockerfile
     networks:
-      - fastapi_example.api.network
-      - fastapi_example.api.network.pg
-      - fastapi_example.api.network.redis
-      - fastapi_example.api.network.kafka
-      - fastapi_example.api.network.smtp
+      - fastapi_example.network
+      - fastapi_example.network.pg
+      - fastapi_example.network.redis
+      - fastapi_example.network.kafka
+      - fastapi_example.network.smtp
     volumes:
-      - ./src:/usr/api/src
-      - ./.certs:/usr/api/.certs:ro
+      - ./src:/usr/fastapi_example/src
+      - ./.certs:/usr/fastapi_example/.certs:ro
     env_file:
       - .env
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
       kafka:
         condition: service_healthy
@@ -133,124 +127,72 @@ services:
       - "8080:8080"
 
   migrations:
-    profiles: [ "migrations" ]
-    image: api
+    profiles: ["migrations"]
+    container_name: fastapi_example.migrations
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fastapi_example.api.pg.migrations
     volumes:
-      - ./src/fastapi_example/infrastructure/database/migrations/versions:/usr/api/src/fastapi_example/infrastructure/database/migrations/versions
-      - ./alembic.ini:/usr/api/alembic.ini:ro
+      - ./src/fastapi_example/infrastructure/database/migrations/versions:/usr/fastapi_example/src/fastapi_example/infrastructure/database/migrations/versions
+      - ./alembic.ini:/usr/fastapi_example/alembic.ini:ro
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - fastapi_example.api.network.pg
+      - fastapi_example.network.pg
     command: ["uv", "run", "alembic", "upgrade", "head"]
     env_file:
       - .env
-
-  grafana:
-    profiles: [ "monitoring" ]
-    image: grafana/grafana:latest
-    container_name: fastapi_example.api.monitoring.grafana
-    ports:
-      - 3000:3000
-    volumes:
-      - ./monitoring/grafana/datasourses/grafana-config.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
-      - grafana.data:/var/lib/grafana:rw
     environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_FEATURE_TOGGLES_ENABLE=accessControlOnCall lokiLogsDataplane
-    networks:
-      - fastapi_example.api.network.monitoring
-
-  loki:
-    profiles: [ "monitoring" ]
-    image: grafana/loki:latest
-    container_name: api.monitoring.loki
-    hostname: fastapi_example.api.monitoring.loki
-    expose:
-      - "3100"
-    volumes:
-      - ./monitoring/loki/loki-config.yaml:/etc/loki/config.yaml:ro
-      - loki.data:/tmp/:rw
-    command: -config.file=/etc/loki/config.yaml
-    restart: unless-stopped
-    networks:
-      - fastapi_example.api.network.monitoring
-
-  promtail:
-    profiles: [ "monitoring" ]
-    image: grafana/promtail:3.0.0
-    container_name: fastapi_example.api.monitoring.promtail
-    volumes:
-      - ./monitoring/promtail/promtail-config.yaml:/etc/promtail/docker-config.yaml
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: -config.file=/etc/promtail/docker-config.yaml
-    depends_on:
-      - loki
-    networks:
-      - fastapi_example.api.network.monitoring
+      DB_HOST: postgres
 
   maildev:
-    profiles: [ "api", "port-forwarder" ]
-    image: maildev/maildev
-    container_name: fastapi_example.api.maildev
+    image: djfarrelly/maildev:latest
+    container_name: fastapi_example.maildev
     restart: unless-stopped
-    environment:
-      - TZ=UTC
-      - MAILDEV_WEB_PORT=1080
-      - MAILDEV_SMTP_PORT=1025
     networks:
-      - fastapi_example.api.network.smtp
+      - fastapi_example.network.smtp
 
   maildev_smtp_port_forwarder:
-    profiles: [ "port-forwarder" ]
+    profiles: ["port-forwarder"]
     image: alpine/socat:latest
-    container_name: fastapi_example.api.maildev.smtp.port_forwarder
+    container_name: fastapi_example.maildev.smtp.port_forwarder
     ports:
       - "127.0.0.1:1025:1025"
     depends_on:
       - maildev
     networks:
-      - fastapi_example.api.network.smtp
-    command: [ "tcp-listen:1025,fork,reuseaddr", "tcp-connect:maildev:1025" ]
+      - fastapi_example.network.smtp
+    command: ["tcp-listen:1025,fork,reuseaddr", "tcp-connect:maildev:25"]
 
   maildev_web_port_forwarder:
-    profiles: [ "port-forwarder" ]
+    profiles: ["port-forwarder"]
     image: alpine/socat:latest
-    container_name: fastapi_example.api.maildev.web.port_forwarder
+    container_name: fastapi_example.maildev.web.port_forwarder
     ports:
       - "127.0.0.1:1080:1080"
     depends_on:
       - maildev
     networks:
-      - fastapi_example.api.network.smtp
-    command: [ "tcp-listen:1080,fork,reuseaddr", "tcp-connect:maildev:1080" ]
+      - fastapi_example.network.smtp
+    command: ["tcp-listen:1080,fork,reuseaddr", "tcp-connect:maildev:80"]
+
 
 volumes:
-  pg_root:
-  loki.data:
-  grafana.data:
-  redis.data:
-  kafka.data:
+  fastapi_example_pg:
+  fastapi_example_redis:
+  fastapi_example_kafka:
+
 
 networks:
-  fastapi_example.api.network:
-    name: fastapi_example.api.network
+  fastapi_example.network:
+    name: fastapi_example.network
     driver: bridge
-  fastapi_example.api.network.pg:
-    name: fastapi_example.api.network.pg
-  fastapi_example.api.network.monitoring:
-    name: fastapi_example.api.network.monitoring
-  fastapi_example.api.network.redis:
-    name: fastapi_example.api.network.redis
-  fastapi_example.api.network.kafka:
-    name: fastapi_example.api.network.kafka
-  fastapi_example.api.network.smtp:
-    name: fastapi_example.api.network.smtp
+  fastapi_example.network.pg:
+    name: fastapi_example.network.pg
+  fastapi_example.network.redis:
+    name: fastapi_example.network.redis
+  fastapi_example.network.kafka:
+    name: fastapi_example.network.kafka
+  fastapi_example.network.smtp:
+    name: fastapi_example.network.smtp

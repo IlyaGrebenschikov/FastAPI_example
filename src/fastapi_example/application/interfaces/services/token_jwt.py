@@ -1,24 +1,43 @@
-from typing import Protocol, TypedDict, NotRequired
+from dataclasses import dataclass
+from typing import Literal, NotRequired, Protocol, TypedDict
 from uuid import UUID
 
 
-class TTokenPayload(TypedDict):
+class AccessTokenClaims(TypedDict):
+    token_type: Literal["access"]
     sub: str
-    scopes: NotRequired[list[str]]
-    exp: NotRequired[int]
+    jti: NotRequired[str]
     iat: NotRequired[int]
+    exp: NotRequired[int]
 
 
-class TTokenDecoded(TypedDict):
+class RefreshTokenClaims(TypedDict):
+    token_type: Literal["refresh"]
     sub: str
-    exp: int
-    iat: int
-    scopes: NotRequired[list[str]]
+    jti: str
+    iat: NotRequired[int]
+    exp: NotRequired[int]
+
+
+TokenClaims = AccessTokenClaims | RefreshTokenClaims
+
+
+@dataclass(frozen=True)
+class TokenData:
+    user_id: UUID
+    jti: str
+
+
+@dataclass(frozen=True)
+class TokenPair:
+    access_token: str
+    refresh_token: str
+    jti: str
 
 
 class ITokenJWTService(Protocol):
-    def create_access_token(self, data: TTokenPayload) -> str: ...
+    def create_token_pair(self, user_id: UUID) -> TokenPair: ...
 
-    def _verify_token(self, token: str) -> TTokenDecoded: ...
+    def verify_access_token(self, token: str) -> UUID: ...
 
-    def get_user_id_from_token(self, token: str) -> UUID: ...
+    def verify_refresh_token(self, token: str) -> TokenData: ...

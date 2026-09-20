@@ -1,5 +1,6 @@
 import json
 import logging
+
 import httpx
 
 from fastapi_example.application.interfaces.http_clients import (
@@ -16,6 +17,9 @@ class AbstractApiEmailVerifier(IEmailVerifier):
     def __init__(self, api_key: str):
         self._client = httpx.AsyncClient(timeout=5.0)
         self._key = api_key
+
+    async def aclose(self) -> None:
+        await self._client.aclose()
 
     async def check(self, email: str) -> EmailVerificationResult:
         try:

@@ -1,19 +1,17 @@
-from typing import Optional, Protocol, TypedDict, NotRequired
+from typing import Protocol, TypedDict
 from uuid import UUID
 
-from fastapi_example.domain.entities import User
+from fastapi_example.domain import User
 
 
 class TCreateUser(TypedDict):
-    username: str
     email: str
     password: str
 
 
-class TUpdateUser(TypedDict):
-    username: NotRequired[str]
-    email: NotRequired[str]
-    password: NotRequired[str]
+class TUpdateUser(TypedDict, total=False):
+    email: str
+    password: str
 
 
 class IUsersRepository(Protocol):
@@ -21,25 +19,24 @@ class IUsersRepository(Protocol):
 
     async def exists_user(
         self,
-        user_id: Optional[UUID] = None,
-        username: Optional[str] = None,
-        email: Optional[str] = None,
+        user_id: UUID | None = None,
+        email: str | None = None,
     ) -> bool: ...
 
     async def get_user(
         self,
-        user_id: Optional[UUID] = None,
-        username: Optional[str] = None,
+        user_id: UUID | None = None,
+        email: str | None = None,
         for_update: bool = False,
-    ) -> Optional[User]: ...
+    ) -> User | None: ...
 
     async def update_user(
         self,
         user_id: UUID,
         data: TUpdateUser,
-    ) -> User: ...
+    ) -> User | None: ...
 
     async def delete_user(
         self,
         user_id: UUID,
-    ) -> User: ...
+    ) -> User | None: ...

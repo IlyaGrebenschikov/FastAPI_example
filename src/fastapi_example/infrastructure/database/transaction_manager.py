@@ -1,10 +1,7 @@
 from __future__ import annotations
 
+import logging
 from types import TracebackType
-from typing import (
-    Optional,
-    Type,
-)
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import (
@@ -14,7 +11,34 @@ from sqlalchemy.ext.asyncio import (
 
 from fastapi_example.application.interfaces.database import ITransactionManager
 
-from .exceptions import CommitError, RollbackError
+log = logging.getLogger(__name__)
+
+
+class DatabaseError(Exception):
+    def __init__(self, message: str, operation: str | None = None) -> None:
+        super().__init__(message)
+        self.operation = operation
+
+
+class CommitError(DatabaseError):
+    def __init__(self, original_error: Exception | None = None) -> None:
+        message = "Failed to commit transaction"
+        if original_error:
+            message += f": {original_error}"
+        super().__init__(message, operation="commit")
+
+
+class RollbackError(DatabaseError):
+    def __init__(self, original_error: Exception | None = None) -> None:
+        message = "Failed to rollback transaction"
+        if original_error:
+            message += f": {original_error}"
+        super().__init__(message, operation="rollback")
+
+
+class InvalidParamsError(DatabaseError):
+    def __init__(self, message: str) -> None:
+        super().__init__(message, operation="invalid_params")
 
 
 class TransactionManager(ITransactionManager[AsyncSession]):
@@ -50,7 +74,7 @@ class TransactionManager(ITransactionManager[AsyncSession]):
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
-        self._transaction: Optional[AsyncSessionTransaction] = None
+        self._transaction: AsyncSessionTransaction | None = None
 
     async def __aenter__(self) -> TransactionManager:
         if self._session.in_transaction():
@@ -60,9 +84,9 @@ class TransactionManager(ITransactionManager[AsyncSession]):
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         if not self._transaction:
             return
@@ -72,7 +96,8 @@ class TransactionManager(ITransactionManager[AsyncSession]):
                 await self._transaction.rollback()
             else:
                 await self._transaction.commit()
-        except SQLAlchemyError as err:
-            raise (RollbackError if exc_type else CommitError)(err) from err
+        except SQLAlchemyError as rollback_err:
+            log.critical("Transaction rollback failed: %s", rollback_err)
+            raise
         finally:
             self._transaction = None

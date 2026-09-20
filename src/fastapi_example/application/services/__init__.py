@@ -1,9 +1,7 @@
-from .rate_limiter import RateLimiterService
-from .token_jwt import TokenJWTService
 from .email_notifications import EmailNotificationsService
+from .rate_limiter import RateLimiterService
 
 __all__ = (
-    "TokenJWTService",
     "RateLimiterService",
     "EmailNotificationsService",
 )

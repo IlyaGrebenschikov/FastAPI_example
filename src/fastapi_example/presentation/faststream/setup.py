@@ -3,7 +3,7 @@ from dishka.integrations.faststream import setup_dishka
 from faststream import FastStream
 from faststream.kafka import KafkaBroker
 
-from .consumers import setup_routers, email_notifications_router
+from .consumers import email_notifications_router, setup_routers
 
 
 async def init_faststream(di_container: AsyncContainer) -> FastStream:
