@@ -1,5 +1,5 @@
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from pydantic import BaseModel, model_validator
@@ -34,8 +34,8 @@ class CorsConfig(TomlConfig):
 
 @dataclass
 class Configs:
-    app: AppConfig
-    cors: CorsConfig
+    app: AppConfig = field(default_factory=AppConfig)
+    cors: CorsConfig = field(default_factory=CorsConfig)
 
 
 def load_configs() -> Configs:

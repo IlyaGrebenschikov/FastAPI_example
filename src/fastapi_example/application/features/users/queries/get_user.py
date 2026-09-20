@@ -19,14 +19,16 @@ class GetUserQuery:
 
 class GetUserHandler:
     def __init__(
-        self, repository: IUsersRepository, transaction_manager: ITransactionManager
+        self,
+        users_repository: IUsersRepository,
+        transaction_manager: ITransactionManager,
     ) -> None:
-        self._repository = repository
+        self._users_repository = users_repository
         self._transaction_manager = transaction_manager
 
     async def execute(self, query: GetUserQuery) -> User:
         async with self._transaction_manager:
-            user = await self._repository.get_user(
+            user = await self._users_repository.get_user(
                 user_id=query.user_id, for_update=False
             )
             if not user:

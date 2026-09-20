@@ -18,6 +18,9 @@ class AbstractApiEmailVerifier(IEmailVerifier):
         self._client = httpx.AsyncClient(timeout=5.0)
         self._key = api_key
 
+    async def aclose(self) -> None:
+        await self._client.aclose()
+
     async def check(self, email: str) -> EmailVerificationResult:
         try:
             r = await self._client.get(

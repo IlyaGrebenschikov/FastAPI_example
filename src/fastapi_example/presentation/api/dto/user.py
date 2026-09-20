@@ -11,8 +11,8 @@ class CreateUserDTO(BaseDTO):
 
 
 class UpdateUserDTO(BaseDTO):
-    email: str | None = None
-    password: str | None = None
+    email: EmailStr | None = None
+    password: str | None = Field(default=None, min_length=8, max_length=128)
 
 
 class DeleteUserDTO(BaseDTO):

@@ -46,6 +46,7 @@ class JWTSettings(EnvSettings):
     algorithm: str = "RS256"
     access_expiration: int = 30
     refresh_expiration: int = 60 * 24 * 30
+    certs_dir: str = ""
 
     @property
     def private_key(self) -> str:
@@ -62,6 +63,8 @@ class JWTSettings(EnvSettings):
         return key_path.read_text(encoding="utf-8")
 
     def _get_certs_path(self) -> Path:
+        if self.certs_dir:
+            return Path(self.certs_dir)
         return Path(__file__).parents[3] / ".certs"
 
 

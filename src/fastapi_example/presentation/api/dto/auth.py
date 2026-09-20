@@ -1,9 +1,11 @@
+from pydantic import EmailStr, Field
+
 from .base import BaseDTO, BaseResponseDTO
 
 
 class LoginEmailDTO(BaseDTO):
-    email: str
-    password: str
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
 
 
 class TokenResponseDTO(BaseResponseDTO):

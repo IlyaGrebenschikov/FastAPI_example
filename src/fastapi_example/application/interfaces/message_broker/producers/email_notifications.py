@@ -1,11 +1,7 @@
-from typing import TypedDict
+from typing import Protocol
+
+from fastapi_example.application.interfaces.services import TEmailMessage
 
 
-class TEmailMessage(TypedDict):
-    recipient: str
-    subject: str
-    content: str
-
-
-class IEmailNotificationsProducer:
+class IEmailNotificationsProducer(Protocol):
     async def publish(self, message: TEmailMessage) -> None: ...

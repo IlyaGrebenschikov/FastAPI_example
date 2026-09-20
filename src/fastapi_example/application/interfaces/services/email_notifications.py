@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Protocol
 
 
 @dataclass
@@ -8,7 +9,7 @@ class TEmailMessage:
     content: str
 
 
-class IEmailNotificationsService:
+class IEmailNotificationsService(Protocol):
     async def enqueue(self, message: TEmailMessage) -> None: ...
 
     async def send(self, message: TEmailMessage) -> None: ...

@@ -5,9 +5,6 @@ from fastapi_example.application.interfaces import IEmailSender
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
 )
-from fastapi_example.application.interfaces.message_broker.producers import (
-    TEmailMessage as TPubEmailMessage,
-)
 from fastapi_example.application.interfaces.services import (
     IEmailNotificationsService,
     TEmailMessage,
@@ -28,19 +25,11 @@ class EmailNotificationsService(IEmailNotificationsService):
         self._email_sender = email_sender
 
     async def enqueue(self, message: TEmailMessage) -> None:
-        log.info("enqueue: %s", message)
-        await self._producer.publish(
-            message=TPubEmailMessage(
-                recipient=message.recipient,
-                subject=message.subject,
-                content=message.content,
-            )
-        )
+        log.info("enqueue: to=%s subject=%s", message.recipient, message.subject)
+        await self._producer.publish(message=message)
 
-    async def send(
-        self, message: TEmailMessage
-    ) -> None:
-        log.info("send: %s", message)
+    async def send(self, message: TEmailMessage) -> None:
+        log.info("send: to=%s subject=%s", message.recipient, message.subject)
         await self._sender.send_email(message=self._build_message(message))
 
     def _build_message(self, message: TEmailMessage) -> EmailMessage:

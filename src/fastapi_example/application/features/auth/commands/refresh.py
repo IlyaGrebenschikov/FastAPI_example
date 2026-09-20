@@ -45,7 +45,7 @@ class RefreshHandler:
                 raise NotFoundError("User not found")
 
         if not await self._refresh_token_repository.revoke(cmd.user_id, cmd.jti):
-            raise UnAuthorizedError("Refresh token revoked")
+            raise UnAuthorizedError("Refresh token is invalid or already revoked")
 
         pair = self._token_service.create_token_pair(user.id)
         await self._refresh_token_repository.save(user.id, pair.jti)

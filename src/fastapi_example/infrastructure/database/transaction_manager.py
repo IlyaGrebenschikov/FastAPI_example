@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from types import TracebackType
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,6 +10,8 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from fastapi_example.application.interfaces.database import ITransactionManager
+
+log = logging.getLogger(__name__)
 
 
 class DatabaseError(Exception):
@@ -93,7 +96,8 @@ class TransactionManager(ITransactionManager[AsyncSession]):
                 await self._transaction.rollback()
             else:
                 await self._transaction.commit()
-        except SQLAlchemyError as err:
-            raise (RollbackError if exc_type else CommitError)(err) from err
+        except SQLAlchemyError as rollback_err:
+            log.critical("Transaction rollback failed: %s", rollback_err)
+            raise
         finally:
             self._transaction = None

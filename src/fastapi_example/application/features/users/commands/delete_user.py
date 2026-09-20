@@ -29,19 +29,21 @@ class DeleteUserCommand:
 class DeleteUserHandler:
     def __init__(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_notifications: IEmailNotificationsService,
     ) -> None:
-        self._repository = repository
+        self._users_repository = users_repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
         self._email_notifications = email_notifications
 
     async def execute(self, cmd: DeleteUserCommand) -> User:
         async with self._transaction_manager:
-            user = await self._repository.get_user(user_id=cmd.user_id, for_update=True)
+            user = await self._users_repository.get_user(
+                user_id=cmd.user_id, for_update=True
+            )
             if not user:
                 log.warning("User does not exist with ID: '%s'", cmd.user_id)
                 raise NotFoundError("User not found")
@@ -53,7 +55,7 @@ class DeleteUserHandler:
                 )
                 raise ForbiddenError("Incorrect password")
 
-            result = await self._repository.delete_user(user_id=cmd.user_id)
+            result = await self._users_repository.delete_user(user_id=cmd.user_id)
 
         if result is None:
             raise NotFoundError("User not found")

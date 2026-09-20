@@ -51,14 +51,14 @@ class UsersFeaturesProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def create_user_handler(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
     ) -> CreateUserHandler:
         return CreateUserHandler(
-            repository,
+            users_repository,
             hasher,
             transaction_manager,
             email_validator,
@@ -68,22 +68,22 @@ class UsersFeaturesProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def get_user_handler(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         transaction_manager: ITransactionManager,
     ) -> GetUserHandler:
-        return GetUserHandler(repository, transaction_manager)
+        return GetUserHandler(users_repository, transaction_manager)
 
     @provide(scope=Scope.REQUEST)
     def update_user_handler(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
     ) -> UpdateUserHandler:
         return UpdateUserHandler(
-            repository,
+            users_repository,
             hasher,
             transaction_manager,
             email_validator,
@@ -93,13 +93,13 @@ class UsersFeaturesProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def delete_user_handler(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_notifications: IEmailNotificationsService,
     ) -> DeleteUserHandler:
         return DeleteUserHandler(
-            repository, hasher, transaction_manager, email_notifications
+            users_repository, hasher, transaction_manager, email_notifications
         )
 
 

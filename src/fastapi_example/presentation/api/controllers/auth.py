@@ -12,10 +12,13 @@ from fastapi_example.application.features.auth.commands import (
     RefreshHandler,
 )
 from fastapi_example.application.interfaces.services import TokenData
-from fastapi_example.presentation.api.dependencies import get_refresh_token_data
+from fastapi_example.presentation.api.dependencies import (
+    RateLimitDep,
+    get_refresh_token_data,
+)
 from fastapi_example.presentation.api.docs import (
-    TooManyRequestsError,
-    UnAuthorizedError,
+    TooManyRequestsDoc,
+    UnauthorizedDoc,
 )
 from fastapi_example.presentation.api.dto import (
     LoginEmailDTO,
@@ -31,13 +34,14 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"], route_class=DishkaRoute)
     response_model=TokenResponseDTO,
     status_code=status.HTTP_200_OK,
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"model": UnAuthorizedError},
-        status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsError},
+        status.HTTP_401_UNAUTHORIZED: {"model": UnauthorizedDoc},
+        status.HTTP_429_TOO_MANY_REQUESTS: {"model": TooManyRequestsDoc},
     },
 )
 async def login_email(
     data: LoginEmailDTO,
     handler: FromDishka[LoginEmailHandler],
+    _rate_limit: RateLimitDep,
 ) -> TokenResponseDTO:
     cmd = LoginEmailCommand(email=data.email, password=data.password)
     pair = await handler.execute(cmd)
@@ -51,7 +55,7 @@ async def login_email(
     response_model=TokenResponseDTO,
     status_code=status.HTTP_200_OK,
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"model": UnAuthorizedError},
+        status.HTTP_401_UNAUTHORIZED: {"model": UnauthorizedDoc},
     },
 )
 async def refresh(
@@ -70,7 +74,7 @@ async def refresh(
     response_model=LogoutResponseDTO,
     status_code=status.HTTP_200_OK,
     responses={
-        status.HTTP_401_UNAUTHORIZED: {"model": UnAuthorizedError},
+        status.HTTP_401_UNAUTHORIZED: {"model": UnauthorizedDoc},
     },
 )
 async def logout(

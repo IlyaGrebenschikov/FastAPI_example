@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import delete, exists, insert, or_, select, update
+from sqlalchemy import and_, delete, exists, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi_example.application.interfaces.database.repositories import (
@@ -30,16 +30,16 @@ class UsersRepository(IUsersRepository):
         user_id: UUID | None = None,
         email: str | None = None,
     ) -> bool:
-        if not any([user_id, email]):
-            raise TypeError("At least one identifier must be provided")
+        if user_id is None and email is None:
+            raise ValueError("At least one of user_id or email must be provided")
 
         conditions = []
-        if user_id:
+        if user_id is not None:
             conditions.append(UserModel.id == user_id)
-        if email:
+        if email is not None:
             conditions.append(UserModel.email == email)
 
-        clause = or_(*conditions)
+        clause = and_(*conditions)
         stmt = exists(select(UserModel).where(clause)).select()
         result = await self._session.scalar(stmt)
         return bool(result)
@@ -50,16 +50,16 @@ class UsersRepository(IUsersRepository):
         email: str | None = None,
         for_update: bool = False,
     ) -> User | None:
-        if not any([user_id, email]):
-            raise TypeError("At least one identifier must be provided")
+        if user_id is None and email is None:
+            raise ValueError("At least one of user_id or email must be provided")
 
         conditions = []
-        if user_id:
+        if user_id is not None:
             conditions.append(UserModel.id == user_id)
-        if email:
+        if email is not None:
             conditions.append(UserModel.email == email)
 
-        clause = or_(*conditions)
+        clause = and_(*conditions)
         stmt = select(UserModel).where(clause)
         if for_update:
             stmt = stmt.with_for_update()

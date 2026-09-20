@@ -14,7 +14,6 @@ from fastapi_example.application.interfaces.database import ITransactionManager
 from fastapi_example.application.interfaces.database.repositories import (
     IUsersRepository,
 )
-from fastapi_example.application.interfaces.http_clients import IEmailVerifier
 from fastapi_example.application.interfaces.message_broker.producers import (
     IEmailNotificationsProducer,
 )
@@ -125,7 +124,7 @@ class CommunicationProvider(Provider):
         super().__init__(scope, component)
         self._smtp_settings = smtp_settings
 
-    @provide(scope=Scope.APP)
+    @provide(scope=Scope.REQUEST)
     async def smtp_client(self):
         client = create_smtp_client(self._smtp_settings)
         async with client:
@@ -144,14 +143,17 @@ class HTTPClientsProvider(Provider):
     def __init__(
         self, email_verifier_settings: EmailVerifierSettings, scope=None, component=None
     ):
-        self._email_verifier_settings = email_verifier_settings
         super().__init__(scope, component)
+        self._email_verifier_settings = email_verifier_settings
 
     @provide(scope=Scope.APP)
-    def email_verifier(self) -> IEmailVerifier:
+    async def email_verifier(self):
         if not self._email_verifier_settings.enabled:
-            return NullEmailVerifier()
-        return AbstractApiEmailVerifier(self._email_verifier_settings.api_key)
+            yield NullEmailVerifier()
+        else:
+            verifier = AbstractApiEmailVerifier(self._email_verifier_settings.api_key)
+            yield verifier
+            await verifier.aclose()
 
 
 class MessageBrokerProvider(Provider):

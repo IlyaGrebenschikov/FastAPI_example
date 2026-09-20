@@ -1,5 +1,5 @@
 import logging
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from uuid import UUID
 
 from fastapi_example.application.http_exceptions import (
@@ -32,13 +32,13 @@ class UpdateUserCommand:
 class UpdateUserHandler:
     def __init__(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
     ) -> None:
-        self._repository = repository
+        self._users_repository = users_repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
         self._email_validator = email_validator
@@ -46,13 +46,15 @@ class UpdateUserHandler:
 
     async def execute(self, cmd: UpdateUserCommand) -> User:
         async with self._transaction_manager:
-            user = await self._repository.get_user(user_id=cmd.user_id, for_update=True)
+            user = await self._users_repository.get_user(
+                user_id=cmd.user_id, for_update=True
+            )
             if not user:
                 log.warning("User does not exist with ID: '%s'", cmd.user_id)
                 raise NotFoundError("User not found")
 
-            if cmd.email and cmd.email != user.email:
-                if await self._repository.exists_user(email=cmd.email):
+            if cmd.email is not None and cmd.email != user.email:
+                if await self._users_repository.exists_user(email=cmd.email):
                     log.warning(
                         "User update failed - user already exists with email: '%s'",
                         cmd.email,
@@ -61,19 +63,13 @@ class UpdateUserHandler:
 
                 await self._email_validator.validate(cmd.email)
 
-            raw_data: dict[str, str] = {
-                k: v for k, v in asdict(cmd).items() if v is not None and k != "user_id"
-            }
-            if "password" in raw_data:
-                raw_data["password"] = self._hasher.hash_password(raw_data["password"])
-
             update_data: TUpdateUser = {}
-            if "email" in raw_data:
-                update_data["email"] = raw_data["email"]
-            if "password" in raw_data:
-                update_data["password"] = raw_data["password"]
+            if cmd.email is not None and cmd.email != user.email:
+                update_data["email"] = cmd.email
+            if cmd.password is not None:
+                update_data["password"] = self._hasher.hash_password(cmd.password)
 
-            updated = await self._repository.update_user(
+            updated = await self._users_repository.update_user(
                 cmd.user_id, update_data
             )
 

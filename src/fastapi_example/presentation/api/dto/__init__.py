@@ -1,4 +1,5 @@
 from .auth import LoginEmailDTO, LogoutResponseDTO, TokenResponseDTO
+from .delete_user import DeleteUserResponseDTO
 from .user import (
     CreateUserDTO,
     DeleteUserDTO,
@@ -9,6 +10,7 @@ from .user import (
 __all__ = (
     "CreateUserDTO",
     "DeleteUserDTO",
+    "DeleteUserResponseDTO",
     "LoginEmailDTO",
     "LogoutResponseDTO",
     "TokenResponseDTO",

@@ -27,13 +27,13 @@ class CreateUserCommand:
 class CreateUserHandler:
     def __init__(
         self,
-        repository: IUsersRepository,
+        users_repository: IUsersRepository,
         hasher: IPwdHasher,
         transaction_manager: ITransactionManager,
         email_validator: IEmailValidatorService,
         email_notifications: IEmailNotificationsService,
     ) -> None:
-        self._repository = repository
+        self._users_repository = users_repository
         self._hasher = hasher
         self._transaction_manager = transaction_manager
         self._email_validator = email_validator
@@ -43,7 +43,7 @@ class CreateUserHandler:
         await self._email_validator.validate(cmd.email)
 
         async with self._transaction_manager:
-            if await self._repository.exists_user(email=cmd.email):
+            if await self._users_repository.exists_user(email=cmd.email):
                 log.warning(
                     "User creation failed - user already exists with email: '%s'",
                     cmd.email,
@@ -51,7 +51,7 @@ class CreateUserHandler:
                 raise ConflictError(f"User already exists with email: {cmd.email}")
 
             hashed_password = self._hasher.hash_password(cmd.password)
-            user = await self._repository.create_user(
+            user = await self._users_repository.create_user(
                 TCreateUser(email=cmd.email, password=hashed_password)
             )
 
