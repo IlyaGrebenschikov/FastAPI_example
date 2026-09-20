@@ -67,7 +67,12 @@ async def validation_exception_handler(
     log.warning("Handle error: %s", type(err).__name__)
     errors = err.errors()
     for e in errors:
-        log.warning("Validation error detail: loc=%s msg=%s type=%s", e.get("loc"), e.get("msg"), e.get("type"))
+        log.warning(
+            "Validation error detail: loc=%s msg=%s type=%s",
+            e.get("loc"),
+            e.get("msg"),
+            e.get("type"),
+        )
     return JSONResponse(
         content={
             "message": "Validation error",
