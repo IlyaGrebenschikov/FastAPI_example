@@ -3,6 +3,7 @@ from collections.abc import AsyncIterator
 import aiosmtplib
 import redis.asyncio as aioredis
 from dishka import Provider, Scope, provide
+from faststream.kafka import KafkaBroker
 from pwdlib import PasswordHash
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
@@ -27,8 +28,6 @@ from fastapi_example.core.settings import (
     MessageBrokerSettings,
     SMTPSettings,
 )
-from faststream.kafka import KafkaBroker
-
 from fastapi_example.infrastructure.cache import create_client
 from fastapi_example.infrastructure.cache.repositories import (
     RateLimiterCacheRepository,
